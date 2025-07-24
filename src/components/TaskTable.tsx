@@ -173,78 +173,78 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
         <Card>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
-              <table className="w-full table-fixed">
+              <table className="w-full min-w-full">
                 <thead className="bg-muted/50">
                   <tr>
-                    <th className="text-right p-4 font-medium w-[180px]">
+                    <th className="text-right p-3 font-medium w-32">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('projectName')}>
                         שם הפרויקט <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                     <th className="text-right p-4 font-medium w-[280px]">תיאור</th>
-                     <th className="text-right p-4 font-medium w-[120px]">משימות</th>
-                    <th className="text-right p-4 font-medium w-[160px]">
+                     <th className="text-right p-3 font-medium w-40">תיאור</th>
+                     <th className="text-right p-3 font-medium w-20">משימות</th>
+                    <th className="text-right p-3 font-medium w-28">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('clientName')}>
                         לקוח <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-medium w-[160px]">
+                    <th className="text-right p-3 font-medium w-28">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('workStatus')}>
                         סטטוס <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-medium w-[140px]">
+                    <th className="text-right p-3 font-medium w-24">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('priority')}>
                         עדיפות <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-medium w-[140px]">
+                    <th className="text-right p-3 font-medium w-24">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('price')}>
                         מחיר <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-medium w-[120px]">תשלום</th>
-                    <th className="text-right p-4 font-medium w-[120px]">הושלם</th>
-                    <th className="text-right p-4 font-medium w-[120px]">פעולות</th>
+                    <th className="text-right p-3 font-medium w-20">תשלום</th>
+                    <th className="text-right p-3 font-medium w-20">הושלם</th>
+                    <th className="text-right p-3 font-medium w-24">פעולות</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredTasks.map((task) => (
                     <tr key={task.id} className="border-t hover:bg-muted/25">
                       {/* Project Name */}
-                      <td className="p-4 w-[180px]">
+                      <td className="p-3 w-32">
                         {editingId === task.id ? (
                           <Input
                             value={task.projectName}
                             onChange={(e) => handleFieldUpdate(task.id, 'projectName', e.target.value)}
-                            className="w-full"
+                            className="w-full text-xs"
                           />
                         ) : (
-                          <div className="font-medium whitespace-nowrap overflow-hidden text-ellipsis" title={task.projectName}>{task.projectName}</div>
+                          <div className="font-medium text-xs whitespace-nowrap overflow-hidden text-ellipsis" title={task.projectName}>{task.projectName}</div>
                         )}
                       </td>
 
                       {/* Description */}
-                      <td className="p-4 w-[280px]">
+                      <td className="p-3 w-40">
                         {editingId === task.id ? (
-                          <div className="space-y-2">
+                          <div className="space-y-1">
                             <Textarea
                               value={task.projectDescription}
                               onChange={(e) => handleFieldUpdate(task.id, 'projectDescription', e.target.value)}
-                              rows={3}
-                              className="w-full resize-none"
-                              placeholder="תיאור הפרויקט..."
+                              rows={2}
+                              className="w-full resize-none text-xs"
+                              placeholder="תיאור..."
                             />
                             <Input
-                              placeholder="נתיב תיקייה (אופציונלי)"
+                              placeholder="נתיב תיקייה"
                               value={task.folderPath || ''}
                               onChange={(e) => handleFieldUpdate(task.id, 'folderPath', e.target.value)}
-                              className="w-full"
+                              className="w-full text-xs"
                             />
                           </div>
                         ) : (
-                          <div className="space-y-2">
-                            <p className="text-sm whitespace-pre-wrap break-words">
+                          <div className="space-y-1">
+                            <p className="text-xs whitespace-pre-wrap break-words line-clamp-2">
                               {task.projectDescription || 'אין תיאור'}
                             </p>
                             {task.folderPath && (
@@ -263,7 +263,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                        </td>
 
                        {/* Tasks */}
-                       <td className="p-4 w-[120px]">
+                       <td className="p-3 w-20">
                          <TaskListDialog
                            tasks={task.tasks}
                            onUpdateTasks={(tasks) => handleFieldUpdate(task.id, 'tasks', tasks)}
@@ -272,28 +272,31 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                        </td>
 
                        {/* Client */}
-                      <td className="p-4 w-[160px]">
+                      <td className="p-3 w-28">
                         {editingId === task.id ? (
-                          <div className="space-y-2">
+                          <div className="space-y-1">
                             <Input
                               placeholder="שם הלקוח"
                               value={task.clientName}
                               onChange={(e) => handleFieldUpdate(task.id, 'clientName', e.target.value)}
+                              className="text-xs"
                             />
                             <Input
-                              placeholder="טלפון (אופציונלי)"
+                              placeholder="טלפון"
                               value={task.clientPhone || ''}
                               onChange={(e) => handleFieldUpdate(task.id, 'clientPhone', e.target.value)}
+                              className="text-xs"
                             />
                             <Input
-                              placeholder="אימייל (אופציונלי)"
+                              placeholder="אימייל"
                               value={task.clientEmail || ''}
                               onChange={(e) => handleFieldUpdate(task.id, 'clientEmail', e.target.value)}
+                              className="text-xs"
                             />
                           </div>
                         ) : (
                           <div className="space-y-1">
-                            <div className="font-medium whitespace-nowrap overflow-hidden text-ellipsis" title={task.clientName}>{task.clientName}</div>
+                            <div className="font-medium text-xs whitespace-nowrap overflow-hidden text-ellipsis" title={task.clientName}>{task.clientName}</div>
                             <div className="flex gap-1">
                               {task.clientPhone && (
                                 <Button
@@ -331,14 +334,14 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                       </td>
 
                       {/* Work Status */}
-                      <td className="p-4 w-[160px]">
+                      <td className="p-3 w-28">
                         <Select
                           value={task.workStatus}
                           onValueChange={(value) => handleFieldUpdate(task.id, 'workStatus', value)}
                         >
-                          <SelectTrigger className="w-full">
+                          <SelectTrigger className="w-full h-8">
                             <SelectValue>
-                              <Badge className={cn(getStatusColor(task.workStatus), "rounded-md px-3 py-1")}>
+                              <Badge className={cn(getStatusColor(task.workStatus), "rounded-md px-2 py-1 text-xs")}>
                                 {WORK_STATUS_LABELS[task.workStatus]}
                               </Badge>
                             </SelectValue>
@@ -346,7 +349,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                           <SelectContent className="z-50 bg-popover border shadow-lg">
                             {Object.entries(WORK_STATUS_LABELS).map(([value, label]) => (
                               <SelectItem key={value} value={value}>
-                                <Badge className={cn(getStatusColor(value as any), "rounded-md px-3 py-1")}>
+                                <Badge className={cn(getStatusColor(value as any), "rounded-md px-2 py-1 text-xs")}>
                                   {label}
                                 </Badge>
                               </SelectItem>
@@ -356,14 +359,14 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                       </td>
 
                       {/* Priority */}
-                      <td className="p-4 w-[140px]">
+                      <td className="p-3 w-24">
                         <Select
                           value={task.priority}
                           onValueChange={(value) => handleFieldUpdate(task.id, 'priority', value)}
                         >
-                          <SelectTrigger className="w-full">
+                          <SelectTrigger className="w-full h-8">
                             <SelectValue>
-                              <Badge className={cn(getPriorityColor(task.priority), "rounded-md px-3 py-1")}>
+                              <Badge className={cn(getPriorityColor(task.priority), "rounded-md px-2 py-1 text-xs")}>
                                 {PRIORITY_LABELS[task.priority]}
                               </Badge>
                             </SelectValue>
@@ -371,7 +374,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                           <SelectContent className="z-50 bg-popover border shadow-lg">
                             {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
                               <SelectItem key={value} value={value}>
-                                <Badge className={cn(getPriorityColor(value as any), "rounded-md px-3 py-1")}>
+                                <Badge className={cn(getPriorityColor(value as any), "rounded-md px-2 py-1 text-xs")}>
                                   {label}
                                 </Badge>
                               </SelectItem>
@@ -381,14 +384,14 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                       </td>
 
                       {/* Price */}
-                      <td className="p-4 w-[140px]">
+                      <td className="p-3 w-24">
                         {editingId === task.id ? (
-                          <div className="flex gap-1">
+                          <div className="space-y-1">
                             <Select
                               value={task.currency}
                               onValueChange={(value) => handleFieldUpdate(task.id, 'currency', value)}
                             >
-                              <SelectTrigger className="w-20">
+                              <SelectTrigger className="w-full h-7 text-xs">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
@@ -403,44 +406,44 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                               type="number"
                               value={task.price}
                               onChange={(e) => handleFieldUpdate(task.id, 'price', parseFloat(e.target.value) || 0)}
-                              className="w-24"
+                              className="w-full text-xs"
                             />
                           </div>
                         ) : (
-                          <div className="font-medium whitespace-nowrap">
+                          <div className="font-medium text-xs whitespace-nowrap">
                             {task.currency} {task.price.toLocaleString()}
                           </div>
                         )}
                       </td>
 
                       {/* Payment Status */}
-                      <td className="p-4 w-[120px]">
-                        <div className="flex items-center gap-2">
+                      <td className="p-3 w-20">
+                        <div className="flex items-center gap-1">
                           <Checkbox
                             checked={task.isPaid}
                             onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isPaid', checked)}
                           />
-                           <span className={cn("text-sm font-medium whitespace-nowrap", task.isPaid ? "text-green-600" : "text-red-600")}>
+                           <span className={cn("text-xs font-medium whitespace-nowrap", task.isPaid ? "text-green-600" : "text-red-600")}>
                              {task.isPaid ? 'שולם' : 'לא שולם'}
                            </span>
                         </div>
                       </td>
 
                       {/* Completion Status */}
-                      <td className="p-4 w-[120px]">
-                        <div className="flex items-center gap-2">
+                      <td className="p-3 w-20">
+                        <div className="flex items-center gap-1">
                           <Checkbox
                             checked={task.isCompleted}
                             onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isCompleted', checked)}
                           />
-                           <span className={cn("text-sm font-medium whitespace-nowrap", task.isCompleted ? "text-green-600" : "text-orange-600")}>
+                           <span className={cn("text-xs font-medium whitespace-nowrap", task.isCompleted ? "text-green-600" : "text-orange-600")}>
                              {task.isCompleted ? 'הושלם' : 'לא הושלם'}
                            </span>
                         </div>
                       </td>
 
                       {/* Actions */}
-                      <td className="p-4 w-[120px]">
+                      <td className="p-3 w-24">
                         <div className="flex gap-1">
                           {editingId === task.id ? (
                             <>
@@ -450,7 +453,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                                 onClick={handleSave}
                                 className="p-1 h-auto"
                               >
-                                <Save className="h-4 w-4" />
+                                <Save className="h-3 w-3" />
                               </Button>
                               <Button
                                 variant="ghost"
@@ -458,7 +461,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                                 onClick={handleCancel}
                                 className="p-1 h-auto"
                               >
-                                <X className="h-4 w-4" />
+                                <X className="h-3 w-3" />
                               </Button>
                             </>
                           ) : (
@@ -469,7 +472,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                                 onClick={() => handleEdit(task)}
                                 className="p-1 h-auto"
                               >
-                                <Edit3 className="h-4 w-4" />
+                                <Edit3 className="h-3 w-3" />
                               </Button>
                               <Button
                                 variant="ghost"
@@ -477,7 +480,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                                 onClick={() => onDeleteTask(task.id)}
                                 className="p-1 h-auto text-red-600 hover:text-red-700"
                               >
-                                <Trash2 className="h-4 w-4" />
+                                <Trash2 className="h-3 w-3" />
                               </Button>
                             </>
                           )}
