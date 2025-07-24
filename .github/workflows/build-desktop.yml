@@ -1,0 +1,120 @@
+name: Build Desktop App
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Add Electron to Capacitor
+      run: |
+        npm install @capacitor/electron --save-dev
+        npx cap add electron
+    
+    - name: Build web app
+      run: npm run build
+    
+    - name: Sync Capacitor
+      run: npx cap sync
+    
+    - name: Build Electron app
+      run: |
+        cd electron
+        npm install
+        npm run electron:build-windows
+    
+    - name: Upload Windows artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-installer
+        path: electron/dist/*.exe
+
+  build-mac:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Add Electron to Capacitor
+      run: |
+        npm install @capacitor/electron --save-dev
+        npx cap add electron
+    
+    - name: Build web app
+      run: npm run build
+    
+    - name: Sync Capacitor
+      run: npx cap sync
+    
+    - name: Build Electron app
+      run: |
+        cd electron
+        npm install
+        npm run electron:build-mac
+    
+    - name: Upload Mac artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: mac-installer
+        path: electron/dist/*.dmg
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Add Electron to Capacitor
+      run: |
+        npm install @capacitor/electron --save-dev
+        npx cap add electron
+    
+    - name: Build web app
+      run: npm run build
+    
+    - name: Sync Capacitor
+      run: npx cap sync
+    
+    - name: Build Electron app
+      run: |
+        cd electron
+        npm install
+        npm run electron:build-linux
+    
+    - name: Upload Linux artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-installer
+        path: electron/dist/*.AppImage
