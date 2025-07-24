@@ -91,7 +91,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
           פרויקט חדש
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir="rtl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto z-[10000]" dir="rtl">
         <DialogHeader>
           <DialogTitle>צור פרויקט חדש</DialogTitle>
         </DialogHeader>
