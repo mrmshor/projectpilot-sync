@@ -147,8 +147,17 @@
   }
 
   body {
-    @apply bg-background text-foreground font-medium;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    @apply bg-background text-foreground font-body font-medium;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
 }
 
@@ -156,24 +165,100 @@
   /* macOS Glass Effect */
   .glass {
     @apply bg-white/80 dark:bg-black/30 backdrop-blur-xl border border-white/20 dark:border-white/10;
+    backdrop-filter: blur(20px) saturate(180%);
   }
   
-  /* macOS Card Style */
+  /* Enhanced macOS Card Style */
   .mac-card {
-    @apply bg-card border border-border/50 rounded-2xl shadow-[var(--shadow-medium)] backdrop-blur-sm;
+    @apply bg-card border border-border/50 rounded-2xl shadow-medium backdrop-blur-sm relative overflow-hidden;
+    background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--card) / 0.95) 100%);
   }
   
-  /* macOS Button Styles */
+  .mac-card::before {
+    @apply absolute inset-0 rounded-2xl opacity-50;
+    content: '';
+    background: linear-gradient(135deg, transparent 0%, hsl(var(--primary) / 0.05) 50%, transparent 100%);
+    pointer-events: none;
+  }
+  
+  /* Enhanced macOS Button Styles */
   .mac-button {
-    @apply rounded-xl font-medium transition-all duration-200 ease-out;
+    @apply rounded-xl font-medium transition-all duration-300 ease-out relative overflow-hidden;
+  }
+  
+  .mac-button::before {
+    @apply absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300;
+    content: '';
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.1) 0%, transparent 50%, hsl(var(--primary) / 0.1) 100%);
+  }
+  
+  .mac-button:hover::before {
+    @apply opacity-100;
   }
   
   .mac-button-primary {
-    @apply bg-gradient-to-b from-primary to-primary/90 text-primary-foreground shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-medium)] hover:scale-[1.02] active:scale-[0.98];
+    @apply bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground shadow-soft;
   }
   
-  /* macOS Input Style */
+  .mac-button-primary:hover {
+    @apply shadow-medium scale-[1.02] brightness-110;
+  }
+  
+  .mac-button-primary:active {
+    @apply scale-[0.98] brightness-95;
+  }
+  
+  /* Enhanced macOS Input Style */
   .mac-input {
-    @apply bg-white/50 dark:bg-black/20 border border-border/60 rounded-xl backdrop-blur-sm transition-all duration-200 focus:bg-white dark:focus:bg-black/30 focus:border-primary/50 focus:shadow-[var(--shadow-soft)];
+    @apply bg-white/60 dark:bg-black/25 border border-border/60 rounded-xl backdrop-blur-sm transition-all duration-300 relative overflow-hidden;
+  }
+  
+  .mac-input::before {
+    @apply absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300 pointer-events-none;
+    content: '';
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.05) 0%, transparent 100%);
+  }
+  
+  .mac-input:focus::before {
+    @apply opacity-100;
+  }
+  
+  .mac-input:focus {
+    @apply bg-white dark:bg-black/40 border-primary/60 shadow-soft ring-4 ring-primary/20;
+  }
+  
+  /* Floating Animation */
+  .float {
+    @apply animate-float;
+  }
+  
+  /* Glow Effect */
+  .glow {
+    @apply animate-glow;
+  }
+  
+  /* Gradient Text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent;
+  }
+  
+  /* Status Indicators */
+  .status-dot {
+    @apply w-2 h-2 rounded-full relative;
+  }
+  
+  .status-dot::before {
+    @apply absolute inset-0 rounded-full animate-ping;
+    content: '';
+    background: inherit;
+  }
+  
+  /* Micro Interactions */
+  .hover-lift {
+    @apply transition-transform duration-200 hover:scale-[1.02] hover:shadow-medium;
+  }
+  
+  .press-scale {
+    @apply transition-transform duration-100 active:scale-[0.98];
   }
 }
