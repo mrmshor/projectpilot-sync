@@ -2,61 +2,68 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Professional Task Management Design System */
+/* Modern macOS Inspired Design System */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 210 11% 15%;
+    /* macOS Surface Colors */
+    --background: 0 0% 99%;
+    --foreground: 0 0% 13%;
 
     --card: 0 0% 100%;
-    --card-foreground: 210 11% 15%;
+    --card-foreground: 0 0% 13%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 11% 15%;
+    --popover-foreground: 0 0% 13%;
 
-    --primary: 213 94% 68%;
+    /* macOS Blue Accent */
+    --primary: 211 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 210 11% 15%;
+    /* Subtle Gray Backgrounds */
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 13%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 210 11% 46%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 210 40% 96%;
-    --accent-foreground: 210 11% 15%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 13%;
 
-    --destructive: 0 84% 60%;
+    /* macOS System Colors */
+    --destructive: 0 100% 58%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 213 94% 68%;
+    /* Refined Borders */
+    --border: 0 0% 89%;
+    --input: 0 0% 89%;
+    --ring: 211 100% 50%;
 
     /* Status Colors */
-    --success: 142 71% 45%;
+    --success: 120 100% 40%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
+    --warning: 38 100% 50%;
     --warning-foreground: 0 0% 100%;
-    --info: 199 89% 48%;
+    --info: 211 100% 50%;
     --info-foreground: 0 0% 100%;
 
     /* Priority Colors */
-    --priority-high: 0 84% 60%;
-    --priority-medium: 38 92% 50%;
-    --priority-low: 142 71% 45%;
+    --priority-high: 0 100% 58%;
+    --priority-medium: 38 100% 50%;
+    --priority-low: 120 100% 40%;
 
-    /* Professional gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(213 94% 68%), hsl(199 89% 48%));
-    --gradient-surface: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 40% 98%));
+    /* macOS Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(211 100% 50%), hsl(226 100% 60%));
+    --gradient-surface: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 98%));
+    --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.8), hsl(0 0% 98% / 0.6));
     
-    /* Shadows */
-    --shadow-soft: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-    --shadow-medium: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
-    --shadow-large: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.1);
+    /* macOS-style Shadows */
+    --shadow-soft: 0 1px 3px 0 hsl(0 0% 0% / 0.05), 0 1px 2px -1px hsl(0 0% 0% / 0.05);
+    --shadow-medium: 0 4px 16px -4px hsl(0 0% 0% / 0.08), 0 2px 8px -2px hsl(0 0% 0% / 0.04);
+    --shadow-large: 0 16px 32px -8px hsl(0 0% 0% / 0.12), 0 8px 16px -4px hsl(0 0% 0% / 0.06);
+    --shadow-glass: 0 8px 32px hsl(0 0% 0% / 0.12), 0 0 0 1px hsl(0 0% 100% / 0.05);
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -76,50 +83,53 @@
   }
 
   .dark {
-    --background: 210 15% 8%;
-    --foreground: 210 40% 95%;
+    /* macOS Dark Mode */
+    --background: 0 0% 7%;
+    --foreground: 0 0% 95%;
 
-    --card: 210 15% 10%;
-    --card-foreground: 210 40% 95%;
+    --card: 0 0% 9%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 210 15% 10%;
-    --popover-foreground: 210 40% 95%;
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 213 94% 68%;
+    --primary: 211 100% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 15% 15%;
-    --secondary-foreground: 210 40% 95%;
+    --secondary: 0 0% 13%;
+    --secondary-foreground: 0 0% 95%;
 
-    --muted: 210 15% 15%;
-    --muted-foreground: 210 11% 65%;
+    --muted: 0 0% 13%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 210 15% 15%;
-    --accent-foreground: 210 40% 95%;
+    --accent: 0 0% 13%;
+    --accent-foreground: 0 0% 95%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 100% 65%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 15% 20%;
-    --input: 210 15% 20%;
-    --ring: 213 94% 68%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 211 100% 60%;
 
     /* Dark mode status colors */
-    --success: 142 71% 45%;
+    --success: 120 100% 50%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
+    --warning: 38 100% 60%;
     --warning-foreground: 0 0% 100%;
-    --info: 199 89% 48%;
+    --info: 211 100% 60%;
     --info-foreground: 0 0% 100%;
 
     /* Dark mode gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(213 94% 68%), hsl(199 89% 48%));
-    --gradient-surface: linear-gradient(180deg, hsl(210 15% 10%), hsl(210 15% 8%));
+    --gradient-primary: linear-gradient(135deg, hsl(211 100% 60%), hsl(226 100% 70%));
+    --gradient-surface: linear-gradient(180deg, hsl(0 0% 9%), hsl(0 0% 7%));
+    --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.1), hsl(0 0% 100% / 0.05));
     
     /* Dark mode shadows */
-    --shadow-soft: 0 1px 3px 0 hsl(0 0% 0% / 0.3), 0 1px 2px -1px hsl(0 0% 0% / 0.3);
-    --shadow-medium: 0 4px 6px -1px hsl(0 0% 0% / 0.3), 0 2px 4px -2px hsl(0 0% 0% / 0.3);
-    --shadow-large: 0 10px 15px -3px hsl(0 0% 0% / 0.3), 0 4px 6px -4px hsl(0 0% 0% / 0.3);
+    --shadow-soft: 0 1px 3px 0 hsl(0 0% 0% / 0.4), 0 1px 2px -1px hsl(0 0% 0% / 0.4);
+    --shadow-medium: 0 4px 16px -4px hsl(0 0% 0% / 0.5), 0 2px 8px -2px hsl(0 0% 0% / 0.3);
+    --shadow-large: 0 16px 32px -8px hsl(0 0% 0% / 0.6), 0 8px 16px -4px hsl(0 0% 0% / 0.4);
+    --shadow-glass: 0 8px 32px hsl(0 0% 0% / 0.4), 0 0 0 1px hsl(0 0% 100% / 0.1);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -137,6 +147,33 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-medium;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  }
+}
+
+@layer components {
+  /* macOS Glass Effect */
+  .glass {
+    @apply bg-white/80 dark:bg-black/30 backdrop-blur-xl border border-white/20 dark:border-white/10;
+  }
+  
+  /* macOS Card Style */
+  .mac-card {
+    @apply bg-card border border-border/50 rounded-2xl shadow-[var(--shadow-medium)] backdrop-blur-sm;
+  }
+  
+  /* macOS Button Styles */
+  .mac-button {
+    @apply rounded-xl font-medium transition-all duration-200 ease-out;
+  }
+  
+  .mac-button-primary {
+    @apply bg-gradient-to-b from-primary to-primary/90 text-primary-foreground shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-medium)] hover:scale-[1.02] active:scale-[0.98];
+  }
+  
+  /* macOS Input Style */
+  .mac-input {
+    @apply bg-white/50 dark:bg-black/20 border border-border/60 rounded-xl backdrop-blur-sm transition-all duration-200 focus:bg-white dark:focus:bg-black/30 focus:border-primary/50 focus:shadow-[var(--shadow-soft)];
   }
 }
