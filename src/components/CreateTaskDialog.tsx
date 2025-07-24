@@ -39,6 +39,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
     onCreateTask({
       ...formData,
       folderPath: formData.folderPath || undefined,
+      tasks: [],
       clientPhone: formData.clientPhone || undefined,
       clientEmail: formData.clientEmail || undefined
     });

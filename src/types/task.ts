@@ -1,8 +1,15 @@
+export interface TaskItem {
+  id: string;
+  text: string;
+  isCompleted: boolean;
+}
+
 export interface Task {
   id: string;
   projectName: string;
   projectDescription: string;
   folderPath?: string;
+  tasks: TaskItem[];
   clientName: string;
   clientPhone?: string;
   clientEmail?: string;

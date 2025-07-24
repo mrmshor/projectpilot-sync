@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Task, WorkStatus, Priority, WORK_STATUS_LABELS, PRIORITY_LABELS, CURRENCIES } from '@/types/task';
+import { Task, TaskItem, WorkStatus, Priority, WORK_STATUS_LABELS, PRIORITY_LABELS, CURRENCIES } from '@/types/task';
+import { TaskListDialog } from '@/components/TaskListDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -146,7 +147,8 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                         שם הפרויקט <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-medium">תיאור</th>
+                     <th className="text-right p-4 font-medium">תיאור</th>
+                     <th className="text-right p-4 font-medium">משימות</th>
                     <th className="text-right p-4 font-medium">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('clientName')}>
                         לקוח <ArrowUpDown className="h-4 w-4 mr-1" />
@@ -219,9 +221,18 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                             )}
                           </div>
                         )}
-                      </td>
+                       </td>
 
-                      {/* Client */}
+                       {/* Tasks */}
+                       <td className="p-4">
+                         <TaskListDialog
+                           tasks={task.tasks}
+                           onUpdateTasks={(tasks) => handleFieldUpdate(task.id, 'tasks', tasks)}
+                           projectName={task.projectName}
+                         />
+                       </td>
+
+                       {/* Client */}
                       <td className="p-4">
                         {editingId === task.id ? (
                           <div className="space-y-2">
