@@ -85,17 +85,14 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => {
-      console.log('Dialog open change:', isOpen);
-      setOpen(isOpen);
-    }}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="gap-2">
           <Plus className="h-4 w-4" />
           פרויקט חדש
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-background border shadow-lg" dir="rtl" onPointerDownOutside={(e) => e.preventDefault()}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir="rtl">
         <DialogHeader>
           <DialogTitle>צור פרויקט חדש</DialogTitle>
         </DialogHeader>
@@ -195,7 +192,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
                   <SelectTrigger>
                     <SelectValue placeholder="בחר סטטוס" />
                   </SelectTrigger>
-                  <SelectContent className="z-[10001]">
+                  <SelectContent>
                     {Object.entries(WORK_STATUS_LABELS).map(([value, label]) => (
                       <SelectItem key={value} value={value}>
                         {label}
@@ -211,7 +208,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
                   <SelectTrigger>
                     <SelectValue placeholder="בחר עדיפות" />
                   </SelectTrigger>
-                  <SelectContent className="z-[10001]">
+                  <SelectContent>
                     {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
                       <SelectItem key={value} value={value}>
                         {label}
@@ -229,7 +226,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
                   <SelectTrigger>
                     <SelectValue placeholder="בחר מטבע" />
                   </SelectTrigger>
-                  <SelectContent className="z-[10001]">
+                  <SelectContent>
                     {CURRENCIES.map((currency) => (
                       <SelectItem key={currency} value={currency}>
                         {currency}
@@ -276,16 +273,10 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
 
           {/* Actions */}
           <div className="flex justify-start gap-3 pt-4">
-            <Button type="submit" onClick={(e) => {
-              console.log('Submit button clicked');
-              e.stopPropagation();
-            }}>
+            <Button type="submit">
               צור פרויקט
             </Button>
-            <Button type="button" variant="outline" onClick={(e) => {
-              e.stopPropagation();
-              setOpen(false);
-            }}>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               ביטול
             </Button>
           </div>
