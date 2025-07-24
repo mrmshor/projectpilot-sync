@@ -103,7 +103,14 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
       setOpen(newOpen);
     }}>
       <DialogTrigger asChild>
-        <Button className="gap-2" onClick={() => console.log('Create project button clicked')}>
+        <Button 
+          className="gap-2" 
+          onClick={(e) => {
+            console.log('=== CREATE PROJECT BUTTON CLICKED ===', e);
+            console.log('Current open state:', open);
+            setOpen(true);
+          }}
+        >
           <Plus className="h-4 w-4" />
           פרויקט חדש
         </Button>
