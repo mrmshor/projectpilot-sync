@@ -176,43 +176,43 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
               <table className="w-full table-fixed">
                 <thead className="bg-muted/50">
                   <tr>
-                    <th className="text-right p-4 font-medium w-[140px]">
+                    <th className="text-right p-4 font-medium w-[180px]">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('projectName')}>
                         שם הפרויקט <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                     <th className="text-right p-4 font-medium w-[200px]">תיאור</th>
-                     <th className="text-right p-4 font-medium w-[100px]">משימות</th>
-                    <th className="text-right p-4 font-medium w-[140px]">
+                     <th className="text-right p-4 font-medium w-[280px]">תיאור</th>
+                     <th className="text-right p-4 font-medium w-[120px]">משימות</th>
+                    <th className="text-right p-4 font-medium w-[160px]">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('clientName')}>
                         לקוח <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-medium w-[130px]">
+                    <th className="text-right p-4 font-medium w-[140px]">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('workStatus')}>
                         סטטוס <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-medium w-[110px]">
+                    <th className="text-right p-4 font-medium w-[120px]">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('priority')}>
                         עדיפות <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-medium w-[120px]">
+                    <th className="text-right p-4 font-medium w-[140px]">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('price')}>
                         מחיר <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-medium w-[100px]">תשלום</th>
-                    <th className="text-right p-4 font-medium w-[100px]">הושלם</th>
-                    <th className="text-right p-4 font-medium w-[100px]">פעולות</th>
+                    <th className="text-right p-4 font-medium w-[120px]">תשלום</th>
+                    <th className="text-right p-4 font-medium w-[120px]">הושלם</th>
+                    <th className="text-right p-4 font-medium w-[120px]">פעולות</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredTasks.map((task) => (
                     <tr key={task.id} className="border-t hover:bg-muted/25">
                       {/* Project Name */}
-                      <td className="p-4 w-[140px]">
+                      <td className="p-4 w-[180px]">
                         {editingId === task.id ? (
                           <Input
                             value={task.projectName}
@@ -220,12 +220,12 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                             className="w-full"
                           />
                         ) : (
-                          <div className="font-medium truncate" title={task.projectName}>{task.projectName}</div>
+                          <div className="font-medium whitespace-nowrap overflow-hidden text-ellipsis" title={task.projectName}>{task.projectName}</div>
                         )}
                       </td>
 
                       {/* Description */}
-                      <td className="p-4 w-[200px]">
+                      <td className="p-4 w-[280px]">
                         {editingId === task.id ? (
                           <div className="space-y-2">
                             <Textarea
@@ -263,7 +263,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                        </td>
 
                        {/* Tasks */}
-                       <td className="p-4 w-[100px]">
+                       <td className="p-4 w-[120px]">
                          <TaskListDialog
                            tasks={task.tasks}
                            onUpdateTasks={(tasks) => handleFieldUpdate(task.id, 'tasks', tasks)}
@@ -272,7 +272,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                        </td>
 
                        {/* Client */}
-                      <td className="p-4 w-[140px]">
+                      <td className="p-4 w-[160px]">
                         {editingId === task.id ? (
                           <div className="space-y-2">
                             <Input
@@ -293,7 +293,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                           </div>
                         ) : (
                           <div className="space-y-1">
-                            <div className="font-medium">{task.clientName}</div>
+                            <div className="font-medium whitespace-nowrap overflow-hidden text-ellipsis" title={task.clientName}>{task.clientName}</div>
                             <div className="flex gap-1">
                               {task.clientPhone && (
                                 <Button
@@ -331,7 +331,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                       </td>
 
                       {/* Work Status */}
-                      <td className="p-4 w-[130px]">
+                      <td className="p-4 w-[140px]">
                         <Select
                           value={task.workStatus}
                           onValueChange={(value) => handleFieldUpdate(task.id, 'workStatus', value)}
@@ -356,7 +356,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                       </td>
 
                       {/* Priority */}
-                      <td className="p-4 w-[110px]">
+                      <td className="p-4 w-[120px]">
                         <Select
                           value={task.priority}
                           onValueChange={(value) => handleFieldUpdate(task.id, 'priority', value)}
@@ -381,7 +381,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                       </td>
 
                       {/* Price */}
-                      <td className="p-4 w-[120px]">
+                      <td className="p-4 w-[140px]">
                         {editingId === task.id ? (
                           <div className="flex gap-1">
                             <Select
@@ -407,40 +407,40 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                             />
                           </div>
                         ) : (
-                          <div className="font-medium">
+                          <div className="font-medium whitespace-nowrap">
                             {task.currency} {task.price.toLocaleString()}
                           </div>
                         )}
                       </td>
 
                       {/* Payment Status */}
-                      <td className="p-4 w-[100px]">
+                      <td className="p-4 w-[120px]">
                         <div className="flex items-center gap-2">
                           <Checkbox
                             checked={task.isPaid}
                             onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isPaid', checked)}
                           />
-                          <span className={cn("text-sm font-medium", task.isPaid ? "text-green-600" : "text-red-600")}>
-                            {task.isPaid ? 'שולם' : 'לא שולם'}
+                          <span className={cn("text-sm font-medium whitespace-nowrap", task.isPaid ? "text-green-600" : "text-red-600")}>
+                            {task.isPaid ? 'שולם' : 'לא_שולם'}
                           </span>
                         </div>
                       </td>
 
                       {/* Completion Status */}
-                      <td className="p-4 w-[100px]">
+                      <td className="p-4 w-[120px]">
                         <div className="flex items-center gap-2">
                           <Checkbox
                             checked={task.isCompleted}
                             onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isCompleted', checked)}
                           />
-                          <span className={cn("text-sm font-medium", task.isCompleted ? "text-green-600" : "text-orange-600")}>
-                            {task.isCompleted ? 'הושלם' : 'לא הושלם'}
+                          <span className={cn("text-sm font-medium whitespace-nowrap", task.isCompleted ? "text-green-600" : "text-orange-600")}>
+                            {task.isCompleted ? 'הושלם' : 'לא_הושלם'}
                           </span>
                         </div>
                       </td>
 
                       {/* Actions */}
-                      <td className="p-4 w-[100px]">
+                      <td className="p-4 w-[120px]">
                         <div className="flex gap-1">
                           {editingId === task.id ? (
                             <>
