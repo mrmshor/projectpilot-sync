@@ -6,8 +6,8 @@ on:
       - 'v*'
 
 jobs:
-  build-mac:
-    runs-on: macos-latest
+  build-and-release:
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     
@@ -23,36 +23,41 @@ jobs:
     - name: Build web app
       run: npm run build
     
-    - name: Copy web app to electron
+    - name: Create desktop package
       run: |
-        mkdir -p electron/app
-        cp -r dist/* electron/app/
-    
-    - name: Install electron dependencies
-      run: |
-        cd electron
-        npm install
-    
-    - name: Build macOS app
-      run: |
-        cd electron
-        npm run build:mac
-    
-    - name: Upload macOS artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: macos-artifacts
-        path: electron/dist/*.dmg
+        mkdir -p desktop-app
+        cp -r dist/* desktop-app/
+        
+        # Create launcher for macOS
+        cat > desktop-app/ProjectPilot-Sync.command << 'EOF'
+        #!/bin/bash
+        cd "$(dirname "$0")"
+        echo "Starting ProjectPilot Sync..."
+        open "http://localhost:3000" &
+        python3 -m http.server 3000
+        EOF
+        chmod +x desktop-app/ProjectPilot-Sync.command
+        
+        # Create launcher for Windows
+        cat > desktop-app/ProjectPilot-Sync.bat << 'EOF'
+        @echo off
+        cd /d "%~dp0"
+        echo Starting ProjectPilot Sync...
+        start "" "http://localhost:3000"
+        python -m http.server 3000
+        EOF
+        
+        # Create README
+        cat > desktop-app/README.txt << 'EOF'
+        ProjectPilot Sync - Desktop App
 
-  create-release:
-    runs-on: ubuntu-latest
-    needs: [build-mac]
-    steps:
-    - name: Download macOS artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: macos-artifacts
-        path: ./macos/
+        For macOS: Double-click ProjectPilot-Sync.command
+        For Windows: Double-click ProjectPilot-Sync.bat
+        For any system: Open index.html in your browser
+        EOF
+        
+        cd desktop-app
+        zip -r ../ProjectPilot-Sync-Desktop-${{ github.ref_name }}.zip .
     
     - name: Create Release
       id: create_release
@@ -65,12 +70,12 @@ jobs:
         draft: false
         prerelease: false
     
-    - name: Upload macOS Release Asset
+    - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./macos/ProjectPilot Sync.dmg
-        asset_name: ProjectPilot-Sync-macOS-${{ github.ref_name }}.dmg
-        asset_content_type: application/octet-stream
+        asset_path: ./ProjectPilot-Sync-Desktop-${{ github.ref_name }}.zip
+        asset_name: ProjectPilot-Sync-Desktop-${{ github.ref_name }}.zip
+        asset_content_type: application/zip

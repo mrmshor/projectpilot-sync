@@ -1,6 +1,0 @@
-{
-  "appId": "app.lovable.projectpilot.sync",
-  "appName": "ProjectPilot Sync",
-  "webDir": "../dist",
-  "bundledWebRuntime": false
-}
