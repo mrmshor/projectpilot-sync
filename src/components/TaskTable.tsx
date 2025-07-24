@@ -123,52 +123,53 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
     <div className="space-y-4">
       {/* Search Bar */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+        <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
         <Input
-          placeholder="Search projects, clients, or descriptions..."
+          placeholder="חפש פרויקטים, לקוחות או תיאורים..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
+          className="pr-10"
+          dir="rtl"
         />
       </div>
 
       {/* Desktop Table View */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:block" dir="rtl">
         <Card>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-muted/50">
                   <tr>
-                    <th className="text-left p-4 font-medium">
+                    <th className="text-right p-4 font-medium">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('projectName')}>
-                        Project Name <ArrowUpDown className="h-4 w-4 ml-1" />
+                        שם הפרויקט <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-left p-4 font-medium">Description</th>
-                    <th className="text-left p-4 font-medium">
+                    <th className="text-right p-4 font-medium">תיאור</th>
+                    <th className="text-right p-4 font-medium">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('clientName')}>
-                        Client <ArrowUpDown className="h-4 w-4 ml-1" />
+                        לקוח <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-left p-4 font-medium">
+                    <th className="text-right p-4 font-medium">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('workStatus')}>
-                        Status <ArrowUpDown className="h-4 w-4 ml-1" />
+                        סטטוס <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-left p-4 font-medium">
+                    <th className="text-right p-4 font-medium">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('priority')}>
-                        Priority <ArrowUpDown className="h-4 w-4 ml-1" />
+                        עדיפות <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-left p-4 font-medium">
+                    <th className="text-right p-4 font-medium">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('price')}>
-                        Price <ArrowUpDown className="h-4 w-4 ml-1" />
+                        מחיר <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-left p-4 font-medium">Payment</th>
-                    <th className="text-left p-4 font-medium">Complete</th>
-                    <th className="text-left p-4 font-medium">Actions</th>
+                    <th className="text-right p-4 font-medium">תשלום</th>
+                    <th className="text-right p-4 font-medium">הושלם</th>
+                    <th className="text-right p-4 font-medium">פעולות</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -197,7 +198,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                               rows={2}
                             />
                             <Input
-                              placeholder="Folder path (optional)"
+                              placeholder="נתיב תיקייה (אופציונלי)"
                               value={task.folderPath || ''}
                               onChange={(e) => handleFieldUpdate(task.id, 'folderPath', e.target.value)}
                             />
@@ -212,8 +213,8 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                                 onClick={() => openFolder(task.folderPath)}
                                 className="p-0 h-auto text-primary hover:text-primary/80"
                               >
-                                <FolderOpen className="h-3 w-3 mr-1" />
-                                Open Folder
+                                <FolderOpen className="h-3 w-3 ml-1" />
+                                פתח תיקייה
                               </Button>
                             )}
                           </div>
@@ -225,17 +226,17 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                         {editingId === task.id ? (
                           <div className="space-y-2">
                             <Input
-                              placeholder="Client name"
+                              placeholder="שם הלקוח"
                               value={task.clientName}
                               onChange={(e) => handleFieldUpdate(task.id, 'clientName', e.target.value)}
                             />
                             <Input
-                              placeholder="Phone (optional)"
+                              placeholder="טלפון (אופציונלי)"
                               value={task.clientPhone || ''}
                               onChange={(e) => handleFieldUpdate(task.id, 'clientPhone', e.target.value)}
                             />
                             <Input
-                              placeholder="Email (optional)"
+                              placeholder="אימייל (אופציונלי)"
                               value={task.clientEmail || ''}
                               onChange={(e) => handleFieldUpdate(task.id, 'clientEmail', e.target.value)}
                             />
@@ -370,7 +371,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                             onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isPaid', checked)}
                           />
                           <span className={cn("text-sm", task.isPaid ? "text-green-600" : "text-red-600")}>
-                            {task.isPaid ? 'Paid' : 'Unpaid'}
+                            {task.isPaid ? 'שולם' : 'לא שולם'}
                           </span>
                         </div>
                       </td>
@@ -383,7 +384,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                             onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isCompleted', checked)}
                           />
                           <span className={cn("text-sm", task.isCompleted ? "text-green-600" : "text-orange-600")}>
-                            {task.isCompleted ? 'Done' : 'Not Done'}
+                            {task.isCompleted ? 'הושלם' : 'לא הושלם'}
                           </span>
                         </div>
                       </td>
@@ -527,7 +528,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                       onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isPaid', checked)}
                     />
                     <span className={cn("text-xs", task.isPaid ? "text-green-600" : "text-red-600")}>
-                      {task.isPaid ? 'Paid' : 'Unpaid'}
+                      {task.isPaid ? 'שולם' : 'לא שולם'}
                     </span>
                   </div>
                   <div className="flex items-center space-x-1">
@@ -536,7 +537,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                       onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isCompleted', checked)}
                     />
                     <span className={cn("text-xs", task.isCompleted ? "text-green-600" : "text-orange-600")}>
-                      {task.isCompleted ? 'Done' : 'Not Done'}
+                      {task.isCompleted ? 'הושלם' : 'לא הושלם'}
                     </span>
                   </div>
                 </div>
@@ -550,7 +551,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
         <Card>
           <CardContent className="text-center py-12">
             <p className="text-muted-foreground">
-              {searchTerm ? 'No tasks match your search.' : 'No tasks yet. Create your first project!'}
+              {searchTerm ? 'אין משימות המתאימות לחיפוש.' : 'אין משימות עדיין. צור את הפרויקט הראשון שלך!'}
             </p>
           </CardContent>
         </Card>

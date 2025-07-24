@@ -41,61 +41,61 @@ export const Dashboard = ({ tasks, stats }: DashboardProps) => {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" dir="rtl">
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
+            <CardTitle className="text-sm font-medium">סך הכל פרויקטים</CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.total}</div>
             <p className="text-xs text-muted-foreground">
-              {stats.completed} completed
+              {stats.completed} הושלמו
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
+            <CardTitle className="text-sm font-medium">אחוז השלמה</CardTitle>
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.completionRate}%</div>
             <p className="text-xs text-muted-foreground">
-              {stats.inProgress} in progress
+              {stats.inProgress} בתהליך
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium">סך הכנסות</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${stats.totalRevenue.toLocaleString()}
+              ₪{stats.totalRevenue.toLocaleString()}
             </div>
             <p className="text-xs text-muted-foreground">
-              {stats.paymentRate}% payment rate
+              {stats.paymentRate}% אחוז תשלום
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium">הכנסות ממתינות</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${stats.pendingRevenue.toLocaleString()}
+              ₪{stats.pendingRevenue.toLocaleString()}
             </div>
             <p className="text-xs text-muted-foreground">
-              {stats.unpaid} unpaid projects
+              {stats.unpaid} פרויקטים לא שולמו
             </p>
           </CardContent>
         </Card>
@@ -108,7 +108,7 @@ export const Dashboard = ({ tasks, stats }: DashboardProps) => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              Recent Activity
+              פעילות אחרונה
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -122,17 +122,17 @@ export const Dashboard = ({ tasks, stats }: DashboardProps) => {
                     </div>
                     <div className="flex flex-col items-end gap-1">
                       <Badge variant={task.isCompleted ? 'default' : 'secondary'}>
-                        {task.isCompleted ? 'Completed' : 'In Progress'}
+                        {task.isCompleted ? 'הושלם' : 'בתהליך'}
                       </Badge>
                       <span className="text-xs text-muted-foreground">
-                        {new Date(task.updatedAt).toLocaleDateString()}
+                        {new Date(task.updatedAt).toLocaleDateString('he-IL')}
                       </span>
                     </div>
                   </div>
                 ))
               ) : (
                 <p className="text-muted-foreground text-center py-4">
-                  No recent activity
+                  אין פעילות אחרונה
                 </p>
               )}
             </div>
@@ -146,7 +146,7 @@ export const Dashboard = ({ tasks, stats }: DashboardProps) => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-red-600">
                 <AlertCircle className="h-5 w-5" />
-                Urgent Tasks
+                משימות דחופות
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -159,11 +159,11 @@ export const Dashboard = ({ tasks, stats }: DashboardProps) => {
                     </div>
                   ))
                 ) : (
-                  <p className="text-muted-foreground text-sm">No urgent tasks</p>
+                  <p className="text-muted-foreground text-sm">אין משימות דחופות</p>
                 )}
                 {urgentTasks.length > 3 && (
                   <p className="text-xs text-muted-foreground">
-                    +{urgentTasks.length - 3} more urgent tasks
+                    +{urgentTasks.length - 3} משימות דחופות נוספות
                   </p>
                 )}
               </div>
@@ -175,7 +175,7 @@ export const Dashboard = ({ tasks, stats }: DashboardProps) => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-orange-600">
                 <DollarSign className="h-5 w-5" />
-                Payment Pending
+                תשלומים ממתינים
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -190,11 +190,11 @@ export const Dashboard = ({ tasks, stats }: DashboardProps) => {
                     </div>
                   ))
                 ) : (
-                  <p className="text-muted-foreground text-sm">All payments up to date</p>
+                  <p className="text-muted-foreground text-sm">כל התשלומים מעודכנים</p>
                 )}
                 {overdueTasks.length > 3 && (
                   <p className="text-xs text-muted-foreground">
-                    +{overdueTasks.length - 3} more pending payments
+                    +{overdueTasks.length - 3} תשלומים ממתינים נוספים
                   </p>
                 )}
               </div>
@@ -206,25 +206,25 @@ export const Dashboard = ({ tasks, stats }: DashboardProps) => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" />
-                Quick Stats
+                סטטיסטיקות מהירות
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span>Active Projects:</span>
+                  <span>פרויקטים פעילים:</span>
                   <span className="font-medium">{stats.inProgress}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Clients:</span>
+                  <span>לקוחות:</span>
                   <span className="font-medium">
                     {new Set(tasks.map(t => t.clientName)).size}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Avg. Project Value:</span>
+                  <span>ערך ממוצע לפרויקט:</span>
                   <span className="font-medium">
-                    ${stats.total > 0 ? Math.round(stats.totalRevenue / stats.total).toLocaleString() : '0'}
+                    ₪{stats.total > 0 ? Math.round(stats.totalRevenue / stats.total).toLocaleString() : '0'}
                   </span>
                 </div>
               </div>

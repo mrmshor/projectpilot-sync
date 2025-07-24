@@ -21,17 +21,17 @@ export type WorkStatus = 'not_started' | 'in_progress' | 'review' | 'completed' 
 export type Priority = 'low' | 'medium' | 'high';
 
 export const WORK_STATUS_LABELS: Record<WorkStatus, string> = {
-  not_started: 'Not Started',
-  in_progress: 'In Progress', 
-  review: 'Review',
-  completed: 'Completed',
-  on_hold: 'On Hold'
+  not_started: 'לא התחיל',
+  in_progress: 'בתהליך', 
+  review: 'בסקירה',
+  completed: 'הושלם',
+  on_hold: 'ממתין'
 };
 
 export const PRIORITY_LABELS: Record<Priority, string> = {
-  low: 'Low',
-  medium: 'Medium',
-  high: 'High'
+  low: 'נמוכה',
+  medium: 'בינונית',
+  high: 'גבוהה'
 };
 
-export const CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD'];
+export const CURRENCIES = ['USD', 'EUR', 'ILS', 'GBP', 'CAD'];

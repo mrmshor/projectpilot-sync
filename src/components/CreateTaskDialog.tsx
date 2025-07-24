@@ -71,87 +71,93 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
       <DialogTrigger asChild>
         <Button className="gap-2">
           <Plus className="h-4 w-4" />
-          New Project
+          פרויקט חדש
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir="rtl">
         <DialogHeader>
-          <DialogTitle>Create New Project</DialogTitle>
+          <DialogTitle>צור פרויקט חדש</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Project Details */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">Project Details</h3>
+            <h3 className="text-lg font-medium">פרטי הפרויקט</h3>
             
             <div>
-              <Label htmlFor="projectName">Project Name *</Label>
+              <Label htmlFor="projectName">שם הפרויקט *</Label>
               <Input
                 id="projectName"
                 value={formData.projectName}
                 onChange={(e) => updateField('projectName', e.target.value)}
-                placeholder="Enter project name"
+                placeholder="הכנס שם פרויקט"
                 required
+                dir="rtl"
               />
             </div>
 
             <div>
-              <Label htmlFor="projectDescription">Description</Label>
+              <Label htmlFor="projectDescription">תיאור</Label>
               <Textarea
                 id="projectDescription"
                 value={formData.projectDescription}
                 onChange={(e) => updateField('projectDescription', e.target.value)}
-                placeholder="Describe the project"
+                placeholder="תאר את הפרויקט"
                 rows={3}
+                dir="rtl"
               />
             </div>
 
             <div>
-              <Label htmlFor="folderPath">Folder Path (optional)</Label>
+              <Label htmlFor="folderPath">נתיב תיקייה (אופציונלי)</Label>
               <Input
                 id="folderPath"
                 value={formData.folderPath}
                 onChange={(e) => updateField('folderPath', e.target.value)}
                 placeholder="/Users/yourname/Projects/ProjectName"
+                dir="rtl"
               />
             </div>
           </div>
 
           {/* Client Information */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">Client Information</h3>
+            <h3 className="text-lg font-medium">פרטי הלקוח</h3>
             
             <div>
-              <Label htmlFor="clientName">Client Name *</Label>
+              <Label htmlFor="clientName">שם הלקוח *</Label>
               <Input
                 id="clientName"
                 value={formData.clientName}
                 onChange={(e) => updateField('clientName', e.target.value)}
-                placeholder="Enter client name"
+                placeholder="הכנס שם לקוח"
                 required
+                dir="rtl"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="clientPhone">Phone (optional)</Label>
+                <Label htmlFor="clientPhone">טלפון (אופציונלי)</Label>
                 <Input
                   id="clientPhone"
                   type="tel"
                   value={formData.clientPhone}
                   onChange={(e) => updateField('clientPhone', e.target.value)}
-                  placeholder="+1234567890"
+                  placeholder="+972501234567"
+                  dir="rtl"
                 />
               </div>
 
               <div>
-                <Label htmlFor="clientEmail">Email (optional)</Label>
+                <Label htmlFor="clientEmail">אימייל (אופציונלי)</Label>
                 <Input
                   id="clientEmail"
                   type="email"
                   value={formData.clientEmail}
                   onChange={(e) => updateField('clientEmail', e.target.value)}
                   placeholder="client@example.com"
+                  dir="rtl"
                 />
               </div>
             </div>
@@ -159,11 +165,11 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
 
           {/* Project Settings */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">Project Settings</h3>
+            <h3 className="text-lg font-medium">הגדרות הפרויקט</h3>
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="workStatus">Work Status</Label>
+                <Label htmlFor="workStatus">סטטוס עבודה</Label>
                 <Select value={formData.workStatus} onValueChange={(value) => updateField('workStatus', value)}>
                   <SelectTrigger>
                     <SelectValue />
@@ -179,7 +185,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
               </div>
 
               <div>
-                <Label htmlFor="priority">Priority</Label>
+                <Label htmlFor="priority">עדיפות</Label>
                 <Select value={formData.priority} onValueChange={(value) => updateField('priority', value)}>
                   <SelectTrigger>
                     <SelectValue />
@@ -197,7 +203,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
 
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <Label htmlFor="currency">Currency</Label>
+                <Label htmlFor="currency">מטבע</Label>
                 <Select value={formData.currency} onValueChange={(value) => updateField('currency', value)}>
                   <SelectTrigger>
                     <SelectValue />
@@ -213,7 +219,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
               </div>
 
               <div className="col-span-2">
-                <Label htmlFor="price">Price</Label>
+                <Label htmlFor="price">מחיר</Label>
                 <Input
                   id="price"
                   type="number"
@@ -233,7 +239,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
                   checked={formData.isPaid}
                   onCheckedChange={(checked) => updateField('isPaid', checked)}
                 />
-                <Label htmlFor="isPaid">Paid</Label>
+                <Label htmlFor="isPaid">שולם</Label>
               </div>
 
               <div className="flex items-center space-x-2">
@@ -242,18 +248,18 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
                   checked={formData.isCompleted}
                   onCheckedChange={(checked) => updateField('isCompleted', checked)}
                 />
-                <Label htmlFor="isCompleted">Completed</Label>
+                <Label htmlFor="isCompleted">הושלם</Label>
               </div>
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
+          <div className="flex justify-start gap-3 pt-4">
             <Button type="submit">
-              Create Project
+              צור פרויקט
+            </Button>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              ביטול
             </Button>
           </div>
         </form>
