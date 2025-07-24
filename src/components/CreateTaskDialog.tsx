@@ -30,9 +30,11 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
     isCompleted: false
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    console.log('handleSubmit called with formData:', formData);
     
     // Validation
     if (!formData.projectName.trim()) {
@@ -46,15 +48,17 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
     }
 
     try {
-      console.log('Submitting form data:', formData);
+      console.log('About to create task...');
       
-      onCreateTask({
+      await onCreateTask({
         ...formData,
         folderPath: formData.folderPath || undefined,
         tasks: [],
         clientPhone: formData.clientPhone || undefined,
         clientEmail: formData.clientEmail || undefined
       });
+
+      console.log('Task created successfully');
 
       // Reset form
       setFormData({
@@ -76,11 +80,12 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
       console.log('Dialog closed and form reset');
     } catch (error) {
       console.error('Error creating task:', error);
-      alert('שגיאה ביצירת הפרויקט');
+      alert('שגיאה ביצירת הפרויקט: ' + error);
     }
   };
 
   const updateField = (field: string, value: any) => {
+    console.log(`Updating field ${field} to:`, value);
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
