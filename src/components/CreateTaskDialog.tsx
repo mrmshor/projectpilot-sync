@@ -32,6 +32,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
     // Validation
     if (!formData.projectName.trim()) {
@@ -189,9 +190,9 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
                 <Label htmlFor="workStatus">סטטוס עבודה</Label>
                 <Select value={formData.workStatus} onValueChange={(value) => updateField('workStatus', value)}>
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="בחר סטטוס" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[10001]">
                     {Object.entries(WORK_STATUS_LABELS).map(([value, label]) => (
                       <SelectItem key={value} value={value}>
                         {label}
@@ -205,9 +206,9 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
                 <Label htmlFor="priority">עדיפות</Label>
                 <Select value={formData.priority} onValueChange={(value) => updateField('priority', value)}>
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="בחר עדיפות" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[10001]">
                     {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
                       <SelectItem key={value} value={value}>
                         {label}
@@ -223,9 +224,9 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
                 <Label htmlFor="currency">מטבע</Label>
                 <Select value={formData.currency} onValueChange={(value) => updateField('currency', value)}>
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="בחר מטבע" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[10001]">
                     {CURRENCIES.map((currency) => (
                       <SelectItem key={currency} value={currency}>
                         {currency}
