@@ -14,7 +14,7 @@ interface TaskListDialogProps {
   projectName: string;
 }
 
-export const TaskListDialog = ({ tasks, onUpdateTasks, projectName }: TaskListDialogProps) => {
+export const TaskListDialog = ({ tasks = [], onUpdateTasks, projectName }: TaskListDialogProps) => {
   const [newTaskText, setNewTaskText] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
