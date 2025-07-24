@@ -8,79 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Add Electron to Capacitor
-      run: |
-        npx cap add electron
-    
-    - name: Build web app
-      run: npm run build
-    
-    - name: Sync Capacitor
-      run: npx cap sync
-    
-    - name: Build Electron app
-      run: |
-        cd electron
-        npm install
-        npx electron-builder --windows
-    
-    - name: Upload Windows artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: windows-installer
-        path: electron/dist/*.exe
-
-  build-mac:
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Add Electron to Capacitor
-      run: |
-        npx cap add electron
-    
-    - name: Build web app
-      run: npm run build
-    
-    - name: Sync Capacitor
-      run: npx cap sync
-    
-    - name: Build Electron app
-      run: |
-        cd electron
-        npm install
-        npx electron-builder --mac
-    
-    - name: Upload Mac artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: mac-installer
-        path: electron/dist/*.dmg
-
-  build-linux:
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -94,24 +22,46 @@ jobs:
     - name: Install dependencies
       run: npm ci
     
-    - name: Add Electron to Capacitor
-      run: |
-        npx cap add electron
-    
     - name: Build web app
       run: npm run build
     
-    - name: Sync Capacitor
-      run: npx cap sync
-    
-    - name: Build Electron app
+    - name: Create desktop package structure
       run: |
-        cd electron
-        npm install
-        npx electron-builder --linux
+        mkdir -p desktop-app
+        cp -r dist/* desktop-app/
+        
+        # Create simple launcher script for Windows
+        cat > desktop-app/launch.bat << 'EOF'
+        @echo off
+        start "" "http://localhost:3000"
+        python -m http.server 3000 --directory .
+        EOF
+        
+        # Create simple launcher script for Linux/Mac
+        cat > desktop-app/launch.sh << 'EOF'
+        #!/bin/bash
+        open "http://localhost:3000" 2>/dev/null || xdg-open "http://localhost:3000" 2>/dev/null
+        python3 -m http.server 3000 --directory .
+        EOF
+        chmod +x desktop-app/launch.sh
+        
+        # Create README
+        cat > desktop-app/README.txt << 'EOF'
+        ProjectPilot Sync - Desktop App
+        
+        Windows: Double-click launch.bat
+        Mac/Linux: Run ./launch.sh in terminal
+        
+        Or simply open index.html in your browser.
+        EOF
     
-    - name: Upload Linux artifacts
+    - name: Create ZIP package
+      run: |
+        cd desktop-app
+        zip -r ../ProjectPilot-Sync-Desktop.zip .
+    
+    - name: Upload Desktop Package
       uses: actions/upload-artifact@v4
       with:
-        name: linux-installer
-        path: electron/dist/*.AppImage
+        name: desktop-package
+        path: ProjectPilot-Sync-Desktop.zip
