@@ -97,26 +97,24 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
 
   const openFolder = (path?: string) => {
     if (path) {
-      try {
-        // Try different methods for opening folder paths
-        if (navigator.userAgent.includes('Windows')) {
-          // Windows path
-          window.open(`file:///${path.replace(/\\/g, '/')}`);
-        } else if (navigator.userAgent.includes('Mac')) {
-          // macOS path
-          window.open(`file://${path}`);
+      // Copy path to clipboard and show instructions
+      navigator.clipboard.writeText(path).then(() => {
+        const isWindows = navigator.userAgent.includes('Windows');
+        const isMac = navigator.userAgent.includes('Mac');
+        
+        let instruction = '';
+        if (isWindows) {
+          instruction = 'לחץ Win+R, הדבק הנתיב ולחץ Enter';
+        } else if (isMac) {
+          instruction = 'לחץ Cmd+Shift+G ב-Finder, הדבק הנתיב ולחץ Enter';
         } else {
-          // Linux/other
-          window.open(`file://${path}`);
+          instruction = 'פתח את מנהל הקבצים והדבק את הנתיב';
         }
-      } catch (error) {
-        // Fallback: copy path to clipboard and show message
-        navigator.clipboard.writeText(path).then(() => {
-          alert(`נתיב התיקייה הועתק ללוח: ${path}\nבאפליקציית אינטרנט לא ניתן לפתוח תיקיות ישירות. השתמש ב-Capacitor ליכולות מובייל מלאות.`);
-        }).catch(() => {
-          alert(`נתיב התיקייה: ${path}\nבאפליקציית אינטרנט לא ניתן לפתוח תיקיות ישירות.`);
-        });
-      }
+        
+        alert(`✅ נתיב התיקייה הועתק ללוח!\n\n📁 ${path}\n\n💡 ${instruction}\n\nהערה: אפליקציות אינטרנט לא יכולות לפתוח תיקיות ישירות מסיבות אבטחה.`);
+      }).catch(() => {
+        alert(`📁 נתיב התיקייה: ${path}\n\n💡 העתק את הנתיב ופתח אותו במנהל הקבצים שלך`);
+      });
     }
   };
 
