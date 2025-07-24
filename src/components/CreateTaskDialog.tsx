@@ -45,6 +45,8 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
     }
 
     try {
+      console.log('Submitting form data:', formData);
+      
       onCreateTask({
         ...formData,
         folderPath: formData.folderPath || undefined,
@@ -70,6 +72,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
       });
 
       setOpen(false);
+      console.log('Dialog closed and form reset');
     } catch (error) {
       console.error('Error creating task:', error);
       alert('שגיאה ביצירת הפרויקט');
