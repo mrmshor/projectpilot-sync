@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { TaskItem } from '@/types/task';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -54,24 +54,31 @@ export const TaskListDialog = ({ tasks = [], onUpdateTasks, projectName }: TaskL
   const totalCount = tasks.length;
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <PopoverTrigger asChild>
+        <div 
+          className="flex items-center gap-2 cursor-pointer hover:bg-accent/10 rounded px-2 py-1 transition-colors"
+          onMouseEnter={() => setIsOpen(true)}
+          onMouseLeave={() => setIsOpen(false)}
+        >
           <CheckSquare className="h-4 w-4" />
-          משימות
+          <span className="text-sm">משימות</span>
           {totalCount > 0 && (
             <Badge variant="secondary" className="text-xs">
               {completedCount}/{totalCount}
             </Badge>
           )}
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-md" dir="rtl">
-        <DialogHeader>
-          <DialogTitle>משימות - {projectName}</DialogTitle>
-        </DialogHeader>
-        
+        </div>
+      </PopoverTrigger>
+      <PopoverContent 
+        className="w-80 p-4 z-50 bg-popover border shadow-lg" 
+        dir="rtl"
+        onMouseEnter={() => setIsOpen(true)}
+        onMouseLeave={() => setIsOpen(false)}
+      >
         <div className="space-y-4">
+          <div className="font-medium text-sm">משימות - {projectName}</div>
+          
           {/* Add new task */}
           <div className="flex gap-2">
             <Input
@@ -79,34 +86,35 @@ export const TaskListDialog = ({ tasks = [], onUpdateTasks, projectName }: TaskL
               value={newTaskText}
               onChange={(e) => setNewTaskText(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && addTask()}
-              className="flex-1"
+              className="flex-1 h-8 text-sm"
             />
-            <Button onClick={addTask} size="sm">
-              <Plus className="h-4 w-4" />
+            <Button onClick={addTask} size="sm" className="h-8 w-8 p-0">
+              <Plus className="h-3 w-3" />
             </Button>
           </div>
 
           {/* Task list */}
-          <div className="space-y-2 max-h-96 overflow-y-auto">
+          <div className="space-y-2 max-h-48 overflow-y-auto">
             {tasks.length === 0 ? (
-              <div className="text-center text-muted-foreground py-8">
+              <div className="text-center text-muted-foreground py-4 text-sm">
                 אין משימות עדיין
               </div>
             ) : (
               tasks.map((task) => (
                 <div
                   key={task.id}
-                  className="flex items-center gap-2 p-2 rounded-lg border bg-card"
+                  className="flex items-center gap-2 p-2 rounded border bg-background/50"
                 >
                   <Checkbox
                     checked={task.isCompleted}
                     onCheckedChange={() => toggleTask(task.id)}
+                    className="h-3 w-3"
                   />
                   <Input
                     value={task.text}
                     onChange={(e) => updateTaskText(task.id, e.target.value)}
                     className={cn(
-                      "flex-1 border-none bg-transparent",
+                      "flex-1 border-none bg-transparent h-6 text-sm p-1",
                       task.isCompleted && "line-through text-muted-foreground"
                     )}
                   />
@@ -114,7 +122,7 @@ export const TaskListDialog = ({ tasks = [], onUpdateTasks, projectName }: TaskL
                     variant="ghost"
                     size="sm"
                     onClick={() => deleteTask(task.id)}
-                    className="p-1 h-auto text-destructive hover:text-destructive"
+                    className="p-1 h-6 w-6 text-destructive hover:text-destructive"
                   >
                     <Trash2 className="h-3 w-3" />
                   </Button>
@@ -125,12 +133,12 @@ export const TaskListDialog = ({ tasks = [], onUpdateTasks, projectName }: TaskL
 
           {/* Summary */}
           {totalCount > 0 && (
-            <div className="text-sm text-muted-foreground text-center">
+            <div className="text-xs text-muted-foreground text-center border-t pt-2">
               הושלמו {completedCount} מתוך {totalCount} משימות
             </div>
           )}
         </div>
-      </DialogContent>
-    </Dialog>
+      </PopoverContent>
+    </Popover>
   );
 };
