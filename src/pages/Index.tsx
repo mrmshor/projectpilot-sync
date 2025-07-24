@@ -21,10 +21,6 @@ const Index = () => {
   const { tasks, loading, createTask, updateTask, deleteTask, getTaskStats, exportToCSV } = useTasks();
   const [activeTab, setActiveTab] = useState('dashboard');
   
-  const handleTabChange = (value: string) => {
-    console.log('Changing tab to:', value);
-    setActiveTab(value);
-  };
   const { toast } = useToast();
   const stats = getTaskStats();
 
@@ -95,7 +91,7 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Tabs value={activeTab} onValueChange={handleTabChange}>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="dashboard" className="gap-2">
               <LayoutDashboard className="h-4 w-4" />
