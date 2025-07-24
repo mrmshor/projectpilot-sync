@@ -24,7 +24,6 @@ jobs:
     
     - name: Add Electron to Capacitor
       run: |
-        npm install @capacitor/electron --save-dev
         npx cap add electron
     
     - name: Build web app
@@ -37,7 +36,7 @@ jobs:
       run: |
         cd electron
         npm install
-        npm run electron:build-windows
+        npx electron-builder --windows
     
     - name: Upload Windows artifacts
       uses: actions/upload-artifact@v4
@@ -61,7 +60,6 @@ jobs:
     
     - name: Add Electron to Capacitor
       run: |
-        npm install @capacitor/electron --save-dev
         npx cap add electron
     
     - name: Build web app
@@ -74,7 +72,7 @@ jobs:
       run: |
         cd electron
         npm install
-        npm run electron:build-mac
+        npx electron-builder --mac
     
     - name: Upload Mac artifacts
       uses: actions/upload-artifact@v4
@@ -98,7 +96,6 @@ jobs:
     
     - name: Add Electron to Capacitor
       run: |
-        npm install @capacitor/electron --save-dev
         npx cap add electron
     
     - name: Build web app
@@ -111,7 +108,7 @@ jobs:
       run: |
         cd electron
         npm install
-        npm run electron:build-linux
+        npx electron-builder --linux
     
     - name: Upload Linux artifacts
       uses: actions/upload-artifact@v4

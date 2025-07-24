@@ -53,7 +53,6 @@ jobs:
     
     - name: Add Electron to Capacitor
       run: |
-        npm install @capacitor/electron --save-dev
         npx cap add electron
     
     - name: Build web app
@@ -67,21 +66,21 @@ jobs:
       run: |
         cd electron
         npm install
-        npm run electron:build-windows
+        npx electron-builder --windows
     
     - name: Build Electron app (Mac)
       if: matrix.os == 'macos-latest'
       run: |
         cd electron
         npm install
-        npm run electron:build-mac
+        npx electron-builder --mac
     
     - name: Build Electron app (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
         cd electron
         npm install
-        npm run electron:build-linux
+        npx electron-builder --linux
     
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1

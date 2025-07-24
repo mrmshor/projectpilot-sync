@@ -58,13 +58,13 @@ cd electron
 npm install
 
 # Windows
-npm run electron:build-windows
+npx electron-builder --windows
 
 # macOS  
-npm run electron:build-mac
+npx electron-builder --mac
 
 # Linux
-npm run electron:build-linux
+npx electron-builder --linux
 ```
 
 ## 📦 קבצי ההתקנה יהיו ב:
