@@ -80,19 +80,19 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
 
   const getPriorityColor = (priority: Priority) => {
     switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300';
-      case 'low': return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300';
+      case 'high': return 'bg-red-500/10 text-red-700 dark:bg-red-500/20 dark:text-red-300 border border-red-500/20';
+      case 'medium': return 'bg-yellow-500/10 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300 border border-yellow-500/20';
+      case 'low': return 'bg-green-500/10 text-green-700 dark:bg-green-500/20 dark:text-green-300 border border-green-500/20';
     }
   };
 
   const getStatusColor = (status: WorkStatus) => {
     switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300';
-      case 'in_progress': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300';
-      case 'review': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300';
-      case 'on_hold': return 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-300';
-      case 'not_started': return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300';
+      case 'completed': return 'bg-green-500/10 text-green-700 dark:bg-green-500/20 dark:text-green-300 border border-green-500/20';
+      case 'in_progress': return 'bg-blue-500/10 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 border border-blue-500/20';
+      case 'review': return 'bg-purple-500/10 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300 border border-purple-500/20';
+      case 'on_hold': return 'bg-orange-500/10 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300 border border-orange-500/20';
+      case 'not_started': return 'bg-gray-500/10 text-gray-700 dark:bg-gray-500/20 dark:text-gray-300 border border-gray-500/20';
     }
   };
 
@@ -338,7 +338,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue>
-                              <Badge className={getStatusColor(task.workStatus)}>
+                              <Badge className={cn(getStatusColor(task.workStatus), "rounded-md px-3 py-1")}>
                                 {WORK_STATUS_LABELS[task.workStatus]}
                               </Badge>
                             </SelectValue>
@@ -346,7 +346,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                           <SelectContent className="z-50 bg-popover border shadow-lg">
                             {Object.entries(WORK_STATUS_LABELS).map(([value, label]) => (
                               <SelectItem key={value} value={value}>
-                                <Badge className={getStatusColor(value as any)}>
+                                <Badge className={cn(getStatusColor(value as any), "rounded-md px-3 py-1")}>
                                   {label}
                                 </Badge>
                               </SelectItem>
@@ -363,7 +363,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue>
-                              <Badge className={getPriorityColor(task.priority)}>
+                              <Badge className={cn(getPriorityColor(task.priority), "rounded-md px-3 py-1")}>
                                 {PRIORITY_LABELS[task.priority]}
                               </Badge>
                             </SelectValue>
@@ -371,7 +371,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                           <SelectContent className="z-50 bg-popover border shadow-lg">
                             {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
                               <SelectItem key={value} value={value}>
-                                <Badge className={getPriorityColor(value as any)}>
+                                <Badge className={cn(getPriorityColor(value as any), "rounded-md px-3 py-1")}>
                                   {label}
                                 </Badge>
                               </SelectItem>
@@ -415,12 +415,12 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
 
                       {/* Payment Status */}
                       <td className="p-4">
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center gap-2">
                           <Checkbox
                             checked={task.isPaid}
                             onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isPaid', checked)}
                           />
-                          <span className={cn("text-sm", task.isPaid ? "text-green-600" : "text-red-600")}>
+                          <span className={cn("text-sm font-medium", task.isPaid ? "text-green-600" : "text-red-600")}>
                             {task.isPaid ? 'שולם' : 'לא שולם'}
                           </span>
                         </div>
@@ -428,12 +428,12 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
 
                       {/* Completion Status */}
                       <td className="p-4">
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center gap-2">
                           <Checkbox
                             checked={task.isCompleted}
                             onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isCompleted', checked)}
                           />
-                          <span className={cn("text-sm", task.isCompleted ? "text-green-600" : "text-orange-600")}>
+                          <span className={cn("text-sm font-medium", task.isCompleted ? "text-green-600" : "text-orange-600")}>
                             {task.isCompleted ? 'הושלם' : 'לא הושלם'}
                           </span>
                         </div>
