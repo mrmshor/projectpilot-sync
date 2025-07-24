@@ -293,52 +293,52 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
 
                       {/* Work Status */}
                       <td className="p-4">
-                        {editingId === task.id ? (
-                          <Select
-                            value={task.workStatus}
-                            onValueChange={(value) => handleFieldUpdate(task.id, 'workStatus', value)}
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {Object.entries(WORK_STATUS_LABELS).map(([value, label]) => (
-                                <SelectItem key={value} value={value}>
+                        <Select
+                          value={task.workStatus}
+                          onValueChange={(value) => handleFieldUpdate(task.id, 'workStatus', value)}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue>
+                              <Badge className={getStatusColor(task.workStatus)}>
+                                {WORK_STATUS_LABELS[task.workStatus]}
+                              </Badge>
+                            </SelectValue>
+                          </SelectTrigger>
+                          <SelectContent className="z-50 bg-popover border shadow-lg">
+                            {Object.entries(WORK_STATUS_LABELS).map(([value, label]) => (
+                              <SelectItem key={value} value={value}>
+                                <Badge className={getStatusColor(value as any)}>
                                   {label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        ) : (
-                          <Badge className={getStatusColor(task.workStatus)}>
-                            {WORK_STATUS_LABELS[task.workStatus]}
-                          </Badge>
-                        )}
+                                </Badge>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </td>
 
                       {/* Priority */}
                       <td className="p-4">
-                        {editingId === task.id ? (
-                          <Select
-                            value={task.priority}
-                            onValueChange={(value) => handleFieldUpdate(task.id, 'priority', value)}
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
-                                <SelectItem key={value} value={value}>
+                        <Select
+                          value={task.priority}
+                          onValueChange={(value) => handleFieldUpdate(task.id, 'priority', value)}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue>
+                              <Badge className={getPriorityColor(task.priority)}>
+                                {PRIORITY_LABELS[task.priority]}
+                              </Badge>
+                            </SelectValue>
+                          </SelectTrigger>
+                          <SelectContent className="z-50 bg-popover border shadow-lg">
+                            {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
+                              <SelectItem key={value} value={value}>
+                                <Badge className={getPriorityColor(value as any)}>
                                   {label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        ) : (
-                          <Badge className={getPriorityColor(task.priority)}>
-                            {PRIORITY_LABELS[task.priority]}
-                          </Badge>
-                        )}
+                                </Badge>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </td>
 
                       {/* Price */}
