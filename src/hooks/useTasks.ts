@@ -34,14 +34,26 @@ export const useTasks = () => {
   }, [tasks, loading]);
 
   const createTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const newTask: Task = {
-      ...taskData,
-      id: crypto.randomUUID(),
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    setTasks(prev => [newTask, ...prev]);
-    return newTask;
+    try {
+      const newTask: Task = {
+        ...taskData,
+        id: crypto.randomUUID(),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      
+      console.log('Creating new task:', newTask);
+      setTasks(prev => {
+        const newTasks = [newTask, ...prev];
+        console.log('New tasks array:', newTasks);
+        return newTasks;
+      });
+      
+      return newTask;
+    } catch (error) {
+      console.error('Error in createTask:', error);
+      throw error;
+    }
   };
 
   const updateTask = (id: string, updates: Partial<Task>) => {

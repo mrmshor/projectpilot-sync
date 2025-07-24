@@ -32,35 +32,48 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.projectName.trim() || !formData.clientName.trim()) {
+    
+    // Validation
+    if (!formData.projectName.trim()) {
+      alert('שם הפרויקט הוא שדה חובה');
+      return;
+    }
+    
+    if (!formData.clientName.trim()) {
+      alert('שם הלקוח הוא שדה חובה');
       return;
     }
 
-    onCreateTask({
-      ...formData,
-      folderPath: formData.folderPath || undefined,
-      tasks: [],
-      clientPhone: formData.clientPhone || undefined,
-      clientEmail: formData.clientEmail || undefined
-    });
+    try {
+      onCreateTask({
+        ...formData,
+        folderPath: formData.folderPath || undefined,
+        tasks: [],
+        clientPhone: formData.clientPhone || undefined,
+        clientEmail: formData.clientEmail || undefined
+      });
 
-    // Reset form
-    setFormData({
-      projectName: '',
-      projectDescription: '',
-      folderPath: '',
-      clientName: '',
-      clientPhone: '',
-      clientEmail: '',
-      workStatus: 'not_started',
-      priority: 'medium',
-      price: 0,
-      currency: 'USD',
-      isPaid: false,
-      isCompleted: false
-    });
+      // Reset form
+      setFormData({
+        projectName: '',
+        projectDescription: '',
+        folderPath: '',
+        clientName: '',
+        clientPhone: '',
+        clientEmail: '',
+        workStatus: 'not_started',
+        priority: 'medium',
+        price: 0,
+        currency: 'USD',
+        isPaid: false,
+        isCompleted: false
+      });
 
-    setOpen(false);
+      setOpen(false);
+    } catch (error) {
+      console.error('Error creating task:', error);
+      alert('שגיאה ביצירת הפרויקט');
+    }
   };
 
   const updateField = (field: string, value: any) => {
@@ -234,7 +247,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
             </div>
 
             <div className="flex gap-6">
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2">
                 <Checkbox
                   id="isPaid"
                   checked={formData.isPaid}
@@ -243,7 +256,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
                 <Label htmlFor="isPaid">שולם</Label>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2">
                 <Checkbox
                   id="isCompleted"
                   checked={formData.isCompleted}
