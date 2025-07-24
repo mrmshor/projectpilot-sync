@@ -188,12 +188,12 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                         לקוח <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-medium w-[140px]">
+                    <th className="text-right p-4 font-medium w-[160px]">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('workStatus')}>
                         סטטוס <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-medium w-[120px]">
+                    <th className="text-right p-4 font-medium w-[140px]">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('priority')}>
                         עדיפות <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
@@ -331,7 +331,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                       </td>
 
                       {/* Work Status */}
-                      <td className="p-4 w-[140px]">
+                      <td className="p-4 w-[160px]">
                         <Select
                           value={task.workStatus}
                           onValueChange={(value) => handleFieldUpdate(task.id, 'workStatus', value)}
@@ -356,7 +356,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                       </td>
 
                       {/* Priority */}
-                      <td className="p-4 w-[120px]">
+                      <td className="p-4 w-[140px]">
                         <Select
                           value={task.priority}
                           onValueChange={(value) => handleFieldUpdate(task.id, 'priority', value)}
@@ -420,9 +420,9 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                             checked={task.isPaid}
                             onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isPaid', checked)}
                           />
-                          <span className={cn("text-sm font-medium whitespace-nowrap", task.isPaid ? "text-green-600" : "text-red-600")}>
-                            {task.isPaid ? 'שולם' : 'לא_שולם'}
-                          </span>
+                           <span className={cn("text-sm font-medium whitespace-nowrap", task.isPaid ? "text-green-600" : "text-red-600")}>
+                             {task.isPaid ? 'שולם' : 'לא שולם'}
+                           </span>
                         </div>
                       </td>
 
@@ -433,9 +433,9 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                             checked={task.isCompleted}
                             onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isCompleted', checked)}
                           />
-                          <span className={cn("text-sm font-medium whitespace-nowrap", task.isCompleted ? "text-green-600" : "text-orange-600")}>
-                            {task.isCompleted ? 'הושלם' : 'לא_הושלם'}
-                          </span>
+                           <span className={cn("text-sm font-medium whitespace-nowrap", task.isCompleted ? "text-green-600" : "text-orange-600")}>
+                             {task.isCompleted ? 'הושלם' : 'לא הושלם'}
+                           </span>
                         </div>
                       </td>
 
