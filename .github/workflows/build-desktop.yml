@@ -8,7 +8,45 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-mac:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Build web app
+      run: npm run build
+    
+    - name: Setup Electron
+      run: |
+        npm install @capacitor/electron --save-dev
+        npx cap add electron
+    
+    - name: Sync Capacitor
+      run: |
+        npx cap sync
+    
+    - name: Build macOS app
+      run: |
+        cd electron
+        npm install
+        npx electron-builder --mac --publish=never
+    
+    - name: Upload macOS Package
+      uses: actions/upload-artifact@v4
+      with:
+        name: macos-package
+        path: electron/dist/*.dmg
+
+  build-web:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -60,8 +98,8 @@ jobs:
         cd desktop-app
         zip -r ../ProjectPilot-Sync-Desktop.zip .
     
-    - name: Upload Desktop Package
+    - name: Upload Web Package
       uses: actions/upload-artifact@v4
       with:
-        name: desktop-package
+        name: web-package
         path: ProjectPilot-Sync-Desktop.zip
