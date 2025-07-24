@@ -21,6 +21,7 @@ import {
   Search
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Capacitor } from '@capacitor/core';
 
 interface TaskTableProps {
   tasks: Task[];
@@ -95,26 +96,43 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
     }
   };
 
-  const openFolder = (path?: string) => {
+  const openFolder = async (path?: string) => {
     if (path) {
-      // Copy path to clipboard and show instructions
-      navigator.clipboard.writeText(path).then(() => {
-        const isWindows = navigator.userAgent.includes('Windows');
-        const isMac = navigator.userAgent.includes('Mac');
-        
-        let instruction = '';
-        if (isWindows) {
-          instruction = 'לחץ Win+R, הדבק הנתיב ולחץ Enter';
-        } else if (isMac) {
-          instruction = 'לחץ Cmd+Shift+G ב-Finder, הדבק הנתיב ולחץ Enter';
-        } else {
-          instruction = 'פתח את מנהל הקבצים והדבק את הנתיב';
+      if (Capacitor.isNativePlatform()) {
+        try {
+          // In native app, try to open folder using system shell
+          if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
+            // For mobile, just show the path (folders don't work the same way)
+            alert(`📁 נתיב התיקייה: ${path}\n\n💡 במובייל, נתיבי תיקיות פועלים שונה מאשר במחשב`);
+          } else {
+            // For desktop/electron, can potentially open folders
+            alert(`📁 נתיב התיקייה: ${path}\n\n💡 באפליקציה מקורית, פתיחת תיקיות תתאפשר בעדכון עתידי`);
+          }
+        } catch (error) {
+          console.error('Error opening folder:', error);
+          alert(`❌ שגיאה בפתיחת התיקייה: ${path}`);
         }
-        
-        alert(`✅ נתיב התיקייה הועתק ללוח!\n\n📁 ${path}\n\n💡 ${instruction}\n\nהערה: אפליקציות אינטרנט לא יכולות לפתוח תיקיות ישירות מסיבות אבטחה.`);
-      }).catch(() => {
-        alert(`📁 נתיב התיקייה: ${path}\n\n💡 העתק את הנתיב ופתח אותו במנהל הקבצים שלך`);
-      });
+      } else {
+        // Web version - copy to clipboard with instructions
+        try {
+          await navigator.clipboard.writeText(path);
+          const isWindows = navigator.userAgent.includes('Windows');
+          const isMac = navigator.userAgent.includes('Mac');
+          
+          let instruction = '';
+          if (isWindows) {
+            instruction = 'לחץ Win+R, הדבק הנתיב ולחץ Enter';
+          } else if (isMac) {
+            instruction = 'לחץ Cmd+Shift+G ב-Finder, הדבק הנתיב ולחץ Enter';
+          } else {
+            instruction = 'פתח את מנהל הקבצים והדבק את הנתיב';
+          }
+          
+          alert(`✅ נתיב התיקייה הועתק ללוח!\n\n📁 ${path}\n\n💡 ${instruction}\n\n🔧 לפתיחה אוטומטית של תיקיות, השתמש באפליקציה המקורית`);
+        } catch (error) {
+          alert(`📁 נתיב התיקייה: ${path}\n\n💡 העתק את הנתיב ופתח אותו במנהל הקבצים שלך`);
+        }
+      }
     }
   };
 
