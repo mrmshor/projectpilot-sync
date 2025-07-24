@@ -97,8 +97,26 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
 
   const openFolder = (path?: string) => {
     if (path) {
-      // In a real app, this would use native file system APIs
-      alert(`Would open folder: ${path}`);
+      try {
+        // Try different methods for opening folder paths
+        if (navigator.userAgent.includes('Windows')) {
+          // Windows path
+          window.open(`file:///${path.replace(/\\/g, '/')}`);
+        } else if (navigator.userAgent.includes('Mac')) {
+          // macOS path
+          window.open(`file://${path}`);
+        } else {
+          // Linux/other
+          window.open(`file://${path}`);
+        }
+      } catch (error) {
+        // Fallback: copy path to clipboard and show message
+        navigator.clipboard.writeText(path).then(() => {
+          alert(`נתיב התיקייה הועתק ללוח: ${path}\nבאפליקציית אינטרנט לא ניתן לפתוח תיקיות ישירות. השתמש ב-Capacitor ליכולות מובייל מלאות.`);
+        }).catch(() => {
+          alert(`נתיב התיקייה: ${path}\nבאפליקציית אינטרנט לא ניתן לפתוח תיקיות ישירות.`);
+        });
+      }
     }
   };
 
@@ -191,32 +209,37 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                       </td>
 
                       {/* Description */}
-                      <td className="p-4 max-w-xs">
+                      <td className="p-4 min-w-[200px] max-w-xs">
                         {editingId === task.id ? (
                           <div className="space-y-2">
                             <Textarea
                               value={task.projectDescription}
                               onChange={(e) => handleFieldUpdate(task.id, 'projectDescription', e.target.value)}
-                              rows={2}
+                              rows={3}
+                              className="w-full resize-none"
+                              placeholder="תיאור הפרויקט..."
                             />
                             <Input
                               placeholder="נתיב תיקייה (אופציונלי)"
                               value={task.folderPath || ''}
                               onChange={(e) => handleFieldUpdate(task.id, 'folderPath', e.target.value)}
+                              className="w-full"
                             />
                           </div>
                         ) : (
-                          <div className="space-y-1">
-                            <p className="text-sm line-clamp-2">{task.projectDescription}</p>
+                          <div className="space-y-2">
+                            <p className="text-sm whitespace-pre-wrap break-words">
+                              {task.projectDescription || 'אין תיאור'}
+                            </p>
                             {task.folderPath && (
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => openFolder(task.folderPath)}
-                                className="p-0 h-auto text-primary hover:text-primary/80"
+                                className="p-1 h-auto text-xs text-primary hover:text-primary/80 flex items-center gap-1"
                               >
-                                <FolderOpen className="h-3 w-3 ml-1" />
-                                פתח תיקייה
+                                <FolderOpen className="h-3 w-3" />
+                                תיקייה
                               </Button>
                             )}
                           </div>
