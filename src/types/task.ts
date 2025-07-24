@@ -28,7 +28,7 @@ export type WorkStatus = 'not_started' | 'in_progress' | 'review' | 'completed' 
 export type Priority = 'low' | 'medium' | 'high';
 
 export const WORK_STATUS_LABELS: Record<WorkStatus, string> = {
-  not_started: 'לא התחיל',
+  not_started: 'לא_התחיל',
   in_progress: 'בתהליך', 
   review: 'בסקירה',
   completed: 'הושלם',
