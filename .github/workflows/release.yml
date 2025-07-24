@@ -23,20 +23,20 @@ jobs:
     - name: Build web app
       run: npm run build
     
-    - name: Setup Electron
+    - name: Copy web app to electron
       run: |
-        npm install @capacitor/electron --save-dev
-        npx cap add electron
+        mkdir -p electron/app
+        cp -r dist/* electron/app/
     
-    - name: Sync Capacitor
+    - name: Install electron dependencies
       run: |
-        npx cap sync
+        cd electron
+        npm install
     
     - name: Build macOS app
       run: |
         cd electron
-        npm install
-        npx electron-builder --mac --publish=never
+        npm run build:mac
     
     - name: Upload macOS artifacts
       uses: actions/upload-artifact@v4
@@ -44,68 +44,15 @@ jobs:
         name: macos-artifacts
         path: electron/dist/*.dmg
 
-  build-web:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Build web app
-      run: npm run build
-    
-    - name: Create desktop package
-      run: |
-        mkdir -p desktop-app
-        cp -r dist/* desktop-app/
-        
-        # Create launchers and package
-        cat > desktop-app/launch.bat << 'EOF'
-        @echo off
-        echo Starting ProjectPilot Sync...
-        start "" "http://localhost:3000"
-        python -m http.server 3000 --directory .
-        EOF
-        
-        cat > desktop-app/launch.sh << 'EOF'
-        #!/bin/bash
-        echo "Starting ProjectPilot Sync..."
-        open "http://localhost:3000" 2>/dev/null || xdg-open "http://localhost:3000" 2>/dev/null
-        python3 -m http.server 3000 --directory .
-        EOF
-        chmod +x desktop-app/launch.sh
-        
-        cd desktop-app
-        zip -r ../ProjectPilot-Sync-Desktop-${{ github.ref_name }}.zip .
-
-    - name: Upload web artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: web-artifacts
-        path: ProjectPilot-Sync-Desktop-${{ github.ref_name }}.zip
-
   create-release:
     runs-on: ubuntu-latest
-    needs: [build-mac, build-web]
+    needs: [build-mac]
     steps:
     - name: Download macOS artifacts
       uses: actions/download-artifact@v4
       with:
         name: macos-artifacts
         path: ./macos/
-    
-    - name: Download web artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: web-artifacts
-        path: ./web/
     
     - name: Create Release
       id: create_release
@@ -127,13 +74,3 @@ jobs:
         asset_path: ./macos/ProjectPilot Sync.dmg
         asset_name: ProjectPilot-Sync-macOS-${{ github.ref_name }}.dmg
         asset_content_type: application/octet-stream
-    
-    - name: Upload Web Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./web/ProjectPilot-Sync-Desktop-${{ github.ref_name }}.zip
-        asset_name: ProjectPilot-Sync-Desktop-${{ github.ref_name }}.zip
-        asset_content_type: application/zip

@@ -1,0 +1,41 @@
+{
+  "name": "projectpilot-sync-electron",
+  "version": "1.0.0",
+  "description": "ProjectPilot Sync Desktop App",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "electron-builder",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux"
+  },
+  "dependencies": {
+    "@capacitor/electron": "^2.5.0"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.0.0"
+  },
+  "build": {
+    "appId": "app.lovable.projectpilot.sync",
+    "productName": "ProjectPilot Sync",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "capacitor.config.json",
+      "app/**/*"
+    ],
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.productivity"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  }
+}
