@@ -179,721 +179,397 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
         />
       </div>
 
-      {/* Desktop Table View */}
-      <div className="hidden lg:block" dir="rtl">
-        <div className="mac-card overflow-hidden">
-          <div className="overflow-x-auto">
-              <table className="w-full min-w-full">
-                <thead className="bg-gradient-to-r from-primary/10 via-primary/15 to-primary/10 border-b-2 border-primary/20">
-                  <tr>
-                    <th className="text-right p-4 font-display font-semibold text-primary text-sm w-48 border-r border-border/30">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('projectName')} className="font-display text-sm text-primary hover:text-primary/80">
-                        שם הפרויקט <ArrowUpDown className="h-4 w-4 mr-1" />
-                      </Button>
-                    </th>
-                     <th className="text-right p-4 font-display font-semibold text-primary text-sm w-64 border-r border-border/30">תיאור</th>
-                     <th className="text-right p-4 font-display font-semibold text-white text-sm w-20 border-r border-border/30 bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">משימות</th>
-                    <th className="text-right p-4 font-display font-semibold text-primary text-sm w-28 border-r border-border/30">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('clientName')} className="font-display text-sm text-primary hover:text-primary/80">
-                        לקוח <ArrowUpDown className="h-4 w-4 mr-1" />
-                      </Button>
-                    </th>
-                    <th className="text-center p-4 font-display font-bold text-primary text-sm w-36 border-r border-border/30">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('workStatus')} className="font-display font-bold text-sm text-primary hover:text-primary/80 w-full justify-center">
-                        סטטוס <ArrowUpDown className="h-4 w-4 mr-1" />
-                      </Button>
-                    </th>
-                    <th className="text-center p-4 font-display font-bold text-primary text-sm w-24 border-r border-border/30">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('priority')} className="font-display font-bold text-sm text-primary hover:text-primary/80 w-full justify-center">
-                        עדיפות <ArrowUpDown className="h-4 w-4 mr-1" />
-                      </Button>
-                    </th>
-                    <th className="text-right p-4 font-display font-semibold text-primary text-sm w-24 border-r border-border/30">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('price')} className="font-display text-sm text-primary hover:text-primary/80">
-                        מחיר <ArrowUpDown className="h-4 w-4 mr-1" />
-                      </Button>
-                    </th>
-                    <th className="text-center p-4 font-display font-semibold text-primary text-sm w-28 border-r border-border/30">תשלום</th>
-                    <th className="text-center p-4 font-display font-semibold text-primary text-sm w-28 border-r border-border/30">הושלם</th>
-                    <th className="text-right p-4 font-display font-semibold text-primary text-sm w-24">פעולות</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredTasks.map((task) => (
-                    <tr key={task.id} className="border-t border-border/30 hover:bg-muted/30 transition-colors duration-200">
-                      {/* Project Name */}
-                      <td className="p-3 w-48">
+      {/* Project Cards View */}
+      <div className="space-y-6" dir="rtl">
+        {filteredTasks.map((task) => (
+          <Card key={task.id} className="mac-card hover-lift overflow-hidden">
+            <CardContent className="p-0">
+              {/* Project Header */}
+              <div className="bg-gradient-to-r from-primary/10 via-primary/15 to-primary/10 p-6 border-b border-border/30">
+                <div className="flex justify-between items-start gap-4">
+                  <div className="flex-1 space-y-3">
+                    {/* Project Name */}
+                    <div>
+                      {editingId === task.id ? (
+                        <Input
+                          value={task.projectName}
+                          onChange={(e) => handleFieldUpdate(task.id, 'projectName', e.target.value)}
+                          className="text-xl font-bold h-12"
+                          dir="rtl"
+                        />
+                      ) : (
+                        <h2 className="text-xl font-bold text-primary break-words">{task.projectName}</h2>
+                      )}
+                    </div>
+
+                    {/* Project Description */}
+                    <div>
+                      {editingId === task.id ? (
+                        <Textarea
+                          value={task.projectDescription}
+                          onChange={(e) => handleFieldUpdate(task.id, 'projectDescription', e.target.value)}
+                          rows={3}
+                          className="w-full resize-none text-base"
+                          placeholder="תיאור הפרויקט..."
+                          dir="rtl"
+                        />
+                      ) : (
+                        <p className="text-base text-muted-foreground break-words whitespace-pre-wrap">
+                          {task.projectDescription || 'אין תיאור'}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Folder Path */}
+                    {(editingId === task.id || task.folderPath) && (
+                      <div>
                         {editingId === task.id ? (
                           <Input
-                            value={task.projectName}
-                            onChange={(e) => handleFieldUpdate(task.id, 'projectName', e.target.value)}
-                            className="w-full text-sm"
+                            placeholder="נתיב תיקייה"
+                            value={task.folderPath || ''}
+                            onChange={(e) => handleFieldUpdate(task.id, 'folderPath', e.target.value)}
+                            className="text-sm"
+                            dir="rtl"
                           />
-                        ) : (
-                          <div className="font-medium text-sm break-words" title={task.projectName}>{task.projectName}</div>
-                        )}
-                      </td>
+                        ) : task.folderPath ? (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => openFolder(task.folderPath)}
+                            className="text-sm text-primary hover:text-primary/80 flex items-center gap-2 p-2"
+                          >
+                            <FolderOpen className="h-4 w-4" />
+                            פתח תיקייה
+                          </Button>
+                        ) : null}
+                      </div>
+                    )}
+                  </div>
 
-                      {/* Description */}
-                      <td className="p-3 w-64">
-                        {editingId === task.id ? (
-                          <div className="space-y-1">
-                            <Textarea
-                              value={task.projectDescription}
-                              onChange={(e) => handleFieldUpdate(task.id, 'projectDescription', e.target.value)}
-                              rows={3}
-                              className="w-full resize-none text-sm"
-                              placeholder="תיאור..."
-                            />
-                            <Input
-                              placeholder="נתיב תיקייה"
-                              value={task.folderPath || ''}
-                              onChange={(e) => handleFieldUpdate(task.id, 'folderPath', e.target.value)}
-                              className="w-full text-sm"
-                            />
-                          </div>
-                        ) : (
-                          <div className="space-y-1">
-                            <p className="text-sm whitespace-pre-wrap break-words max-h-20 overflow-y-auto">
-                              {task.projectDescription || 'אין תיאור'}
-                            </p>
-                            {task.folderPath && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => openFolder(task.folderPath)}
-                                className="p-1 h-auto text-sm text-primary hover:text-primary/80 flex items-center gap-1"
-                              >
-                                <FolderOpen className="h-3 w-3" />
-                                תיקייה
-                              </Button>
-                            )}
-                          </div>
-                        )}
-                       </td>
-
-                       {/* Tasks */}
-                       <td className="p-3 w-20 bg-gradient-to-br from-blue-500/20 to-purple-600/20 border-r border-border/30">
-                         <TaskListDialog
-                           tasks={task.tasks}
-                           onUpdateTasks={(tasks) => handleFieldUpdate(task.id, 'tasks', tasks)}
-                           projectName={task.projectName}
-                         />
-                       </td>
-
-                       {/* Client */}
-                       <td className="p-3 w-28">
-                        {editingId === task.id ? (
-                          <div className="space-y-1">
-                            <Input
-                              placeholder="שם הלקוח"
-                              value={task.clientName}
-                              onChange={(e) => handleFieldUpdate(task.id, 'clientName', e.target.value)}
-                              className="text-xs"
-                            />
-                            <Input
-                              placeholder="טלפון 1"
-                              value={task.clientPhone || ''}
-                              onChange={(e) => handleFieldUpdate(task.id, 'clientPhone', e.target.value)}
-                              className="text-xs"
-                            />
-                            <Input
-                              placeholder="טלפון 2"
-                              value={task.clientPhone2 || ''}
-                              onChange={(e) => handleFieldUpdate(task.id, 'clientPhone2', e.target.value)}
-                              className="text-xs"
-                            />
-                            <Input
-                              placeholder="וואטסאפ 1"
-                              value={task.clientWhatsapp || ''}
-                              onChange={(e) => handleFieldUpdate(task.id, 'clientWhatsapp', e.target.value)}
-                              className="text-xs"
-                            />
-                            <Input
-                              placeholder="וואטסאפ 2"
-                              value={task.clientWhatsapp2 || ''}
-                              onChange={(e) => handleFieldUpdate(task.id, 'clientWhatsapp2', e.target.value)}
-                              className="text-xs"
-                            />
-                            <Input
-                              placeholder="אימייל"
-                              value={task.clientEmail || ''}
-                              onChange={(e) => handleFieldUpdate(task.id, 'clientEmail', e.target.value)}
-                              className="text-xs"
-                            />
-                          </div>
-                         ) : (
-                           <div className="space-y-1">
-                             <div className="font-medium text-xs whitespace-nowrap overflow-hidden text-ellipsis" title={task.clientName}>{task.clientName}</div>
-                             
-                             {/* Display phone numbers and email */}
-                             {(task.clientPhone || task.clientEmail) && (
-                               <div className="text-xs space-y-0.5">
-                                 {task.clientPhone && (
-                                   <div className="text-muted-foreground truncate" title={task.clientPhone}>
-                                     📞 {task.clientPhone}
-                                   </div>
-                                 )}
-                                 {task.clientEmail && (
-                                   <div className="text-muted-foreground truncate" title={task.clientEmail}>
-                                     ✉️ {task.clientEmail}
-                                   </div>
-                                 )}
-                               </div>
-                             )}
-
-                             <div className="flex flex-wrap gap-1">
-                               {task.clientPhone && (
-                                 <Button
-                                   variant="ghost"
-                                   size="sm"
-                                   onClick={() => makePhoneCall(task.clientPhone)}
-                                   className="p-1 h-auto"
-                                   title={`טלפון 1: ${task.clientPhone}`}
-                                 >
-                                   <Phone className="h-3 w-3" />
-                                 </Button>
-                               )}
-                               {task.clientPhone2 && (
-                                 <Button
-                                   variant="ghost"
-                                   size="sm"
-                                   onClick={() => makePhoneCall(task.clientPhone2)}
-                                   className="p-1 h-auto"
-                                   title={`טלפון 2: ${task.clientPhone2}`}
-                                 >
-                                   <Phone className="h-3 w-3 text-blue-600" />
-                                 </Button>
-                               )}
-                               {task.clientWhatsapp && (
-                                 <Button
-                                   variant="ghost"
-                                   size="sm"
-                                   onClick={() => sendWhatsApp(task.clientWhatsapp)}
-                                   className="p-1 h-auto"
-                                   title={`וואטסאפ 1: ${task.clientWhatsapp}`}
-                                 >
-                                   <MessageCircle className="h-3 w-3 text-green-600" />
-                                 </Button>
-                               )}
-                               {task.clientWhatsapp2 && (
-                                 <Button
-                                   variant="ghost"
-                                   size="sm"
-                                   onClick={() => sendWhatsApp(task.clientWhatsapp2)}
-                                   className="p-1 h-auto"
-                                   title={`וואטסאפ 2: ${task.clientWhatsapp2}`}
-                                 >
-                                   <MessageCircle className="h-3 w-3 text-green-500" />
-                                 </Button>
-                               )}
-                                {task.clientEmail && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => sendEmail(task.clientEmail)}
-                                    className="p-1 h-auto"
-                                    title={`אימייל: ${task.clientEmail}`}
-                                  >
-                                    <Mail className="h-3 w-3 text-blue-500" />
-                                  </Button>
-                                )}
-                              </div>
-                          </div>
-                        )}
-                      </td>
-
-                      {/* Work Status */}
-                      <td className="p-3 w-36">
-                        <Select
-                          value={task.workStatus}
-                          onValueChange={(value) => handleFieldUpdate(task.id, 'workStatus', value)}
+                  {/* Action Buttons */}
+                  <div className="flex gap-2">
+                    {editingId === task.id ? (
+                      <>
+                        <Button size="sm" onClick={handleSave} className="gap-1">
+                          <Save className="h-4 w-4" />
+                          שמור
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={handleCancel} className="gap-1">
+                          <X className="h-4 w-4" />
+                          ביטול
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button size="sm" variant="outline" onClick={() => handleEdit(task)} className="gap-1">
+                          <Edit3 className="h-4 w-4" />
+                          ערוך
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="destructive" 
+                          onClick={() => {
+                            if (confirm('האם אתה בטוח שברצונך למחוק את הפרויקט?')) {
+                              onDeleteTask(task.id);
+                            }
+                          }}
+                          className="gap-1"
                         >
-                          <SelectTrigger className={cn("w-full h-8 border-0 min-w-32 flex items-center justify-center", getStatusColor(task.workStatus))}>
-                            <SelectValue>
-                              <span className="text-xs font-bold text-center whitespace-nowrap w-full block">
-                                {WORK_STATUS_LABELS[task.workStatus]}
-                              </span>
-                            </SelectValue>
-                          </SelectTrigger>
-                          <SelectContent className="z-50 bg-background border shadow-lg min-w-32">
-                            {Object.entries(WORK_STATUS_LABELS).map(([value, label]) => (
-                              <SelectItem key={value} value={value} className="flex justify-center">
-                                <span className={cn(getStatusColor(value as any), "rounded-md px-4 py-2 text-xs font-bold whitespace-nowrap w-full text-center block")}>
-                                  {label}
-                                </span>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </td>
+                          <Trash2 className="h-4 w-4" />
+                          מחק
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Project Details Grid */}
+              <div className="bg-muted/20 p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  
+                  {/* Tasks Section */}
+                  <div className="bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-lg p-4 border border-blue-300/30">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="font-semibold text-blue-700 dark:text-blue-300">משימות</h3>
+                    </div>
+                    <TaskListDialog
+                      tasks={task.tasks}
+                      onUpdateTasks={(tasks) => handleFieldUpdate(task.id, 'tasks', tasks)}
+                      projectName={task.projectName}
+                    />
+                  </div>
+
+                  {/* Client Information */}
+                  <div className="bg-muted/30 rounded-lg p-4 border border-border/30">
+                    <h3 className="font-semibold text-foreground mb-3">פרטי לקוח</h3>
+                    {editingId === task.id ? (
+                      <div className="space-y-2">
+                        <Input
+                          placeholder="שם הלקוח"
+                          value={task.clientName}
+                          onChange={(e) => handleFieldUpdate(task.id, 'clientName', e.target.value)}
+                          className="text-sm"
+                          dir="rtl"
+                        />
+                        <Input
+                          placeholder="טלפון 1"
+                          value={task.clientPhone || ''}
+                          onChange={(e) => handleFieldUpdate(task.id, 'clientPhone', e.target.value)}
+                          className="text-sm"
+                          dir="rtl"
+                        />
+                        <Input
+                          placeholder="טלפון 2"
+                          value={task.clientPhone2 || ''}
+                          onChange={(e) => handleFieldUpdate(task.id, 'clientPhone2', e.target.value)}
+                          className="text-sm"
+                          dir="rtl"
+                        />
+                        <Input
+                          placeholder="וואטסאפ 1"
+                          value={task.clientWhatsapp || ''}
+                          onChange={(e) => handleFieldUpdate(task.id, 'clientWhatsapp', e.target.value)}
+                          className="text-sm"
+                          dir="rtl"
+                        />
+                        <Input
+                          placeholder="וואטסאפ 2"
+                          value={task.clientWhatsapp2 || ''}
+                          onChange={(e) => handleFieldUpdate(task.id, 'clientWhatsapp2', e.target.value)}
+                          className="text-sm"
+                          dir="rtl"
+                        />
+                        <Input
+                          placeholder="אימייל"
+                          value={task.clientEmail || ''}
+                          onChange={(e) => handleFieldUpdate(task.id, 'clientEmail', e.target.value)}
+                          className="text-sm"
+                          dir="rtl"
+                        />
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <div className="font-medium text-sm">{task.clientName}</div>
+                        
+                        {/* Contact actions */}
+                        <div className="flex flex-wrap gap-1">
+                          {task.clientPhone && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => makePhoneCall(task.clientPhone)}
+                              className="p-1 h-auto"
+                              title={`טלפון 1: ${task.clientPhone}`}
+                            >
+                              <Phone className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {task.clientPhone2 && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => makePhoneCall(task.clientPhone2)}
+                              className="p-1 h-auto"
+                              title={`טלפון 2: ${task.clientPhone2}`}
+                            >
+                              <Phone className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {task.clientWhatsapp && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => sendWhatsApp(task.clientWhatsapp)}
+                              className="p-1 h-auto text-green-600"
+                              title={`וואטסאפ 1: ${task.clientWhatsapp}`}
+                            >
+                              <MessageCircle className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {task.clientWhatsapp2 && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => sendWhatsApp(task.clientWhatsapp2)}
+                              className="p-1 h-auto text-green-600"
+                              title={`וואטסאפ 2: ${task.clientWhatsapp2}`}
+                            >
+                              <MessageCircle className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {task.clientEmail && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => sendEmail(task.clientEmail)}
+                              className="p-1 h-auto"
+                              title={`אימייל: ${task.clientEmail}`}
+                            >
+                              <Mail className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+
+                        {/* Contact details */}
+                        <div className="text-xs text-muted-foreground space-y-1">
+                          {task.clientPhone && <div>📞 {task.clientPhone}</div>}
+                          {task.clientPhone2 && <div>📞 {task.clientPhone2}</div>}
+                          {task.clientWhatsapp && <div>💬 {task.clientWhatsapp}</div>}
+                          {task.clientWhatsapp2 && <div>💬 {task.clientWhatsapp2}</div>}
+                          {task.clientEmail && <div>✉️ {task.clientEmail}</div>}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Status & Priority */}
+                  <div className="bg-muted/30 rounded-lg p-4 border border-border/30">
+                    <h3 className="font-semibold text-foreground mb-3">סטטוס ועדיפות</h3>
+                    <div className="space-y-3">
+                      {/* Work Status */}
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">סטטוס עבודה</label>
+                        {editingId === task.id ? (
+                          <Select 
+                            value={task.workStatus} 
+                            onValueChange={(value) => handleFieldUpdate(task.id, 'workStatus', value)}
+                          >
+                            <SelectTrigger className="text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {Object.entries(WORK_STATUS_LABELS).map(([value, label]) => (
+                                <SelectItem key={value} value={value}>{label}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <Badge className={cn("text-xs", getStatusColor(task.workStatus))}>
+                            {WORK_STATUS_LABELS[task.workStatus]}
+                          </Badge>
+                        )}
+                      </div>
 
                       {/* Priority */}
-                      <td className="p-3 w-24">
-                        <Select
-                          value={task.priority}
-                          onValueChange={(value) => handleFieldUpdate(task.id, 'priority', value)}
-                        >
-                          <SelectTrigger className={cn("w-full h-8 border-0 flex items-center justify-center", getPriorityColor(task.priority))}>
-                            <SelectValue>
-                              <span className="text-xs font-bold text-center w-full block">
-                                {PRIORITY_LABELS[task.priority]}
-                              </span>
-                            </SelectValue>
-                          </SelectTrigger>
-                          <SelectContent className="z-50 bg-background border shadow-lg">
-                            {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
-                              <SelectItem key={value} value={value} className="flex justify-center">
-                                <span className={cn(getPriorityColor(value as any), "rounded-md px-4 py-2 text-xs font-bold w-full text-center block")}>
-                                  {label}
-                                </span>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </td>
-
-                      {/* Price */}
-                      <td className="p-3 w-24">
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">עדיפות</label>
                         {editingId === task.id ? (
-                          <div className="space-y-1">
-                            <Select
-                              value={task.currency}
+                          <Select 
+                            value={task.priority} 
+                            onValueChange={(value) => handleFieldUpdate(task.id, 'priority', value)}
+                          >
+                            <SelectTrigger className="text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
+                                <SelectItem key={value} value={value}>{label}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <Badge className={cn("text-xs", getPriorityColor(task.priority))}>
+                            {PRIORITY_LABELS[task.priority]}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Price & Payment */}
+                  <div className="bg-muted/30 rounded-lg p-4 border border-border/30">
+                    <h3 className="font-semibold text-foreground mb-3">מחיר ותשלום</h3>
+                    <div className="space-y-3">
+                      {/* Price */}
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">מחיר</label>
+                        {editingId === task.id ? (
+                          <div className="flex gap-1">
+                            <Select 
+                              value={task.currency} 
                               onValueChange={(value) => handleFieldUpdate(task.id, 'currency', value)}
                             >
-                              <SelectTrigger className="w-full h-7 text-xs">
+                              <SelectTrigger className="w-20 text-xs">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
                                 {CURRENCIES.map((currency) => (
-                                  <SelectItem key={currency} value={currency}>
-                                    {currency}
-                                  </SelectItem>
+                                  <SelectItem key={currency} value={currency}>{currency}</SelectItem>
                                 ))}
                               </SelectContent>
                             </Select>
                             <Input
                               type="number"
+                              min="0"
+                              step="0.01"
                               value={task.price}
                               onChange={(e) => handleFieldUpdate(task.id, 'price', parseFloat(e.target.value) || 0)}
-                              className="w-full text-xs"
+                              className="text-sm"
                             />
                           </div>
                         ) : (
-                          <div className="font-medium text-xs whitespace-nowrap">
-                            {task.currency} {task.price.toLocaleString()}
+                          <div className="text-lg font-semibold text-primary">
+                            {task.price.toFixed(2)} {task.currency}
                           </div>
                         )}
-                      </td>
+                      </div>
 
-                       {/* Payment Status */}
-                       <td className="p-3 w-28">
-                         <div className="flex items-center justify-center gap-2">
-                           <Checkbox
-                             checked={task.isPaid}
-                             onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isPaid', checked)}
-                           />
-                            <span className={cn("text-xs font-medium text-center", task.isPaid ? "text-green-600" : "text-red-600")}>
-                              {task.isPaid ? 'שולם' : 'לא שולם'}
-                            </span>
-                         </div>
-                       </td>
-
-                       {/* Completion Status */}
-                       <td className="p-3 w-28">
-                         <div className="flex items-center justify-center gap-2">
-                           <Checkbox
-                             checked={task.isCompleted}
-                             onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isCompleted', checked)}
-                           />
-                            <span className={cn("text-xs font-medium text-center", task.isCompleted ? "text-green-600" : "text-orange-600")}>
-                              {task.isCompleted ? 'הושלם' : 'לא הושלם'}
-                            </span>
-                         </div>
-                       </td>
-
-                      {/* Actions */}
-                      <td className="p-3 w-24">
-                        <div className="flex gap-1">
+                      {/* Payment Status */}
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
                           {editingId === task.id ? (
-                            <>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={handleSave}
-                                className="p-1 h-auto"
-                              >
-                                <Save className="h-3 w-3" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={handleCancel}
-                                className="p-1 h-auto"
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </>
+                            <Checkbox
+                              checked={task.isPaid}
+                              onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isPaid', checked)}
+                            />
                           ) : (
-                            <>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleEdit(task)}
-                                className="p-1 h-auto"
-                              >
-                                <Edit3 className="h-3 w-3" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => onDeleteTask(task.id)}
-                                className="p-1 h-auto text-red-600 hover:text-red-700"
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </>
+                            <div className={cn(
+                              "w-4 h-4 rounded border-2 flex items-center justify-center",
+                              task.isPaid ? "bg-green-500 border-green-500" : "border-muted-foreground"
+                            )}>
+                              {task.isPaid && <div className="w-2 h-2 bg-white rounded-sm" />}
+                            </div>
                           )}
+                          <span className="text-sm">שולם</span>
                         </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-        </div>
-      </div>
 
-      {/* Mobile Card View */}
-      <div className="lg:hidden space-y-4" dir="rtl">
-        {filteredTasks.map((task) => (
-          <div key={task.id} className="mac-card hover-lift p-4">
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="font-display text-lg font-semibold">{task.projectName}</h3>
-              <div className="flex gap-1">
-                {editingId === task.id ? (
-                  <>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleSave}
-                      className="p-1 h-auto"
-                    >
-                      <Save className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleCancel}
-                      className="p-1 h-auto"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleEdit(task)}
-                      className="p-1 h-auto"
-                    >
-                      <Edit3 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onDeleteTask(task.id)}
-                      className="p-1 h-auto text-destructive hover:text-destructive/80"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </>
-                )}
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              {/* Project Description */}
-              {editingId === task.id ? (
-                <div className="space-y-2">
-                  <Textarea
-                    value={task.projectDescription}
-                    onChange={(e) => handleFieldUpdate(task.id, 'projectDescription', e.target.value)}
-                    rows={2}
-                    className="w-full resize-none text-sm"
-                    placeholder="תיאור..."
-                  />
-                  <Input
-                    placeholder="נתיב תיקייה"
-                    value={task.folderPath || ''}
-                    onChange={(e) => handleFieldUpdate(task.id, 'folderPath', e.target.value)}
-                    className="w-full text-sm"
-                  />
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">{task.projectDescription || 'אין תיאור'}</p>
-                  {task.folderPath && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openFolder(task.folderPath)}
-                      className="p-1 h-auto text-sm text-primary hover:text-primary/80 flex items-center gap-1"
-                    >
-                      <FolderOpen className="h-3 w-3" />
-                      תיקייה
-                    </Button>
-                  )}
-                </div>
-              )}
-
-              {/* Tasks */}
-              <div className="bg-gradient-to-br from-blue-500/20 to-purple-600/20 p-3 rounded-lg border border-blue-500/30">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-sm font-medium text-blue-700 dark:text-blue-300">משימות</span>
-                </div>
-                <TaskListDialog
-                  tasks={task.tasks}
-                  onUpdateTasks={(tasks) => handleFieldUpdate(task.id, 'tasks', tasks)}
-                  projectName={task.projectName}
-                />
-              </div>
-
-              {/* Client Info */}
-              <div className="border rounded-lg p-3">
-                <h4 className="text-sm font-medium mb-2">פרטי לקוח</h4>
-                {editingId === task.id ? (
-                  <div className="space-y-2">
-                    <Input
-                      placeholder="שם הלקוח"
-                      value={task.clientName}
-                      onChange={(e) => handleFieldUpdate(task.id, 'clientName', e.target.value)}
-                      className="text-sm"
-                    />
-                    <div className="grid grid-cols-2 gap-2">
-                      <Input
-                        placeholder="טלפון 1"
-                        value={task.clientPhone || ''}
-                        onChange={(e) => handleFieldUpdate(task.id, 'clientPhone', e.target.value)}
-                        className="text-sm"
-                      />
-                      <Input
-                        placeholder="טלפון 2"
-                        value={task.clientPhone2 || ''}
-                        onChange={(e) => handleFieldUpdate(task.id, 'clientPhone2', e.target.value)}
-                        className="text-sm"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <Input
-                        placeholder="וואטסאפ 1"
-                        value={task.clientWhatsapp || ''}
-                        onChange={(e) => handleFieldUpdate(task.id, 'clientWhatsapp', e.target.value)}
-                        className="text-sm"
-                      />
-                      <Input
-                        placeholder="וואטסאפ 2"
-                        value={task.clientWhatsapp2 || ''}
-                        onChange={(e) => handleFieldUpdate(task.id, 'clientWhatsapp2', e.target.value)}
-                        className="text-sm"
-                      />
-                    </div>
-                    <Input
-                      placeholder="אימייל"
-                      value={task.clientEmail || ''}
-                      onChange={(e) => handleFieldUpdate(task.id, 'clientEmail', e.target.value)}
-                      className="text-sm"
-                    />
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium text-sm">{task.clientName}</span>
-                      <div className="flex gap-1">
-                        {task.clientPhone && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => makePhoneCall(task.clientPhone)}
-                            className="p-1 h-auto"
-                            title="טלפון 1"
-                          >
-                            <Phone className="h-3 w-3" />
-                          </Button>
-                        )}
-                        {task.clientPhone2 && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => makePhoneCall(task.clientPhone2)}
-                            className="p-1 h-auto"
-                            title="טלפון 2"
-                          >
-                            <Phone className="h-3 w-3 text-blue-600" />
-                          </Button>
-                        )}
-                        {task.clientWhatsapp && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => sendWhatsApp(task.clientWhatsapp)}
-                            className="p-1 h-auto"
-                            title="וואטסאפ 1"
-                          >
-                            <MessageCircle className="h-3 w-3 text-green-600" />
-                          </Button>
-                        )}
-                        {task.clientWhatsapp2 && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => sendWhatsApp(task.clientWhatsapp2)}
-                            className="p-1 h-auto"
-                            title={`וואטסאפ 2: ${task.clientWhatsapp2}`}
-                          >
-                            <MessageCircle className="h-3 w-3 text-green-500" />
-                          </Button>
-                        )}
-                        {task.clientEmail && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => sendEmail(task.clientEmail)}
-                            className="p-1 h-auto"
-                            title={`אימייל: ${task.clientEmail}`}
-                          >
-                            <Mail className="h-3 w-3 text-blue-500" />
-                          </Button>
-                        )}
+                        <div className="flex items-center gap-2">
+                          {editingId === task.id ? (
+                            <Checkbox
+                              checked={task.isCompleted}
+                              onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isCompleted', checked)}
+                            />
+                          ) : (
+                            <div className={cn(
+                              "w-4 h-4 rounded border-2 flex items-center justify-center",
+                              task.isCompleted ? "bg-green-500 border-green-500" : "border-muted-foreground"
+                            )}>
+                              {task.isCompleted && <div className="w-2 h-2 bg-white rounded-sm" />}
+                            </div>
+                          )}
+                          <span className="text-sm">הושלם</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                )}
-              </div>
 
-              {/* Status and Priority Row */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-sm font-bold text-muted-foreground mb-1 block text-center">סטטוס</label>
-                  <Select
-                    value={task.workStatus}
-                    onValueChange={(value) => handleFieldUpdate(task.id, 'workStatus', value)}
-                  >
-                    <SelectTrigger className={cn("w-full h-10 flex items-center justify-center", getStatusColor(task.workStatus))}>
-                      <SelectValue>
-                        <span className="text-sm font-bold text-center whitespace-nowrap w-full block">
-                          {WORK_STATUS_LABELS[task.workStatus]}
-                        </span>
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent className="z-50 bg-background border shadow-lg">
-                      {Object.entries(WORK_STATUS_LABELS).map(([value, label]) => (
-                        <SelectItem key={value} value={value} className="flex justify-center">
-                          <span className={cn(getStatusColor(value as any), "rounded-md px-4 py-2 text-sm font-bold whitespace-nowrap w-full text-center block")}>
-                            {label}
-                          </span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <label className="text-sm font-bold text-muted-foreground mb-1 block text-center">עדיפות</label>
-                  <Select
-                    value={task.priority}
-                    onValueChange={(value) => handleFieldUpdate(task.id, 'priority', value)}
-                  >
-                    <SelectTrigger className={cn("w-full h-10 flex items-center justify-center", getPriorityColor(task.priority))}>
-                      <SelectValue>
-                        <span className="text-sm font-bold text-center w-full block">
-                          {PRIORITY_LABELS[task.priority]}
-                        </span>
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent className="z-50 bg-background border shadow-lg">
-                      {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
-                        <SelectItem key={value} value={value} className="flex justify-center">
-                          <span className={cn(getPriorityColor(value as any), "rounded-md px-4 py-2 text-sm font-bold w-full text-center block")}>
-                            {label}
-                          </span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
                 </div>
               </div>
-
-              {/* Price Section */}
-              <div className="border rounded-lg p-3">
-                <h4 className="text-sm font-medium mb-2">פרטים כספיים</h4>
-                {editingId === task.id ? (
-                  <div className="flex gap-2">
-                    <Select
-                      value={task.currency}
-                      onValueChange={(value) => handleFieldUpdate(task.id, 'currency', value)}
-                    >
-                      <SelectTrigger className="w-20">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {CURRENCIES.map((currency) => (
-                          <SelectItem key={currency} value={currency}>
-                            {currency}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Input
-                      type="number"
-                      value={task.price}
-                      onChange={(e) => handleFieldUpdate(task.id, 'price', parseFloat(e.target.value) || 0)}
-                      className="flex-1"
-                      placeholder="מחיר"
-                    />
-                  </div>
-                ) : (
-                  <div className="text-lg font-semibold">
-                    {task.currency} {task.price.toLocaleString()}
-                  </div>
-                )}
-              </div>
-
-              {/* Status Checkboxes */}
-              <div className="flex justify-between items-center border rounded-lg p-3">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    checked={task.isPaid}
-                    onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isPaid', checked)}
-                  />
-                  <span className={cn("text-sm font-medium", task.isPaid ? "text-green-600" : "text-red-600")}>
-                    {task.isPaid ? 'שולם' : 'לא שולם'}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    checked={task.isCompleted}
-                    onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isCompleted', checked)}
-                  />
-                  <span className={cn("text-sm font-medium", task.isCompleted ? "text-green-600" : "text-orange-600")}>
-                    {task.isCompleted ? 'הושלם' : 'לא הושלם'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         ))}
-      </div>
 
-      {filteredTasks.length === 0 && (
-        <div className="mac-card text-center py-12">
-          <p className="text-muted-foreground">
-            {searchTerm ? 'אין משימות המתאימות לחיפוש.' : 'אין משימות עדיין. צור את הפרויקט הראשון שלך!'}
-          </p>
-        </div>
-      )}
+        {filteredTasks.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">📋</div>
+            <h3 className="text-xl font-semibold text-foreground mb-2">אין פרויקטים</h3>
+            <p className="text-muted-foreground">
+              {searchTerm ? 'לא נמצאו פרויקטים התואמים לחיפוש' : 'התחל על ידי יצירת פרויקט חדש'}
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
