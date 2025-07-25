@@ -80,19 +80,19 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
 
   const getPriorityColor = (priority: Priority) => {
     switch (priority) {
-      case 'high': return 'bg-destructive/5 text-destructive border-0 font-medium';
-      case 'medium': return 'bg-warning/5 text-warning border-0 font-medium';
-      case 'low': return 'bg-success/5 text-success border-0 font-medium';
+      case 'high': return 'bg-red-500 text-white border-0 font-medium shadow-md';
+      case 'medium': return 'bg-orange-500 text-white border-0 font-medium shadow-md';
+      case 'low': return 'bg-green-500 text-white border-0 font-medium shadow-md';
     }
   };
 
   const getStatusColor = (status: WorkStatus) => {
     switch (status) {
-      case 'completed': return 'bg-success/5 text-success border-0 font-medium';
-      case 'in_progress': return 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-0 font-medium';
-      case 'review': return 'bg-info/5 text-info border-0 font-medium';
-      case 'on_hold': return 'bg-warning/5 text-warning border-0 font-medium';
-      case 'not_started': return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-0 font-medium';
+      case 'completed': return 'bg-green-500 text-white border-0 font-medium shadow-md';
+      case 'in_progress': return 'bg-purple-500 text-white border-0 font-medium shadow-md';
+      case 'review': return 'bg-blue-500 text-white border-0 font-medium shadow-md';
+      case 'on_hold': return 'bg-yellow-500 text-white border-0 font-medium shadow-md';
+      case 'not_started': return 'bg-gray-500 text-white border-0 font-medium shadow-md';
     }
   };
 
@@ -402,9 +402,9 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                           <SelectContent className="z-50 bg-background border shadow-lg min-w-32">
                             {Object.entries(WORK_STATUS_LABELS).map(([value, label]) => (
                               <SelectItem key={value} value={value}>
-                                <Badge className={cn(getStatusColor(value as any), "rounded-md px-2 py-1 text-xs whitespace-nowrap")}>
+                                <div className={cn(getStatusColor(value as any), "rounded-md px-3 py-1 text-xs whitespace-nowrap w-full text-center")}>
                                   {label}
-                                </Badge>
+                                </div>
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -427,9 +427,9 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                           <SelectContent className="z-50 bg-popover border shadow-lg">
                             {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
                               <SelectItem key={value} value={value}>
-                                <Badge className={cn(getPriorityColor(value as any), "rounded-md px-2 py-1 text-xs")}>
+                                <div className={cn(getPriorityColor(value as any), "rounded-md px-3 py-1 text-xs w-full text-center")}>
                                   {label}
-                                </Badge>
+                                </div>
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -776,7 +776,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                   >
                     <SelectTrigger className="w-full h-10">
                       <SelectValue>
-                        <div className={cn(getStatusColor(task.workStatus), "rounded-lg px-3 py-1 text-xs text-center whitespace-nowrap")}>
+                        <div className={cn(getStatusColor(task.workStatus), "rounded-lg px-3 py-1 text-xs text-center whitespace-nowrap w-full")}>
                           {WORK_STATUS_LABELS[task.workStatus]}
                         </div>
                       </SelectValue>
@@ -784,9 +784,9 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                     <SelectContent className="z-50 bg-background border shadow-lg">
                       {Object.entries(WORK_STATUS_LABELS).map(([value, label]) => (
                         <SelectItem key={value} value={value}>
-                          <Badge className={cn(getStatusColor(value as any), "rounded-md px-2 py-1 text-xs whitespace-nowrap")}>
+                          <div className={cn(getStatusColor(value as any), "rounded-md px-3 py-1 text-xs whitespace-nowrap w-full text-center")}>
                             {label}
-                          </Badge>
+                          </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -801,7 +801,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                   >
                     <SelectTrigger className="w-full h-10">
                       <SelectValue>
-                        <div className={cn(getPriorityColor(task.priority), "rounded-lg px-3 py-1 text-xs text-center")}>
+                        <div className={cn(getPriorityColor(task.priority), "rounded-lg px-3 py-1 text-xs text-center w-full")}>
                           {PRIORITY_LABELS[task.priority]}
                         </div>
                       </SelectValue>
@@ -809,9 +809,9 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                     <SelectContent className="z-50 bg-background border shadow-lg">
                       {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
                         <SelectItem key={value} value={value}>
-                          <Badge className={cn(getPriorityColor(value as any), "rounded-md px-2 py-1 text-xs")}>
+                          <div className={cn(getPriorityColor(value as any), "rounded-md px-3 py-1 text-xs w-full text-center")}>
                             {label}
-                          </Badge>
+                          </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
