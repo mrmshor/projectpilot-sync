@@ -187,7 +187,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                         לקוח <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-display font-semibold text-primary text-sm w-28 border-r border-border/30">
+                    <th className="text-right p-4 font-display font-semibold text-primary text-sm w-36 border-r border-border/30">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('workStatus')} className="font-display text-sm text-primary hover:text-primary/80">
                         סטטוס <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
@@ -370,22 +370,22 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                       </td>
 
                       {/* Work Status */}
-                      <td className="p-3 w-28">
+                      <td className="p-3 w-36">
                         <Select
                           value={task.workStatus}
                           onValueChange={(value) => handleFieldUpdate(task.id, 'workStatus', value)}
                         >
-                          <SelectTrigger className="w-full h-8 border-0 bg-transparent">
+                          <SelectTrigger className="w-full h-8 border-0 bg-transparent min-w-32">
                             <SelectValue>
-                              <div className={cn(getStatusColor(task.workStatus), "rounded-lg px-3 py-1 text-xs w-full text-center")}>
+                              <div className={cn(getStatusColor(task.workStatus), "rounded-lg px-3 py-1 text-xs w-full text-center whitespace-nowrap")}>
                                 {WORK_STATUS_LABELS[task.workStatus]}
                               </div>
                             </SelectValue>
                           </SelectTrigger>
-                          <SelectContent className="z-50 bg-popover border shadow-lg">
+                          <SelectContent className="z-50 bg-background border shadow-lg min-w-32">
                             {Object.entries(WORK_STATUS_LABELS).map(([value, label]) => (
                               <SelectItem key={value} value={value}>
-                                <Badge className={cn(getStatusColor(value as any), "rounded-md px-2 py-1 text-xs")}>
+                                <Badge className={cn(getStatusColor(value as any), "rounded-md px-2 py-1 text-xs whitespace-nowrap")}>
                                   {label}
                                 </Badge>
                               </SelectItem>
