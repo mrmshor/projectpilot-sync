@@ -135,7 +135,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
             <h3 className="text-lg font-medium">פרטי הפרויקט</h3>
             
             <div>
-              <Label htmlFor="projectName">שם הפרויקט *</Label>
+              <Label htmlFor="projectName" className="text-base font-medium">שם הפרויקט *</Label>
               <Input
                 id="projectName"
                 value={formData.projectName}
@@ -143,18 +143,20 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
                 placeholder="הכנס שם פרויקט"
                 required
                 dir="rtl"
+                className="text-base h-12 mt-2"
               />
             </div>
 
             <div>
-              <Label htmlFor="projectDescription">תיאור</Label>
+              <Label htmlFor="projectDescription" className="text-base font-medium">תיאור</Label>
               <Textarea
                 id="projectDescription"
                 value={formData.projectDescription}
                 onChange={(e) => updateField('projectDescription', e.target.value)}
-                placeholder="תאר את הפרויקט"
-                rows={3}
+                placeholder="תאר את הפרויקט בפירוט"
+                rows={4}
                 dir="rtl"
+                className="text-base min-h-24 mt-2 resize-y"
               />
             </div>
 

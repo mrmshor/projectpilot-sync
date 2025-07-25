@@ -186,12 +186,12 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
               <table className="w-full min-w-full">
                 <thead className="bg-gradient-to-r from-primary/10 via-primary/15 to-primary/10 border-b-2 border-primary/20">
                   <tr>
-                    <th className="text-right p-4 font-display font-semibold text-primary text-sm w-32 border-r border-border/30">
+                    <th className="text-right p-4 font-display font-semibold text-primary text-sm w-48 border-r border-border/30">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('projectName')} className="font-display text-sm text-primary hover:text-primary/80">
                         שם הפרויקט <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                     <th className="text-right p-4 font-display font-semibold text-primary text-sm w-40 border-r border-border/30">תיאור</th>
+                     <th className="text-right p-4 font-display font-semibold text-primary text-sm w-64 border-r border-border/30">תיאור</th>
                      <th className="text-right p-4 font-display font-semibold text-white text-sm w-20 border-r border-border/30 bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">משימות</th>
                     <th className="text-right p-4 font-display font-semibold text-primary text-sm w-28 border-r border-border/30">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('clientName')} className="font-display text-sm text-primary hover:text-primary/80">
@@ -222,39 +222,39 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                   {filteredTasks.map((task) => (
                     <tr key={task.id} className="border-t border-border/30 hover:bg-muted/30 transition-colors duration-200">
                       {/* Project Name */}
-                      <td className="p-3 w-32">
+                      <td className="p-3 w-48">
                         {editingId === task.id ? (
                           <Input
                             value={task.projectName}
                             onChange={(e) => handleFieldUpdate(task.id, 'projectName', e.target.value)}
-                            className="w-full text-xs"
+                            className="w-full text-sm"
                           />
                         ) : (
-                          <div className="font-medium text-xs whitespace-nowrap overflow-hidden text-ellipsis" title={task.projectName}>{task.projectName}</div>
+                          <div className="font-medium text-sm break-words" title={task.projectName}>{task.projectName}</div>
                         )}
                       </td>
 
                       {/* Description */}
-                      <td className="p-3 w-40">
+                      <td className="p-3 w-64">
                         {editingId === task.id ? (
                           <div className="space-y-1">
                             <Textarea
                               value={task.projectDescription}
                               onChange={(e) => handleFieldUpdate(task.id, 'projectDescription', e.target.value)}
-                              rows={2}
-                              className="w-full resize-none text-xs"
+                              rows={3}
+                              className="w-full resize-none text-sm"
                               placeholder="תיאור..."
                             />
                             <Input
                               placeholder="נתיב תיקייה"
                               value={task.folderPath || ''}
                               onChange={(e) => handleFieldUpdate(task.id, 'folderPath', e.target.value)}
-                              className="w-full text-xs"
+                              className="w-full text-sm"
                             />
                           </div>
                         ) : (
                           <div className="space-y-1">
-                            <p className="text-xs whitespace-pre-wrap break-words line-clamp-2">
+                            <p className="text-sm whitespace-pre-wrap break-words max-h-20 overflow-y-auto">
                               {task.projectDescription || 'אין תיאור'}
                             </p>
                             {task.folderPath && (
@@ -262,7 +262,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => openFolder(task.folderPath)}
-                                className="p-1 h-auto text-xs text-primary hover:text-primary/80 flex items-center gap-1"
+                                className="p-1 h-auto text-sm text-primary hover:text-primary/80 flex items-center gap-1"
                               >
                                 <FolderOpen className="h-3 w-3" />
                                 תיקייה
