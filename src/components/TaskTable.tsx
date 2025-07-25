@@ -80,19 +80,19 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
 
   const getPriorityColor = (priority: Priority) => {
     switch (priority) {
-      case 'high': return 'bg-destructive/10 text-destructive border border-destructive/20 shadow-soft';
-      case 'medium': return 'bg-warning/10 text-warning border border-warning/20 shadow-soft';
-      case 'low': return 'bg-success/10 text-success border border-success/20 shadow-soft';
+      case 'high': return 'bg-destructive/5 text-destructive border-0 font-medium';
+      case 'medium': return 'bg-warning/5 text-warning border-0 font-medium';
+      case 'low': return 'bg-success/5 text-success border-0 font-medium';
     }
   };
 
   const getStatusColor = (status: WorkStatus) => {
     switch (status) {
-      case 'completed': return 'bg-success/10 text-success border border-success/20 shadow-soft';
-      case 'in_progress': return 'bg-primary/10 text-primary border border-primary/20 shadow-soft';
-      case 'review': return 'bg-info/10 text-info border border-info/20 shadow-soft';
-      case 'on_hold': return 'bg-warning/10 text-warning border border-warning/20 shadow-soft';
-      case 'not_started': return 'bg-muted-foreground/10 text-muted-foreground border border-muted-foreground/20 shadow-soft';
+      case 'completed': return 'bg-success/5 text-success border-0 font-medium';
+      case 'in_progress': return 'bg-primary/5 text-primary border-0 font-medium';
+      case 'review': return 'bg-info/5 text-info border-0 font-medium';
+      case 'on_hold': return 'bg-warning/5 text-warning border-0 font-medium';
+      case 'not_started': return 'bg-muted-foreground/5 text-muted-foreground border-0 font-medium';
     }
   };
 
@@ -172,39 +172,39 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
       <div className="hidden lg:block" dir="rtl">
         <div className="mac-card overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-full">
-              <thead className="bg-gradient-muted border-b border-border/50">
-                <tr>
-                    <th className="text-right p-3 font-medium w-32">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('projectName')}>
+              <table className="w-full min-w-full">
+                <thead className="bg-gradient-to-r from-muted via-muted/80 to-muted border-b-2 border-primary/10">
+                  <tr>
+                    <th className="text-right p-4 font-display font-semibold text-foreground w-32 border-r border-border/30">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort('projectName')} className="font-display">
                         שם הפרויקט <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                     <th className="text-right p-3 font-medium w-40">תיאור</th>
-                     <th className="text-right p-3 font-medium w-20">משימות</th>
-                    <th className="text-right p-3 font-medium w-28">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('clientName')}>
+                     <th className="text-right p-4 font-display font-semibold text-foreground w-40 border-r border-border/30">תיאור</th>
+                     <th className="text-right p-4 font-display font-semibold text-foreground w-20 border-r border-border/30">משימות</th>
+                    <th className="text-right p-4 font-display font-semibold text-foreground w-28 border-r border-border/30">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort('clientName')} className="font-display">
                         לקוח <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-3 font-medium w-28">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('workStatus')}>
+                    <th className="text-right p-4 font-display font-semibold text-foreground w-28 border-r border-border/30">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort('workStatus')} className="font-display">
                         סטטוס <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-3 font-medium w-24">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('priority')}>
+                    <th className="text-right p-4 font-display font-semibold text-foreground w-24 border-r border-border/30">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort('priority')} className="font-display">
                         עדיפות <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-3 font-medium w-24">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('price')}>
+                    <th className="text-right p-4 font-display font-semibold text-foreground w-24 border-r border-border/30">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort('price')} className="font-display">
                         מחיר <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-3 font-medium w-20">תשלום</th>
-                    <th className="text-right p-3 font-medium w-20">הושלם</th>
-                    <th className="text-right p-3 font-medium w-24">פעולות</th>
+                    <th className="text-right p-4 font-display font-semibold text-foreground w-20 border-r border-border/30">תשלום</th>
+                    <th className="text-right p-4 font-display font-semibold text-foreground w-20 border-r border-border/30">הושלם</th>
+                    <th className="text-right p-4 font-display font-semibold text-foreground w-24">פעולות</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -338,11 +338,11 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                           value={task.workStatus}
                           onValueChange={(value) => handleFieldUpdate(task.id, 'workStatus', value)}
                         >
-                          <SelectTrigger className="w-full h-8">
+                          <SelectTrigger className="w-full h-8 border-0 bg-transparent">
                             <SelectValue>
-                              <Badge className={cn(getStatusColor(task.workStatus), "rounded-md px-2 py-1 text-xs")}>
+                              <div className={cn(getStatusColor(task.workStatus), "rounded-lg px-3 py-1 text-xs w-full text-center")}>
                                 {WORK_STATUS_LABELS[task.workStatus]}
-                              </Badge>
+                              </div>
                             </SelectValue>
                           </SelectTrigger>
                           <SelectContent className="z-50 bg-popover border shadow-lg">
@@ -363,11 +363,11 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                           value={task.priority}
                           onValueChange={(value) => handleFieldUpdate(task.id, 'priority', value)}
                         >
-                          <SelectTrigger className="w-full h-8">
+                          <SelectTrigger className="w-full h-8 border-0 bg-transparent">
                             <SelectValue>
-                              <Badge className={cn(getPriorityColor(task.priority), "rounded-md px-2 py-1 text-xs")}>
+                              <div className={cn(getPriorityColor(task.priority), "rounded-lg px-3 py-1 text-xs w-full text-center")}>
                                 {PRIORITY_LABELS[task.priority]}
-                              </Badge>
+                              </div>
                             </SelectValue>
                           </SelectTrigger>
                           <SelectContent className="z-50 bg-popover border shadow-lg">
