@@ -194,11 +194,11 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                         <Input
                           value={task.projectName}
                           onChange={(e) => handleFieldUpdate(task.id, 'projectName', e.target.value)}
-                          className="text-xl font-bold h-12"
+                          className="text-2xl font-bold h-14 text-right"
                           dir="rtl"
                         />
                       ) : (
-                        <h2 className="text-xl font-bold text-primary break-words">{task.projectName}</h2>
+                        <h2 className="text-2xl font-bold text-primary break-words text-right">{task.projectName}</h2>
                       )}
                     </div>
 
@@ -208,13 +208,13 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                         <Textarea
                           value={task.projectDescription}
                           onChange={(e) => handleFieldUpdate(task.id, 'projectDescription', e.target.value)}
-                          rows={3}
-                          className="w-full resize-none text-base"
+                          rows={4}
+                          className="w-full resize-none text-base min-h-[100px] text-right"
                           placeholder="תיאור הפרויקט..."
                           dir="rtl"
                         />
                       ) : (
-                        <p className="text-base text-muted-foreground break-words whitespace-pre-wrap">
+                        <p className="text-base text-muted-foreground break-words whitespace-pre-wrap text-right leading-relaxed">
                           {task.projectDescription || 'אין תיאור'}
                         </p>
                       )}
@@ -430,49 +430,37 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                       {/* Work Status */}
                       <div>
                         <label className="text-xs text-muted-foreground mb-1 block">סטטוס עבודה</label>
-                        {editingId === task.id ? (
-                          <Select 
-                            value={task.workStatus} 
-                            onValueChange={(value) => handleFieldUpdate(task.id, 'workStatus', value)}
-                          >
-                            <SelectTrigger className="text-sm">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {Object.entries(WORK_STATUS_LABELS).map(([value, label]) => (
-                                <SelectItem key={value} value={value}>{label}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        ) : (
-                          <Badge className={cn("text-xs", getStatusColor(task.workStatus))}>
-                            {WORK_STATUS_LABELS[task.workStatus]}
-                          </Badge>
-                        )}
+                        <Select 
+                          value={task.workStatus} 
+                          onValueChange={(value) => handleFieldUpdate(task.id, 'workStatus', value)}
+                        >
+                          <SelectTrigger className="text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Object.entries(WORK_STATUS_LABELS).map(([value, label]) => (
+                              <SelectItem key={value} value={value}>{label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
 
                       {/* Priority */}
                       <div>
                         <label className="text-xs text-muted-foreground mb-1 block">עדיפות</label>
-                        {editingId === task.id ? (
-                          <Select 
-                            value={task.priority} 
-                            onValueChange={(value) => handleFieldUpdate(task.id, 'priority', value)}
-                          >
-                            <SelectTrigger className="text-sm">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
-                                <SelectItem key={value} value={value}>{label}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        ) : (
-                          <Badge className={cn("text-xs", getPriorityColor(task.priority))}>
-                            {PRIORITY_LABELS[task.priority]}
-                          </Badge>
-                        )}
+                        <Select 
+                          value={task.priority} 
+                          onValueChange={(value) => handleFieldUpdate(task.id, 'priority', value)}
+                        >
+                          <SelectTrigger className="text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
+                              <SelectItem key={value} value={value}>{label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
                   </div>
