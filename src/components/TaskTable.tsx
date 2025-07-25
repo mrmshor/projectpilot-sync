@@ -202,8 +202,8 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                         מחיר <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-display font-semibold text-primary text-sm w-20 border-r border-border/30">תשלום</th>
-                    <th className="text-right p-4 font-display font-semibold text-primary text-sm w-20 border-r border-border/30">הושלם</th>
+                    <th className="text-center p-4 font-display font-semibold text-primary text-sm w-28 border-r border-border/30">תשלום</th>
+                    <th className="text-center p-4 font-display font-semibold text-primary text-sm w-28 border-r border-border/30">הושלם</th>
                     <th className="text-right p-4 font-display font-semibold text-primary text-sm w-24">פעולות</th>
                   </tr>
                 </thead>
@@ -469,31 +469,31 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                         )}
                       </td>
 
-                      {/* Payment Status */}
-                      <td className="p-3 w-20">
-                        <div className="flex items-center gap-1">
-                          <Checkbox
-                            checked={task.isPaid}
-                            onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isPaid', checked)}
-                          />
-                           <span className={cn("text-xs font-medium whitespace-nowrap", task.isPaid ? "text-green-600" : "text-red-600")}>
-                             {task.isPaid ? 'שולם' : 'לא שולם'}
-                           </span>
-                        </div>
-                      </td>
+                       {/* Payment Status */}
+                       <td className="p-3 w-28">
+                         <div className="flex items-center justify-center gap-2">
+                           <Checkbox
+                             checked={task.isPaid}
+                             onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isPaid', checked)}
+                           />
+                            <span className={cn("text-xs font-medium text-center", task.isPaid ? "text-green-600" : "text-red-600")}>
+                              {task.isPaid ? 'שולם' : 'לא שולם'}
+                            </span>
+                         </div>
+                       </td>
 
-                      {/* Completion Status */}
-                      <td className="p-3 w-20">
-                        <div className="flex items-center gap-1">
-                          <Checkbox
-                            checked={task.isCompleted}
-                            onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isCompleted', checked)}
-                          />
-                           <span className={cn("text-xs font-medium whitespace-nowrap", task.isCompleted ? "text-green-600" : "text-orange-600")}>
-                             {task.isCompleted ? 'הושלם' : 'לא הושלם'}
-                           </span>
-                        </div>
-                      </td>
+                       {/* Completion Status */}
+                       <td className="p-3 w-28">
+                         <div className="flex items-center justify-center gap-2">
+                           <Checkbox
+                             checked={task.isCompleted}
+                             onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isCompleted', checked)}
+                           />
+                            <span className={cn("text-xs font-medium text-center", task.isCompleted ? "text-green-600" : "text-orange-600")}>
+                              {task.isCompleted ? 'הושלם' : 'לא הושלם'}
+                            </span>
+                         </div>
+                       </td>
 
                       {/* Actions */}
                       <td className="p-3 w-24">
