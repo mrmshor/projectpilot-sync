@@ -92,13 +92,19 @@ export const TaskListDialog = ({ tasks = [], onUpdateTasks, projectName }: TaskL
           </div>
 
           {/* Task list */}
-          <div className="space-y-2 max-h-80 overflow-hidden">{/* הסרתי את הסליידר לגמרי */}
+          <div 
+            className="space-y-2 max-h-80 overflow-y-auto scrollbar-hide"
+            style={{
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none'
+            }}
+          >
             {tasks.length === 0 ? (
               <div className="text-center text-muted-foreground py-4 text-sm">
                 אין משימות עדיין
               </div>
             ) : (
-              tasks.map((task, index) => (
+              [...tasks].reverse().map((task, index) => (
                 <div
                   key={task.id}
                   className={cn(
