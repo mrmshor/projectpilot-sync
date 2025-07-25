@@ -80,19 +80,19 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
 
   const getPriorityColor = (priority: Priority) => {
     switch (priority) {
-      case 'high': return 'bg-red-500/10 text-red-700 dark:bg-red-500/20 dark:text-red-300 border border-red-500/20';
-      case 'medium': return 'bg-yellow-500/10 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300 border border-yellow-500/20';
-      case 'low': return 'bg-green-500/10 text-green-700 dark:bg-green-500/20 dark:text-green-300 border border-green-500/20';
+      case 'high': return 'bg-destructive/10 text-destructive border border-destructive/20 shadow-soft';
+      case 'medium': return 'bg-warning/10 text-warning border border-warning/20 shadow-soft';
+      case 'low': return 'bg-success/10 text-success border border-success/20 shadow-soft';
     }
   };
 
   const getStatusColor = (status: WorkStatus) => {
     switch (status) {
-      case 'completed': return 'bg-green-500/10 text-green-700 dark:bg-green-500/20 dark:text-green-300 border border-green-500/20';
-      case 'in_progress': return 'bg-blue-500/10 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 border border-blue-500/20';
-      case 'review': return 'bg-purple-500/10 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300 border border-purple-500/20';
-      case 'on_hold': return 'bg-orange-500/10 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300 border border-orange-500/20';
-      case 'not_started': return 'bg-gray-500/10 text-gray-700 dark:bg-gray-500/20 dark:text-gray-300 border border-gray-500/20';
+      case 'completed': return 'bg-success/10 text-success border border-success/20 shadow-soft';
+      case 'in_progress': return 'bg-primary/10 text-primary border border-primary/20 shadow-soft';
+      case 'review': return 'bg-info/10 text-info border border-info/20 shadow-soft';
+      case 'on_hold': return 'bg-warning/10 text-warning border border-warning/20 shadow-soft';
+      case 'not_started': return 'bg-muted-foreground/10 text-muted-foreground border border-muted-foreground/20 shadow-soft';
     }
   };
 
@@ -170,12 +170,11 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
 
       {/* Desktop Table View */}
       <div className="hidden lg:block" dir="rtl">
-        <Card>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-full">
-                <thead className="bg-muted/50">
-                  <tr>
+        <div className="mac-card overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-full">
+              <thead className="bg-gradient-muted border-b border-border/50">
+                <tr>
                     <th className="text-right p-3 font-medium w-32">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('projectName')}>
                         שם הפרויקט <ArrowUpDown className="h-4 w-4 mr-1" />
@@ -210,7 +209,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                 </thead>
                 <tbody>
                   {filteredTasks.map((task) => (
-                    <tr key={task.id} className="border-t hover:bg-muted/25">
+                    <tr key={task.id} className="border-t border-border/30 hover:bg-muted/30 transition-colors duration-200">
                       {/* Project Name */}
                       <td className="p-3 w-32">
                         {editingId === task.id ? (
@@ -491,38 +490,36 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                 </tbody>
               </table>
             </div>
-          </CardContent>
-        </Card>
+        </div>
       </div>
 
       {/* Mobile Card View */}
-      <div className="lg:hidden space-y-4">
+      <div className="lg:hidden space-y-4" dir="rtl">
         {filteredTasks.map((task) => (
-          <Card key={task.id}>
-            <CardHeader className="pb-3">
-              <div className="flex justify-between items-start">
-                <CardTitle className="text-lg">{task.projectName}</CardTitle>
-                <div className="flex gap-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleEdit(task)}
-                    className="p-1 h-auto"
-                  >
-                    <Edit3 className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onDeleteTask(task.id)}
-                    className="p-1 h-auto text-red-600 hover:text-red-700"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
+          <div key={task.id} className="mac-card hover-lift p-4">
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="font-display text-lg font-semibold">{task.projectName}</h3>
+              <div className="flex gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleEdit(task)}
+                  className="p-1 h-auto"
+                >
+                  <Edit3 className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onDeleteTask(task.id)}
+                  className="p-1 h-auto text-destructive hover:text-destructive/80"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
+            </div>
+            
+            <div className="space-y-3">
               <p className="text-sm text-muted-foreground">{task.projectDescription}</p>
               
               <div className="flex justify-between items-center">
@@ -580,7 +577,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                       checked={task.isPaid}
                       onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isPaid', checked)}
                     />
-                    <span className={cn("text-xs", task.isPaid ? "text-green-600" : "text-red-600")}>
+                    <span className={cn("text-xs", task.isPaid ? "text-success" : "text-destructive")}>
                       {task.isPaid ? 'שולם' : 'לא שולם'}
                     </span>
                   </div>
@@ -589,25 +586,23 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                       checked={task.isCompleted}
                       onCheckedChange={(checked) => handleFieldUpdate(task.id, 'isCompleted', checked)}
                     />
-                    <span className={cn("text-xs", task.isCompleted ? "text-green-600" : "text-orange-600")}>
+                    <span className={cn("text-xs", task.isCompleted ? "text-success" : "text-warning")}>
                       {task.isCompleted ? 'הושלם' : 'לא הושלם'}
                     </span>
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         ))}
       </div>
 
       {filteredTasks.length === 0 && (
-        <Card>
-          <CardContent className="text-center py-12">
-            <p className="text-muted-foreground">
-              {searchTerm ? 'אין משימות המתאימות לחיפוש.' : 'אין משימות עדיין. צור את הפרויקט הראשון שלך!'}
-            </p>
-          </CardContent>
-        </Card>
+        <div className="mac-card text-center py-12">
+          <p className="text-muted-foreground">
+            {searchTerm ? 'אין משימות המתאימות לחיפוש.' : 'אין משימות עדיין. צור את הפרויקט הראשון שלך!'}
+          </p>
+        </div>
       )}
     </div>
   );

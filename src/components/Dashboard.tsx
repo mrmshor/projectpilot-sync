@@ -43,88 +43,88 @@ export const Dashboard = ({ tasks, stats }: DashboardProps) => {
   return (
     <div className="space-y-6" dir="rtl">
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">סך הכל פרויקטים</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.total}</div>
-            <p className="text-xs text-muted-foreground">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="mac-card hover-lift p-6">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-display font-medium text-muted-foreground">סך הכל פרויקטים</h3>
+            <BarChart3 className="h-5 w-5 text-primary" />
+          </div>
+          <div className="space-y-1">
+            <div className="text-3xl font-display font-semibold text-foreground">{stats.total}</div>
+            <p className="text-sm text-muted-foreground">
               {stats.completed} הושלמו
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">אחוז השלמה</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.completionRate}%</div>
-            <p className="text-xs text-muted-foreground">
+        <div className="mac-card hover-lift p-6">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-display font-medium text-muted-foreground">אחוז השלמה</h3>
+            <CheckCircle className="h-5 w-5 text-success" />
+          </div>
+          <div className="space-y-1">
+            <div className="text-3xl font-display font-semibold text-foreground">{stats.completionRate}%</div>
+            <p className="text-sm text-muted-foreground">
               {stats.inProgress} בתהליך
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">סך הכנסות</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+        <div className="mac-card hover-lift p-6">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-display font-medium text-muted-foreground">סך הכנסות</h3>
+            <DollarSign className="h-5 w-5 text-primary" />
+          </div>
+          <div className="space-y-1">
+            <div className="text-3xl font-display font-semibold text-foreground">
               ₪{stats.totalRevenue.toLocaleString()}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               {stats.paymentRate}% אחוז תשלום
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">הכנסות ממתינות</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+        <div className="mac-card hover-lift p-6">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="text-sm font-display font-medium text-muted-foreground">הכנסות ממתינות</h3>
+            <Clock className="h-5 w-5 text-warning" />
+          </div>
+          <div className="space-y-1">
+            <div className="text-3xl font-display font-semibold text-foreground">
               ₪{stats.pendingRevenue.toLocaleString()}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               {stats.unpaid} פרויקטים לא שולמו
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Quick Insights */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Activity */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
+        <div className="lg:col-span-2 mac-card p-6">
+          <div className="mb-6">
+            <h2 className="font-display text-lg font-semibold flex items-center gap-3">
+              <Calendar className="h-5 w-5 text-primary" />
               פעילות אחרונה
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h2>
+          </div>
+          <div>
             <div className="space-y-3">
               {recentTasks.length > 0 ? (
                 recentTasks.map((task) => (
-                  <div key={task.id} className="flex items-center justify-between p-3 bg-muted/25 rounded-lg">
+                  <div key={task.id} className="flex items-center justify-between p-4 bg-gradient-muted rounded-xl border border-border/30 hover-lift">
                     <div>
-                      <p className="font-medium">{task.projectName}</p>
-                      <p className="text-sm text-muted-foreground">{task.clientName}</p>
+                      <p className="font-display font-medium text-foreground">{task.projectName}</p>
+                      <p className="text-sm text-muted-foreground font-body">{task.clientName}</p>
                     </div>
-                    <div className="flex flex-col items-end gap-1">
-                      <Badge variant={task.isCompleted ? 'default' : 'secondary'}>
+                    <div className="flex flex-col items-end gap-2">
+                      <Badge variant={task.isCompleted ? 'default' : 'secondary'} className="shadow-soft">
                         {task.isCompleted ? 'הושלם' : 'בתהליך'}
                       </Badge>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs text-muted-foreground font-mono">
                         {new Date(task.updatedAt).toLocaleDateString('he-IL')}
                       </span>
                     </div>
@@ -136,20 +136,20 @@ export const Dashboard = ({ tasks, stats }: DashboardProps) => {
                 </p>
               )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Alerts & Notifications */}
         <div className="space-y-4">
           {/* Urgent Tasks */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-red-600">
+          <div className="mac-card p-6">
+            <div className="mb-4">
+              <h3 className="font-display text-base font-semibold flex items-center gap-2 text-destructive">
                 <AlertCircle className="h-5 w-5" />
                 משימות דחופות
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
+            </div>
+            <div>
               <div className="space-y-2">
                 {urgentTasks.length > 0 ? (
                   urgentTasks.slice(0, 3).map((task) => (
@@ -167,18 +167,18 @@ export const Dashboard = ({ tasks, stats }: DashboardProps) => {
                   </p>
                 )}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Payment Pending */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-orange-600">
+          <div className="mac-card p-6">
+            <div className="mb-4">
+              <h3 className="font-display text-base font-semibold flex items-center gap-2 text-warning">
                 <DollarSign className="h-5 w-5" />
                 תשלומים ממתינים
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
+            </div>
+            <div>
               <div className="space-y-2">
                 {overdueTasks.length > 0 ? (
                   overdueTasks.slice(0, 3).map((task) => (
@@ -198,18 +198,18 @@ export const Dashboard = ({ tasks, stats }: DashboardProps) => {
                   </p>
                 )}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Quick Stats */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+          <div className="mac-card p-6">
+            <div className="mb-4">
+              <h3 className="font-display text-base font-semibold flex items-center gap-2 text-primary">
                 <TrendingUp className="h-5 w-5" />
                 סטטיסטיקות מהירות
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
+            </div>
+            <div>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span>פרויקטים פעילים:</span>
@@ -228,8 +228,8 @@ export const Dashboard = ({ tasks, stats }: DashboardProps) => {
                   </span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>
