@@ -80,21 +80,29 @@ export const TaskListDialog = ({ tasks = [], onUpdateTasks, projectName }: TaskL
           <div className="font-medium text-sm text-accent-foreground">משימות - {projectName}</div>
           
           {/* Add new task */}
-          <div className="flex gap-2">
-            <Input
-              placeholder="הוסף משימה חדשה..."
-              value={newTaskText}
-              onChange={(e) => setNewTaskText(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && addTask()}
-              className="flex-1 h-8 text-sm"
-            />
-            <Button onClick={addTask} size="sm" className="h-8 w-8 p-0">
-              <Plus className="h-3 w-3" />
-            </Button>
+          <div className="bg-gradient-to-r from-accent/20 to-primary/20 p-4 rounded-xl border-2 border-accent/40 shadow-lg">
+            <div className="flex gap-3">
+              <Input
+                placeholder="הוסף משימה חדשה..."
+                value={newTaskText}
+                onChange={(e) => setNewTaskText(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && addTask()}
+                className="flex-1 h-12 text-base bg-background/80 border-2 border-accent/30 focus:border-accent focus:ring-2 focus:ring-accent/20 rounded-lg shadow-sm font-medium placeholder:text-muted-foreground/70"
+                dir="rtl"
+              />
+              <Button 
+                onClick={addTask} 
+                size="lg" 
+                className="shrink-0 h-12 px-6 bg-accent hover:bg-accent/80 text-accent-foreground shadow-md hover:shadow-lg transition-all duration-200 rounded-lg font-bold"
+              >
+                <Plus className="h-5 w-5 ml-2" />
+                הוסף
+              </Button>
+            </div>
           </div>
 
           {/* Task list */}
-          <div className="space-y-2 max-h-48 overflow-y-auto">
+          <div className="space-y-2 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/30 scrollbar-track-transparent">{/* הוספתי max-h-80 במקום max-h-48 ושיפרתי את הסליידר */}
             {tasks.length === 0 ? (
               <div className="text-center text-muted-foreground py-4 text-sm">
                 אין משימות עדיין
