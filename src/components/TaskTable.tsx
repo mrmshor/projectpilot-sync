@@ -188,7 +188,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                       </Button>
                     </th>
                     <th className="text-right p-4 font-display font-semibold text-primary text-sm w-36 border-r border-border/30">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('workStatus')} className="font-display text-sm text-primary hover:text-primary/80">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort('workStatus')} className="font-display text-sm text-primary hover:text-primary/80 w-full justify-center">
                         סטטוס <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
@@ -293,9 +293,15 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                               className="text-xs"
                             />
                             <Input
-                              placeholder="וואטסאפ"
+                              placeholder="וואטסאפ 1"
                               value={task.clientWhatsapp || ''}
                               onChange={(e) => handleFieldUpdate(task.id, 'clientWhatsapp', e.target.value)}
+                              className="text-xs"
+                            />
+                            <Input
+                              placeholder="וואטסאפ 2"
+                              value={task.clientWhatsapp2 || ''}
+                              onChange={(e) => handleFieldUpdate(task.id, 'clientWhatsapp2', e.target.value)}
                               className="text-xs"
                             />
                             <Input
@@ -337,9 +343,20 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                                   size="sm"
                                   onClick={() => sendWhatsApp(task.clientWhatsapp)}
                                   className="p-1 h-auto"
-                                  title="וואטסאפ"
+                                  title="וואטסאפ 1"
                                 >
                                   <MessageCircle className="h-3 w-3 text-green-600" />
+                                </Button>
+                              )}
+                              {task.clientWhatsapp2 && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => sendWhatsApp(task.clientWhatsapp2)}
+                                  className="p-1 h-auto"
+                                  title="וואטסאפ 2"
+                                >
+                                  <MessageCircle className="h-3 w-3 text-green-500" />
                                 </Button>
                               )}
                               {task.clientPhone && (

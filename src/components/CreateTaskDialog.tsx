@@ -23,6 +23,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
     clientPhone: '',
     clientPhone2: '',
     clientWhatsapp: '',
+    clientWhatsapp2: '',
     clientEmail: '',
     workStatus: 'not_started' as WorkStatus,
     priority: 'medium' as Priority,
@@ -62,6 +63,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
         clientPhone: formData.clientPhone || undefined,
         clientPhone2: formData.clientPhone2 || undefined,
         clientWhatsapp: formData.clientWhatsapp || undefined,
+        clientWhatsapp2: formData.clientWhatsapp2 || undefined,
         clientEmail: formData.clientEmail || undefined
       });
       
@@ -76,6 +78,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
         clientPhone: '',
         clientPhone2: '',
         clientWhatsapp: '',
+        clientWhatsapp2: '',
         clientEmail: '',
         workStatus: 'not_started',
         priority: 'medium',
@@ -209,12 +212,24 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
               </div>
 
               <div>
-                <Label htmlFor="clientWhatsapp">וואטסאפ (אופציונלי)</Label>
+                <Label htmlFor="clientWhatsapp">וואטסאפ 1 (אופציונלי)</Label>
                 <Input
                   id="clientWhatsapp"
                   type="tel"
                   value={formData.clientWhatsapp}
                   onChange={(e) => updateField('clientWhatsapp', e.target.value)}
+                  placeholder="+972501234567"
+                  dir="rtl"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="clientWhatsapp2">וואטסאפ 2 (אופציונלי)</Label>
+                <Input
+                  id="clientWhatsapp2"
+                  type="tel"
+                  value={formData.clientWhatsapp2}
+                  onChange={(e) => updateField('clientWhatsapp2', e.target.value)}
                   placeholder="+972501234567"
                   dir="rtl"
                 />

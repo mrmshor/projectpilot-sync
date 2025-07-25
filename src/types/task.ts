@@ -14,6 +14,7 @@ export interface Task {
   clientPhone?: string;
   clientPhone2?: string;
   clientWhatsapp?: string;
+  clientWhatsapp2?: string;
   clientEmail?: string;
   workStatus: WorkStatus;
   priority: Priority;
