@@ -89,7 +89,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
   const getStatusColor = (status: WorkStatus) => {
     switch (status) {
       case 'completed': return 'bg-success/5 text-success border-0 font-medium';
-      case 'in_progress': return 'bg-primary/5 text-primary border-0 font-medium';
+      case 'in_progress': return 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-0 font-medium';
       case 'review': return 'bg-info/5 text-info border-0 font-medium';
       case 'on_hold': return 'bg-warning/5 text-warning border-0 font-medium';
       case 'not_started': return 'bg-muted-foreground/5 text-muted-foreground border-0 font-medium';
@@ -158,12 +158,12 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
     <div className="space-y-4">
       {/* Search Bar */}
       <div className="relative">
-        <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+        <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-primary h-5 w-5" />
         <Input
           placeholder="חפש פרויקטים, לקוחות או תיאורים..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pr-10"
+          className="pr-12 pl-4 h-12 border-2 border-primary/20 focus:border-primary/40 bg-accent/5 shadow-soft"
           dir="rtl"
         />
       </div>
@@ -175,36 +175,36 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
               <table className="w-full min-w-full">
                 <thead className="bg-gradient-to-r from-muted via-muted/80 to-muted border-b-2 border-primary/10">
                   <tr>
-                    <th className="text-right p-4 font-display font-semibold text-foreground w-32 border-r border-border/30">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('projectName')} className="font-display">
+                    <th className="text-right p-4 font-display font-semibold text-foreground text-sm w-32 border-r border-border/30">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort('projectName')} className="font-display text-sm">
                         שם הפרויקט <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                     <th className="text-right p-4 font-display font-semibold text-foreground w-40 border-r border-border/30">תיאור</th>
-                     <th className="text-right p-4 font-display font-semibold text-foreground w-20 border-r border-border/30">משימות</th>
-                    <th className="text-right p-4 font-display font-semibold text-foreground w-28 border-r border-border/30">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('clientName')} className="font-display">
+                     <th className="text-right p-4 font-display font-semibold text-foreground text-sm w-40 border-r border-border/30">תיאור</th>
+                     <th className="text-right p-4 font-display font-semibold text-foreground text-sm w-20 border-r border-border/30 bg-accent/20">משימות</th>
+                    <th className="text-right p-4 font-display font-semibold text-foreground text-sm w-28 border-r border-border/30">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort('clientName')} className="font-display text-sm">
                         לקוח <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-display font-semibold text-foreground w-28 border-r border-border/30">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('workStatus')} className="font-display">
+                    <th className="text-right p-4 font-display font-semibold text-foreground text-sm w-28 border-r border-border/30">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort('workStatus')} className="font-display text-sm">
                         סטטוס <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-display font-semibold text-foreground w-24 border-r border-border/30">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('priority')} className="font-display">
+                    <th className="text-right p-4 font-display font-semibold text-foreground text-sm w-24 border-r border-border/30">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort('priority')} className="font-display text-sm">
                         עדיפות <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-display font-semibold text-foreground w-24 border-r border-border/30">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('price')} className="font-display">
+                    <th className="text-right p-4 font-display font-semibold text-foreground text-sm w-24 border-r border-border/30">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort('price')} className="font-display text-sm">
                         מחיר <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-display font-semibold text-foreground w-20 border-r border-border/30">תשלום</th>
-                    <th className="text-right p-4 font-display font-semibold text-foreground w-20 border-r border-border/30">הושלם</th>
-                    <th className="text-right p-4 font-display font-semibold text-foreground w-24">פעולות</th>
+                    <th className="text-right p-4 font-display font-semibold text-foreground text-sm w-20 border-r border-border/30">תשלום</th>
+                    <th className="text-right p-4 font-display font-semibold text-foreground text-sm w-20 border-r border-border/30">הושלם</th>
+                    <th className="text-right p-4 font-display font-semibold text-foreground text-sm w-24">פעולות</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -262,7 +262,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                        </td>
 
                        {/* Tasks */}
-                       <td className="p-3 w-20">
+                       <td className="p-3 w-20 bg-accent/10">
                          <TaskListDialog
                            tasks={task.tasks}
                            onUpdateTasks={(tasks) => handleFieldUpdate(task.id, 'tasks', tasks)}
@@ -271,7 +271,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                        </td>
 
                        {/* Client */}
-                      <td className="p-3 w-28">
+                       <td className="p-3 w-28">
                         {editingId === task.id ? (
                           <div className="space-y-1">
                             <Input
@@ -281,9 +281,21 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                               className="text-xs"
                             />
                             <Input
-                              placeholder="טלפון"
+                              placeholder="טלפון 1"
                               value={task.clientPhone || ''}
                               onChange={(e) => handleFieldUpdate(task.id, 'clientPhone', e.target.value)}
+                              className="text-xs"
+                            />
+                            <Input
+                              placeholder="טלפון 2"
+                              value={task.clientPhone2 || ''}
+                              onChange={(e) => handleFieldUpdate(task.id, 'clientPhone2', e.target.value)}
+                              className="text-xs"
+                            />
+                            <Input
+                              placeholder="וואטסאפ"
+                              value={task.clientWhatsapp || ''}
+                              onChange={(e) => handleFieldUpdate(task.id, 'clientWhatsapp', e.target.value)}
                               className="text-xs"
                             />
                             <Input
@@ -296,15 +308,38 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                         ) : (
                           <div className="space-y-1">
                             <div className="font-medium text-xs whitespace-nowrap overflow-hidden text-ellipsis" title={task.clientName}>{task.clientName}</div>
-                            <div className="flex gap-1">
+                            <div className="flex flex-wrap gap-1">
                               {task.clientPhone && (
                                 <Button
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => makePhoneCall(task.clientPhone)}
                                   className="p-1 h-auto"
+                                  title="טלפון 1"
                                 >
                                   <Phone className="h-3 w-3" />
+                                </Button>
+                              )}
+                              {task.clientPhone2 && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => makePhoneCall(task.clientPhone2)}
+                                  className="p-1 h-auto"
+                                  title="טלפון 2"
+                                >
+                                  <Phone className="h-3 w-3 text-blue-600" />
+                                </Button>
+                              )}
+                              {task.clientWhatsapp && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => sendWhatsApp(task.clientWhatsapp)}
+                                  className="p-1 h-auto"
+                                  title="וואטסאפ"
+                                >
+                                  <MessageCircle className="h-3 w-3 text-green-600" />
                                 </Button>
                               )}
                               {task.clientPhone && (
@@ -313,6 +348,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                                   size="sm"
                                   onClick={() => sendWhatsApp(task.clientPhone)}
                                   className="p-1 h-auto"
+                                  title="וואטסאפ טלפון 1"
                                 >
                                   <MessageCircle className="h-3 w-3" />
                                 </Button>
@@ -323,6 +359,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                                   size="sm"
                                   onClick={() => sendEmail(task.clientEmail)}
                                   className="p-1 h-auto"
+                                  title="אימייל"
                                 >
                                   <Mail className="h-3 w-3" />
                                 </Button>
