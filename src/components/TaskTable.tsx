@@ -392,19 +392,19 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                           value={task.workStatus}
                           onValueChange={(value) => handleFieldUpdate(task.id, 'workStatus', value)}
                         >
-                          <SelectTrigger className={cn("w-full h-8 border-0 min-w-32", getStatusColor(task.workStatus))}>
+                          <SelectTrigger className={cn("w-full h-8 border-0 min-w-32 flex items-center justify-center", getStatusColor(task.workStatus))}>
                             <SelectValue>
-                              <div className="text-xs font-bold text-center whitespace-nowrap w-full">
+                              <span className="text-xs font-bold text-center whitespace-nowrap w-full block">
                                 {WORK_STATUS_LABELS[task.workStatus]}
-                              </div>
+                              </span>
                             </SelectValue>
                           </SelectTrigger>
                           <SelectContent className="z-50 bg-background border shadow-lg min-w-32">
                             {Object.entries(WORK_STATUS_LABELS).map(([value, label]) => (
-                              <SelectItem key={value} value={value}>
-                                <div className={cn(getStatusColor(value as any), "rounded-md px-3 py-1 text-xs font-bold whitespace-nowrap w-full text-center")}>
+                              <SelectItem key={value} value={value} className="flex justify-center">
+                                <span className={cn(getStatusColor(value as any), "rounded-md px-4 py-2 text-xs font-bold whitespace-nowrap w-full text-center block")}>
                                   {label}
-                                </div>
+                                </span>
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -417,19 +417,19 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                           value={task.priority}
                           onValueChange={(value) => handleFieldUpdate(task.id, 'priority', value)}
                         >
-                          <SelectTrigger className={cn("w-full h-8 border-0", getPriorityColor(task.priority))}>
+                          <SelectTrigger className={cn("w-full h-8 border-0 flex items-center justify-center", getPriorityColor(task.priority))}>
                             <SelectValue>
-                              <div className="text-xs font-bold text-center w-full">
+                              <span className="text-xs font-bold text-center w-full block">
                                 {PRIORITY_LABELS[task.priority]}
-                              </div>
+                              </span>
                             </SelectValue>
                           </SelectTrigger>
                           <SelectContent className="z-50 bg-background border shadow-lg">
                             {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
-                              <SelectItem key={value} value={value}>
-                                <div className={cn(getPriorityColor(value as any), "rounded-md px-3 py-1 text-xs font-bold w-full text-center")}>
+                              <SelectItem key={value} value={value} className="flex justify-center">
+                                <span className={cn(getPriorityColor(value as any), "rounded-md px-4 py-2 text-xs font-bold w-full text-center block")}>
                                   {label}
-                                </div>
+                                </span>
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -774,19 +774,19 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                     value={task.workStatus}
                     onValueChange={(value) => handleFieldUpdate(task.id, 'workStatus', value)}
                   >
-                    <SelectTrigger className={cn("w-full h-10", getStatusColor(task.workStatus))}>
+                    <SelectTrigger className={cn("w-full h-10 flex items-center justify-center", getStatusColor(task.workStatus))}>
                       <SelectValue>
-                        <div className="text-xs font-bold text-center whitespace-nowrap w-full">
+                        <span className="text-sm font-bold text-center whitespace-nowrap w-full block">
                           {WORK_STATUS_LABELS[task.workStatus]}
-                        </div>
+                        </span>
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent className="z-50 bg-background border shadow-lg">
                       {Object.entries(WORK_STATUS_LABELS).map(([value, label]) => (
-                        <SelectItem key={value} value={value}>
-                          <div className={cn(getStatusColor(value as any), "rounded-md px-3 py-1 text-xs font-bold whitespace-nowrap w-full text-center")}>
+                        <SelectItem key={value} value={value} className="flex justify-center">
+                          <span className={cn(getStatusColor(value as any), "rounded-md px-4 py-2 text-sm font-bold whitespace-nowrap w-full text-center block")}>
                             {label}
-                          </div>
+                          </span>
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -799,19 +799,19 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                     value={task.priority}
                     onValueChange={(value) => handleFieldUpdate(task.id, 'priority', value)}
                   >
-                    <SelectTrigger className={cn("w-full h-10", getPriorityColor(task.priority))}>
+                    <SelectTrigger className={cn("w-full h-10 flex items-center justify-center", getPriorityColor(task.priority))}>
                       <SelectValue>
-                        <div className="text-xs font-bold text-center w-full">
+                        <span className="text-sm font-bold text-center w-full block">
                           {PRIORITY_LABELS[task.priority]}
-                        </div>
+                        </span>
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent className="z-50 bg-background border shadow-lg">
                       {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
-                        <SelectItem key={value} value={value}>
-                          <div className={cn(getPriorityColor(value as any), "rounded-md px-3 py-1 text-xs font-bold w-full text-center")}>
+                        <SelectItem key={value} value={value} className="flex justify-center">
+                          <span className={cn(getPriorityColor(value as any), "rounded-md px-4 py-2 text-sm font-bold w-full text-center block")}>
                             {label}
-                          </div>
+                          </span>
                         </SelectItem>
                       ))}
                     </SelectContent>
