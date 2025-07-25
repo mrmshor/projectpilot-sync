@@ -89,7 +89,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
   const getStatusColor = (status: WorkStatus) => {
     switch (status) {
       case 'completed': return 'bg-success/5 text-success border-0 font-medium';
-      case 'in_progress': return 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-0 font-medium';
+      case 'in_progress': return 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-0 font-medium';
       case 'review': return 'bg-info/5 text-info border-0 font-medium';
       case 'on_hold': return 'bg-warning/5 text-warning border-0 font-medium';
       case 'not_started': return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-0 font-medium';
