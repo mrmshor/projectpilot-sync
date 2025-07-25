@@ -158,12 +158,12 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
     <div className="space-y-4">
       {/* Search Bar */}
       <div className="relative">
-        <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-primary h-5 w-5" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary h-5 w-5" />
         <Input
           placeholder="חפש פרויקטים, לקוחות או תיאורים..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pr-12 pl-4 h-12 border-2 border-primary/20 focus:border-primary/40 bg-accent/5 shadow-soft"
+          className="pl-12 pr-4 h-12 border-2 border-primary/20 focus:border-primary/40 bg-accent/5 shadow-soft"
           dir="rtl"
         />
       </div>
@@ -181,7 +181,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                       </Button>
                     </th>
                      <th className="text-right p-4 font-display font-semibold text-primary text-sm w-40 border-r border-border/30">תיאור</th>
-                     <th className="text-right p-4 font-display font-semibold text-primary text-sm w-20 border-r border-border/30 bg-accent/30">משימות</th>
+                     <th className="text-right p-4 font-display font-semibold text-white text-sm w-20 border-r border-border/30 bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">משימות</th>
                     <th className="text-right p-4 font-display font-semibold text-primary text-sm w-28 border-r border-border/30">
                       <Button variant="ghost" size="sm" onClick={() => handleSort('clientName')} className="font-display text-sm text-primary hover:text-primary/80">
                         לקוח <ArrowUpDown className="h-4 w-4 mr-1" />
@@ -262,7 +262,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                        </td>
 
                        {/* Tasks */}
-                       <td className="p-3 w-20 bg-accent/30 border-l-2 border-accent">
+                       <td className="p-3 w-20 bg-gradient-to-br from-blue-500/20 to-purple-600/20 border-l-4 border-blue-500">
                          <TaskListDialog
                            tasks={task.tasks}
                            onUpdateTasks={(tasks) => handleFieldUpdate(task.id, 'tasks', tasks)}

@@ -57,14 +57,14 @@ export const TaskListDialog = ({ tasks = [], onUpdateTasks, projectName }: TaskL
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <div 
-          className="flex items-center gap-2 cursor-pointer hover:bg-accent/20 rounded-lg px-3 py-2 transition-colors bg-accent/15 border border-accent/40"
+          className="flex items-center gap-2 cursor-pointer hover:bg-gradient-to-br hover:from-blue-500/30 hover:to-purple-600/30 rounded-lg px-3 py-2 transition-all duration-300 bg-gradient-to-br from-blue-500/20 to-purple-600/20 border border-blue-500/50 shadow-md"
           onMouseEnter={() => setIsOpen(true)}
           onMouseLeave={() => setIsOpen(false)}
         >
-          <CheckSquare className="h-4 w-4 text-accent-foreground" />
-          <span className="text-sm font-medium text-accent-foreground">משימות</span>
+          <CheckSquare className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+          <span className="text-sm font-medium text-blue-700 dark:text-blue-300">משימות</span>
           {totalCount > 0 && (
-            <Badge variant="secondary" className="text-xs bg-accent/30 text-accent-foreground border-accent/50">
+            <Badge variant="secondary" className="text-xs bg-blue-500/30 text-blue-700 dark:text-blue-300 border-blue-500/50">
               {completedCount}/{totalCount}
             </Badge>
           )}
