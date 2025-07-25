@@ -144,7 +144,18 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
 
   const sendWhatsApp = (phone?: string) => {
     if (phone) {
-      window.open(`https://wa.me/${phone.replace(/\D/g, '')}`);
+      // Clean phone number - remove all non-digit characters and ensure proper format
+      const cleanNumber = phone.replace(/\D/g, '');
+      // If number starts with 0, replace with 972, if starts with +972, remove +
+      let formattedNumber = cleanNumber;
+      if (cleanNumber.startsWith('0')) {
+        formattedNumber = '972' + cleanNumber.substring(1);
+      } else if (cleanNumber.startsWith('972')) {
+        formattedNumber = cleanNumber;
+      }
+      const whatsappUrl = `https://wa.me/${formattedNumber}`;
+      console.log('Opening WhatsApp with URL:', whatsappUrl);
+      window.open(whatsappUrl, '_blank');
     }
   };
 
@@ -311,77 +322,83 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                               className="text-xs"
                             />
                           </div>
-                        ) : (
-                          <div className="space-y-1">
-                            <div className="font-medium text-xs whitespace-nowrap overflow-hidden text-ellipsis" title={task.clientName}>{task.clientName}</div>
-                            <div className="flex flex-wrap gap-1">
-                              {task.clientPhone && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => makePhoneCall(task.clientPhone)}
-                                  className="p-1 h-auto"
-                                  title="טלפון 1"
-                                >
-                                  <Phone className="h-3 w-3" />
-                                </Button>
-                              )}
-                              {task.clientPhone2 && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => makePhoneCall(task.clientPhone2)}
-                                  className="p-1 h-auto"
-                                  title="טלפון 2"
-                                >
-                                  <Phone className="h-3 w-3 text-blue-600" />
-                                </Button>
-                              )}
-                              {task.clientWhatsapp && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => sendWhatsApp(task.clientWhatsapp)}
-                                  className="p-1 h-auto"
-                                  title="וואטסאפ 1"
-                                >
-                                  <MessageCircle className="h-3 w-3 text-green-600" />
-                                </Button>
-                              )}
-                              {task.clientWhatsapp2 && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => sendWhatsApp(task.clientWhatsapp2)}
-                                  className="p-1 h-auto"
-                                  title="וואטסאפ 2"
-                                >
-                                  <MessageCircle className="h-3 w-3 text-green-500" />
-                                </Button>
-                              )}
-                              {task.clientPhone && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => sendWhatsApp(task.clientPhone)}
-                                  className="p-1 h-auto"
-                                  title="וואטסאפ טלפון 1"
-                                >
-                                  <MessageCircle className="h-3 w-3" />
-                                </Button>
-                              )}
-                              {task.clientEmail && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => sendEmail(task.clientEmail)}
-                                  className="p-1 h-auto"
-                                  title="אימייל"
-                                >
-                                  <Mail className="h-3 w-3" />
-                                </Button>
-                              )}
-                            </div>
+                         ) : (
+                           <div className="space-y-1">
+                             <div className="font-medium text-xs whitespace-nowrap overflow-hidden text-ellipsis" title={task.clientName}>{task.clientName}</div>
+                             
+                             {/* Display phone numbers and email */}
+                             {(task.clientPhone || task.clientEmail) && (
+                               <div className="text-xs space-y-0.5">
+                                 {task.clientPhone && (
+                                   <div className="text-muted-foreground truncate" title={task.clientPhone}>
+                                     📞 {task.clientPhone}
+                                   </div>
+                                 )}
+                                 {task.clientEmail && (
+                                   <div className="text-muted-foreground truncate" title={task.clientEmail}>
+                                     ✉️ {task.clientEmail}
+                                   </div>
+                                 )}
+                               </div>
+                             )}
+
+                             <div className="flex flex-wrap gap-1">
+                               {task.clientPhone && (
+                                 <Button
+                                   variant="ghost"
+                                   size="sm"
+                                   onClick={() => makePhoneCall(task.clientPhone)}
+                                   className="p-1 h-auto"
+                                   title={`טלפון 1: ${task.clientPhone}`}
+                                 >
+                                   <Phone className="h-3 w-3" />
+                                 </Button>
+                               )}
+                               {task.clientPhone2 && (
+                                 <Button
+                                   variant="ghost"
+                                   size="sm"
+                                   onClick={() => makePhoneCall(task.clientPhone2)}
+                                   className="p-1 h-auto"
+                                   title={`טלפון 2: ${task.clientPhone2}`}
+                                 >
+                                   <Phone className="h-3 w-3 text-blue-600" />
+                                 </Button>
+                               )}
+                               {task.clientWhatsapp && (
+                                 <Button
+                                   variant="ghost"
+                                   size="sm"
+                                   onClick={() => sendWhatsApp(task.clientWhatsapp)}
+                                   className="p-1 h-auto"
+                                   title={`וואטסאפ 1: ${task.clientWhatsapp}`}
+                                 >
+                                   <MessageCircle className="h-3 w-3 text-green-600" />
+                                 </Button>
+                               )}
+                               {task.clientWhatsapp2 && (
+                                 <Button
+                                   variant="ghost"
+                                   size="sm"
+                                   onClick={() => sendWhatsApp(task.clientWhatsapp2)}
+                                   className="p-1 h-auto"
+                                   title={`וואטסאפ 2: ${task.clientWhatsapp2}`}
+                                 >
+                                   <MessageCircle className="h-3 w-3 text-green-500" />
+                                 </Button>
+                               )}
+                                {task.clientEmail && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => sendEmail(task.clientEmail)}
+                                    className="p-1 h-auto"
+                                    title={`אימייל: ${task.clientEmail}`}
+                                  >
+                                    <Mail className="h-3 w-3 text-blue-500" />
+                                  </Button>
+                                )}
+                              </div>
                           </div>
                         )}
                       </td>
@@ -733,20 +750,9 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                             size="sm"
                             onClick={() => sendWhatsApp(task.clientWhatsapp2)}
                             className="p-1 h-auto"
-                            title="וואטסאפ 2"
+                            title={`וואטסאפ 2: ${task.clientWhatsapp2}`}
                           >
                             <MessageCircle className="h-3 w-3 text-green-500" />
-                          </Button>
-                        )}
-                        {task.clientPhone && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => sendWhatsApp(task.clientPhone)}
-                            className="p-1 h-auto"
-                            title="וואטסאפ טלפון 1"
-                          >
-                            <MessageCircle className="h-3 w-3" />
                           </Button>
                         )}
                         {task.clientEmail && (
@@ -755,9 +761,9 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                             size="sm"
                             onClick={() => sendEmail(task.clientEmail)}
                             className="p-1 h-auto"
-                            title="אימייל"
+                            title={`אימייל: ${task.clientEmail}`}
                           >
-                            <Mail className="h-3 w-3" />
+                            <Mail className="h-3 w-3 text-blue-500" />
                           </Button>
                         )}
                       </div>
