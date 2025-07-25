@@ -100,29 +100,36 @@ export const TaskListDialog = ({ tasks = [], onUpdateTasks, projectName }: TaskL
                 אין משימות עדיין
               </div>
             ) : (
-              tasks.map((task) => (
+              tasks.map((task, index) => (
                 <div
                   key={task.id}
-                  className="flex items-center gap-2 p-2 rounded border bg-background/50"
+                  className={cn(
+                    "flex items-center gap-2 p-3 rounded-lg border transition-all duration-200 hover:shadow-md animate-fade-in",
+                    index % 2 === 0 
+                      ? "bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200/50 dark:border-blue-700/50" 
+                      : "bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 border-purple-200/50 dark:border-purple-700/50"
+                  )}
                 >
                   <Checkbox
                     checked={task.isCompleted}
                     onCheckedChange={() => toggleTask(task.id)}
-                    className="h-3 w-3"
+                    className="h-4 w-4 border-2 data-[state=checked]:bg-accent data-[state=checked]:border-accent"
                   />
                   <Input
                     value={task.text}
                     onChange={(e) => updateTaskText(task.id, e.target.value)}
                     className={cn(
-                      "flex-1 border-none bg-transparent h-6 text-sm p-1",
-                      task.isCompleted && "line-through text-muted-foreground"
+                      "flex-1 border-none bg-transparent h-7 text-sm p-2 font-medium rounded focus:ring-2 focus:ring-accent/50",
+                      task.isCompleted 
+                        ? "line-through text-muted-foreground" 
+                        : "text-foreground"
                     )}
                   />
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => deleteTask(task.id)}
-                    className="p-1 h-6 w-6 text-destructive hover:text-destructive"
+                    className="p-1 h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10 rounded-full transition-all duration-200 hover-scale"
                   >
                     <Trash2 className="h-3 w-3" />
                   </Button>
