@@ -429,7 +429,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                     <div className="space-y-3">
                        {/* Work Status */}
                        <div>
-                         <label className="text-xs text-muted-foreground mb-1 block">סטטוס עבודה</label>
+                         <label className="text-sm font-semibold text-foreground mb-2 block">סטטוס עבודה</label>
                          <Select 
                            value={task.workStatus} 
                            onValueChange={(value) => handleFieldUpdate(task.id, 'workStatus', value)}
@@ -437,9 +437,15 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                            <SelectTrigger className={cn("text-sm border-0", getStatusColor(task.workStatus))}>
                              <SelectValue />
                            </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-background border border-border shadow-lg z-50">
                             {Object.entries(WORK_STATUS_LABELS).map(([value, label]) => (
-                              <SelectItem key={value} value={value}>{label}</SelectItem>
+                              <SelectItem 
+                                key={value} 
+                                value={value}
+                                className={cn("cursor-pointer hover:opacity-80", getStatusColor(value as WorkStatus))}
+                              >
+                                {label}
+                              </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
@@ -447,7 +453,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
 
                        {/* Priority */}
                        <div>
-                         <label className="text-xs text-muted-foreground mb-1 block">עדיפות</label>
+                         <label className="text-sm font-semibold text-foreground mb-2 block">עדיפות</label>
                          <Select 
                            value={task.priority} 
                            onValueChange={(value) => handleFieldUpdate(task.id, 'priority', value)}
@@ -455,9 +461,15 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                            <SelectTrigger className={cn("text-sm border-0", getPriorityColor(task.priority))}>
                              <SelectValue />
                            </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-background border border-border shadow-lg z-50">
                             {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
-                              <SelectItem key={value} value={value}>{label}</SelectItem>
+                              <SelectItem 
+                                key={value} 
+                                value={value}
+                                className={cn("cursor-pointer hover:opacity-80", getPriorityColor(value as Priority))}
+                              >
+                                {label}
+                              </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
