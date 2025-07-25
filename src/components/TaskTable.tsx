@@ -173,38 +173,38 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
         <div className="mac-card overflow-hidden">
           <div className="overflow-x-auto">
               <table className="w-full min-w-full">
-                <thead className="bg-gradient-to-r from-muted via-muted/80 to-muted border-b-2 border-primary/10">
+                <thead className="bg-gradient-to-r from-primary/10 via-primary/15 to-primary/10 border-b-2 border-primary/20">
                   <tr>
-                    <th className="text-right p-4 font-display font-semibold text-foreground text-sm w-32 border-r border-border/30">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('projectName')} className="font-display text-sm">
+                    <th className="text-right p-4 font-display font-semibold text-primary text-sm w-32 border-r border-border/30">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort('projectName')} className="font-display text-sm text-primary hover:text-primary/80">
                         שם הפרויקט <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                     <th className="text-right p-4 font-display font-semibold text-foreground text-sm w-40 border-r border-border/30">תיאור</th>
-                     <th className="text-right p-4 font-display font-semibold text-foreground text-sm w-20 border-r border-border/30 bg-accent/20">משימות</th>
-                    <th className="text-right p-4 font-display font-semibold text-foreground text-sm w-28 border-r border-border/30">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('clientName')} className="font-display text-sm">
+                     <th className="text-right p-4 font-display font-semibold text-primary text-sm w-40 border-r border-border/30">תיאור</th>
+                     <th className="text-right p-4 font-display font-semibold text-primary text-sm w-20 border-r border-border/30 bg-accent/30">משימות</th>
+                    <th className="text-right p-4 font-display font-semibold text-primary text-sm w-28 border-r border-border/30">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort('clientName')} className="font-display text-sm text-primary hover:text-primary/80">
                         לקוח <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-display font-semibold text-foreground text-sm w-28 border-r border-border/30">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('workStatus')} className="font-display text-sm">
+                    <th className="text-right p-4 font-display font-semibold text-primary text-sm w-28 border-r border-border/30">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort('workStatus')} className="font-display text-sm text-primary hover:text-primary/80">
                         סטטוס <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-display font-semibold text-foreground text-sm w-24 border-r border-border/30">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('priority')} className="font-display text-sm">
+                    <th className="text-right p-4 font-display font-semibold text-primary text-sm w-24 border-r border-border/30">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort('priority')} className="font-display text-sm text-primary hover:text-primary/80">
                         עדיפות <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-display font-semibold text-foreground text-sm w-24 border-r border-border/30">
-                      <Button variant="ghost" size="sm" onClick={() => handleSort('price')} className="font-display text-sm">
+                    <th className="text-right p-4 font-display font-semibold text-primary text-sm w-24 border-r border-border/30">
+                      <Button variant="ghost" size="sm" onClick={() => handleSort('price')} className="font-display text-sm text-primary hover:text-primary/80">
                         מחיר <ArrowUpDown className="h-4 w-4 mr-1" />
                       </Button>
                     </th>
-                    <th className="text-right p-4 font-display font-semibold text-foreground text-sm w-20 border-r border-border/30">תשלום</th>
-                    <th className="text-right p-4 font-display font-semibold text-foreground text-sm w-20 border-r border-border/30">הושלם</th>
-                    <th className="text-right p-4 font-display font-semibold text-foreground text-sm w-24">פעולות</th>
+                    <th className="text-right p-4 font-display font-semibold text-primary text-sm w-20 border-r border-border/30">תשלום</th>
+                    <th className="text-right p-4 font-display font-semibold text-primary text-sm w-20 border-r border-border/30">הושלם</th>
+                    <th className="text-right p-4 font-display font-semibold text-primary text-sm w-24">פעולות</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -262,7 +262,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                        </td>
 
                        {/* Tasks */}
-                       <td className="p-3 w-20 bg-accent/10">
+                       <td className="p-3 w-20 bg-accent/30 border-l-2 border-accent">
                          <TaskListDialog
                            tasks={task.tasks}
                            onUpdateTasks={(tasks) => handleFieldUpdate(task.id, 'tasks', tasks)}

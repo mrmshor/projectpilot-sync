@@ -57,27 +57,27 @@ export const TaskListDialog = ({ tasks = [], onUpdateTasks, projectName }: TaskL
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <div 
-          className="flex items-center gap-2 cursor-pointer hover:bg-accent/10 rounded px-2 py-1 transition-colors"
+          className="flex items-center gap-2 cursor-pointer hover:bg-accent/20 rounded-lg px-3 py-2 transition-colors bg-accent/15 border border-accent/40"
           onMouseEnter={() => setIsOpen(true)}
           onMouseLeave={() => setIsOpen(false)}
         >
-          <CheckSquare className="h-4 w-4" />
-          <span className="text-sm">משימות</span>
+          <CheckSquare className="h-4 w-4 text-accent-foreground" />
+          <span className="text-sm font-medium text-accent-foreground">משימות</span>
           {totalCount > 0 && (
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="secondary" className="text-xs bg-accent/30 text-accent-foreground border-accent/50">
               {completedCount}/{totalCount}
             </Badge>
           )}
         </div>
       </PopoverTrigger>
       <PopoverContent 
-        className="w-80 p-4 z-50 bg-popover border shadow-lg" 
+        className="w-80 p-4 z-50 bg-gradient-to-br from-accent/5 to-accent/15 border-accent/30 shadow-lg" 
         dir="rtl"
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}
       >
         <div className="space-y-4">
-          <div className="font-medium text-sm">משימות - {projectName}</div>
+          <div className="font-medium text-sm text-accent-foreground">משימות - {projectName}</div>
           
           {/* Add new task */}
           <div className="flex gap-2">
