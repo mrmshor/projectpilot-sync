@@ -92,7 +92,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
       case 'in_progress': return 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-0 font-medium';
       case 'review': return 'bg-info/5 text-info border-0 font-medium';
       case 'on_hold': return 'bg-warning/5 text-warning border-0 font-medium';
-      case 'not_started': return 'bg-muted-foreground/5 text-muted-foreground border-0 font-medium';
+      case 'not_started': return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-0 font-medium';
     }
   };
 
@@ -262,7 +262,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                        </td>
 
                        {/* Tasks */}
-                       <td className="p-3 w-20 bg-gradient-to-br from-blue-500/20 to-purple-600/20 border-l-4 border-blue-500">
+                       <td className="p-3 w-20 bg-gradient-to-br from-blue-500/20 to-purple-600/20 border-r border-border/30">
                          <TaskListDialog
                            tasks={task.tasks}
                            onUpdateTasks={(tasks) => handleFieldUpdate(task.id, 'tasks', tasks)}

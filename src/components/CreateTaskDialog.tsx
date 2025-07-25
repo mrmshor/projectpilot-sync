@@ -21,6 +21,8 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
     folderPath: '',
     clientName: '',
     clientPhone: '',
+    clientPhone2: '',
+    clientWhatsapp: '',
     clientEmail: '',
     workStatus: 'not_started' as WorkStatus,
     priority: 'medium' as Priority,
@@ -58,6 +60,8 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
         folderPath: formData.folderPath || undefined,
         tasks: [],
         clientPhone: formData.clientPhone || undefined,
+        clientPhone2: formData.clientPhone2 || undefined,
+        clientWhatsapp: formData.clientWhatsapp || undefined,
         clientEmail: formData.clientEmail || undefined
       });
       
@@ -70,6 +74,8 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
         folderPath: '',
         clientName: '',
         clientPhone: '',
+        clientPhone2: '',
+        clientWhatsapp: '',
         clientEmail: '',
         workStatus: 'not_started',
         priority: 'medium',
@@ -177,14 +183,38 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <div>
-                <Label htmlFor="clientPhone">טלפון (אופציונלי)</Label>
+                <Label htmlFor="clientPhone">טלפון 1 (אופציונלי)</Label>
                 <Input
                   id="clientPhone"
                   type="tel"
                   value={formData.clientPhone}
                   onChange={(e) => updateField('clientPhone', e.target.value)}
+                  placeholder="+972501234567"
+                  dir="rtl"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="clientPhone2">טלפון 2 (אופציונלי)</Label>
+                <Input
+                  id="clientPhone2"
+                  type="tel"
+                  value={formData.clientPhone2}
+                  onChange={(e) => updateField('clientPhone2', e.target.value)}
+                  placeholder="+972501234567"
+                  dir="rtl"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="clientWhatsapp">וואטסאפ (אופציונלי)</Label>
+                <Input
+                  id="clientWhatsapp"
+                  type="tel"
+                  value={formData.clientWhatsapp}
+                  onChange={(e) => updateField('clientWhatsapp', e.target.value)}
                   placeholder="+972501234567"
                   dir="rtl"
                 />
