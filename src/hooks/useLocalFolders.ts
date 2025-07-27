@@ -34,52 +34,27 @@ export const useLocalFolders = () => {
           return null;
         }
       } else {
-        // בדפדפן - בחירת תיקיה באמצעות סייר הקבצים
-        return new Promise((resolve) => {
-          const input = document.createElement('input');
-          input.type = 'file';
-          (input as any).webkitdirectory = true;
-          input.multiple = true;
-          
-          input.addEventListener('change', (event: any) => {
-            const files = event.target.files;
-            if (files && files.length > 0) {
-              const firstFile = files[0];
-              // קבלת הנתיב המלא של התיקיה
-              const fullPath = firstFile.path || firstFile.webkitRelativePath;
-              let folderPath;
-              
-              if (fullPath) {
-                // חילוץ נתיב התיקיה הראשית
-                const pathParts = fullPath.split('/');
-                pathParts.pop(); // הסרת שם הקובץ
-                folderPath = pathParts.join('/');
-                
-                // אם זה Windows, נוסיף את האות של הכונן
-                if (firstFile.path && firstFile.path.includes(':')) {
-                  folderPath = firstFile.path.split('/').slice(0, -1).join('/');
-                }
-              } else {
-                // fallback - רק שם התיקיה
-                const pathParts = firstFile.webkitRelativePath.split('/');
-                folderPath = pathParts[0];
-              }
-              
-              localStorage.setItem('selectedFolder', folderPath);
-              toast.success(`✅ נבחרה תיקייה: ${folderPath}`);
-              resolve(folderPath);
-            } else {
-              resolve(null);
+        // בדפדפן - שימוש ב-File System Access API בלבד (בלי העלאת קבצים)
+        if ('showDirectoryPicker' in window) {
+          try {
+            const dirHandle = await (window as any).showDirectoryPicker();
+            // קבלת הנתיב המלא של התיקיה
+            const folderPath = dirHandle.name;
+            
+            localStorage.setItem('selectedFolder', folderPath);
+            toast.success(`✅ נבחרה תיקייה: ${folderPath}`);
+            return folderPath;
+          } catch (error) {
+            if (error.name !== 'AbortError') {
+              console.error('Directory picker error:', error);
+              toast.error('❌ שגיאה בבחירת התיקיה');
             }
-          });
-          
-          input.addEventListener('cancel', () => {
-            resolve(null);
-          });
-          
-          // פתיחת סייר הקבצים לבחירת תיקיה
-          input.click();
-        });
+            return null;
+          }
+        } else {
+          toast.error('❌ הדפדפן לא תומך בבחירת תיקיות');
+          return null;
+        }
       }
     } catch (error) {
       console.error('Error selecting folder:', error);
