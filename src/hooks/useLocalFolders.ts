@@ -34,55 +34,52 @@ export const useLocalFolders = () => {
           return null;
         }
       } else {
-        // בדפדפן - בחירת תיקיה עם File System Access API או webkitdirectory
-        if ('showDirectoryPicker' in window) {
-          // דפדפן מודרני עם File System Access API
-          try {
-            const dirHandle = await (window as any).showDirectoryPicker();
-            const folderPath = dirHandle.name;
-            
-            localStorage.setItem('selectedFolder', folderPath);
-            toast.success(`✅ נבחרה תיקייה: ${folderPath}`);
-            return folderPath;
-          } catch (error) {
-            if (error.name !== 'AbortError') {
-              console.error('Directory picker error:', error);
-              toast.error('❌ שגיאה בבחירת התיקייה');
-            }
-            return null;
-          }
-        } else {
-          // Fallback - שימוש ב-webkitdirectory
-          return new Promise((resolve) => {
-            const input = document.createElement('input');
-            input.type = 'file';
-            (input as any).webkitdirectory = true;
-            input.multiple = true;
-            
-            input.addEventListener('change', (event: any) => {
-              const files = event.target.files;
-              if (files && files.length > 0) {
-                const firstFile = files[0];
-                const pathParts = firstFile.webkitRelativePath.split('/');
-                const folderName = pathParts[0];
+        // בדפדפן - בחירת תיקיה באמצעות סייר הקבצים
+        return new Promise((resolve) => {
+          const input = document.createElement('input');
+          input.type = 'file';
+          (input as any).webkitdirectory = true;
+          input.multiple = true;
+          
+          input.addEventListener('change', (event: any) => {
+            const files = event.target.files;
+            if (files && files.length > 0) {
+              const firstFile = files[0];
+              // קבלת הנתיב המלא של התיקיה
+              const fullPath = firstFile.path || firstFile.webkitRelativePath;
+              let folderPath;
+              
+              if (fullPath) {
+                // חילוץ נתיב התיקיה הראשית
+                const pathParts = fullPath.split('/');
+                pathParts.pop(); // הסרת שם הקובץ
+                folderPath = pathParts.join('/');
                 
-                // שמירת נתיב התיקיה
-                localStorage.setItem('selectedFolder', folderName);
-                toast.success(`✅ נבחרה תיקייה: ${folderName}`);
-                resolve(folderName);
+                // אם זה Windows, נוסיף את האות של הכונן
+                if (firstFile.path && firstFile.path.includes(':')) {
+                  folderPath = firstFile.path.split('/').slice(0, -1).join('/');
+                }
               } else {
-                resolve(null);
+                // fallback - רק שם התיקיה
+                const pathParts = firstFile.webkitRelativePath.split('/');
+                folderPath = pathParts[0];
               }
-            });
-            
-            input.addEventListener('cancel', () => {
+              
+              localStorage.setItem('selectedFolder', folderPath);
+              toast.success(`✅ נבחרה תיקייה: ${folderPath}`);
+              resolve(folderPath);
+            } else {
               resolve(null);
-            });
-            
-            // פתיחת דיאלוג בחירת תיקיות
-            input.click();
+            }
           });
-        }
+          
+          input.addEventListener('cancel', () => {
+            resolve(null);
+          });
+          
+          // פתיחת סייר הקבצים לבחירת תיקיה
+          input.click();
+        });
       }
     } catch (error) {
       console.error('Error selecting folder:', error);
