@@ -67,15 +67,15 @@ export function ProjectNavigationSidebar({ tasks, onProjectSelect }: ProjectNavi
   };
 
   return (
-    <Card className="w-64 h-[calc(100vh-8rem)] overflow-hidden mac-card">
-      <CardHeader className="pb-3 border-b border-border/20">
+    <Card className="w-64 h-[calc(100vh-2rem)] overflow-hidden mac-card sticky top-4">
+      <CardHeader className="pb-3 border-b border-border/20 sticky top-0 bg-background/95 backdrop-blur-sm z-10">
         <CardTitle className="text-lg font-display gradient-text flex items-center gap-2">
           <FolderOpen className="h-5 w-5" />
           פרויקטים
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-0 h-full">
-        <div className="overflow-y-auto h-full scrollbar-thin">
+      <CardContent className="p-0 h-[calc(100%-4rem)] relative">
+        <div className="overflow-y-auto h-full scrollbar-thin absolute inset-0">
           <div className="space-y-2 p-4">
             {tasks.map((task) => (
               <Button
