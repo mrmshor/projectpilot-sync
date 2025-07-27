@@ -98,6 +98,10 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
     const selectedPath = await selectFolder();
     if (selectedPath) {
       updateField('folderPath', selectedPath);
+      // אם זה קישור רשת, נוסיף גם ל-folderLink
+      if (selectedPath.startsWith('http')) {
+        updateField('folderLink', selectedPath);
+      }
     }
   };
 
