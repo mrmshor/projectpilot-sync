@@ -45,22 +45,17 @@ export const useLocalFolders = () => {
             const files = event.target.files;
             if (files && files.length > 0) {
               const firstFile = files[0];
-              // חילוץ נתיב התיקיה מהקובץ הראשון
+              // רק חילוץ נתיב התיקיה - בלי גישה לתוכן הקבצים
               const webkitPath = firstFile.webkitRelativePath;
               const folderName = webkitPath.split('/')[0];
               
-              // ניסיון לקבל נתיב מלא אם זמין
-              let fullPath = folderName;
-              if (firstFile.path) {
-                // אם יש נתיב מלא - נחלץ את תיקיית האב
-                const pathParts = firstFile.path.split('/');
-                pathParts.pop(); // הסרת שם הקובץ
-                fullPath = pathParts.join('/');
-              }
+              // שמירת רק הנתיב - לא הקבצים
+              localStorage.setItem('selectedFolder', folderName);
+              toast.success(`✅ נקשרה תיקייה: ${folderName}`);
+              resolve(folderName);
               
-              localStorage.setItem('selectedFolder', fullPath);
-              toast.success(`✅ נבחרה תיקייה: ${folderName}`);
-              resolve(fullPath);
+              // איפוס הקלט מיד כדי שלא יישארו קבצים
+              input.value = '';
             } else {
               resolve(null);
             }
