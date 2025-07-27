@@ -37,68 +37,89 @@ export const useLocalFolders = () => {
     }
   };
 
-  // פונקציה לניסיון פתיחה אוטומטית של תיקיה
+  // פונקציה לפתיחה מתקדמת עם קבצי עזר
+  const downloadHelperFiles = () => {
+    const isWindows = navigator.platform.toLowerCase().includes('win');
+    const helperFileName = isWindows ? 'folder-opener.bat' : 'folder-opener.sh';
+    
+    const link = document.createElement('a');
+    link.href = `/${helperFileName}`;
+    link.download = helperFileName;
+    link.click();
+    
+    if (isWindows) {
+      // גם הורדת קובץ registry
+      setTimeout(() => {
+        const regLink = document.createElement('a');
+        regLink.href = '/setup-folder-protocol.reg';
+        regLink.download = 'setup-folder-protocol.reg';
+        regLink.click();
+      }, 500);
+    }
+  };
+
+  // פונקציה לניסיון פתיחה אוטומטית משופרת
   const attemptAutoOpen = async (folderPath: string): Promise<boolean> => {
     const cleanPath = folderPath.trim();
     
-    // ניסיון 1: Shell protocol (Windows)
-    if (cleanPath.includes('\\') || cleanPath.match(/^[A-Z]:/)) {
-      try {
-        // Windows - ניסיון עם shell: protocol
-        window.location.href = `shell:${cleanPath}`;
-        return true;
-      } catch (e) {
-        try {
-          // Windows - ניסיון עם ms-appinstaller
-          window.open(`ms-windows-store://navigate/?path=${encodeURIComponent(cleanPath)}`);
-          return true;
-        } catch (e2) {
-          // Windows - ניסיון עם explorer
-          const explorerUrl = `shell:AppsFolder\\Microsoft.WindowsTerminal_8wekyb3d8bbwe!App ${cleanPath}`;
-          window.location.href = explorerUrl;
-          return true;
-        }
-      }
-    }
-    
-    // ניסיון 2: Mac protocols
-    if (cleanPath.startsWith('/') || cleanPath.startsWith('~')) {
-      try {
-        // Mac - ניסיון עם finder protocol
-        window.open(`finder:${cleanPath}`);
-        return true;
-      } catch (e) {
-        try {
-          // Mac - ניסיון עם file protocol מיוחד
-          const macPath = cleanPath.replace(/\s/g, '%20');
-          window.open(`file://${macPath}`);
-          return true;
-        } catch (e2) {
-          console.log('Mac protocols failed');
-        }
-      }
-    }
-    
-    // ניסיון 3: Universal file protocol
+    // ניסיון 1: Custom folder protocol (אם הותקן)
     try {
-      const fileUrl = cleanPath.startsWith('/') ? 
-        `file://${cleanPath}` : 
-        `file:///${cleanPath.replace(/\\/g, '/')}`;
-      
-      // יצירת link זמני לפתיחה
-      const link = document.createElement('a');
-      link.href = fileUrl;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      
-      // הוספה ללמחסור ופתיחה
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
+      window.location.href = `folder://${encodeURIComponent(cleanPath)}`;
+      await new Promise(resolve => setTimeout(resolve, 1000));
       return true;
     } catch (e) {
-      console.log('File protocol failed');
+      console.log('Custom folder protocol not available');
+    }
+    
+    // ניסיון 2: Native file manager protocols
+    const isWindows = cleanPath.includes('\\') || cleanPath.match(/^[A-Z]:/);
+    const isMac = cleanPath.startsWith('/');
+    
+    if (isWindows) {
+      try {
+        // Windows protocols
+        const winPath = cleanPath.replace(/\//g, '\\');
+        const protocols = [
+          `ms-appinstaller:?source=file:///${winPath}`,
+          `shell:${winPath}`,
+          `file:///${winPath}`
+        ];
+        
+        for (const protocol of protocols) {
+          try {
+            window.open(protocol, '_blank');
+            await new Promise(resolve => setTimeout(resolve, 500));
+          } catch (e) {
+            continue;
+          }
+        }
+        return true;
+      } catch (e) {
+        console.log('Windows protocols failed');
+      }
+    }
+    
+    if (isMac) {
+      try {
+        // Mac protocols
+        const protocols = [
+          `finder:${cleanPath}`,
+          `file://${cleanPath}`,
+          `shareddocuments://${cleanPath}`
+        ];
+        
+        for (const protocol of protocols) {
+          try {
+            window.open(protocol, '_blank');
+            await new Promise(resolve => setTimeout(resolve, 500));
+          } catch (e) {
+            continue;
+          }
+        }
+        return true;
+      } catch (e) {
+        console.log('Mac protocols failed');
+      }
     }
     
     return false;
@@ -250,7 +271,7 @@ export const useLocalFolders = () => {
             return;
           }
           
-          // אם הפתיחה האוטומטית נכשלה - fallback להעתקה ללוח
+          // אם הפתיחה האוטומטית נכשלה - הצע הורדת קבצי עזר
           try {
             copyToClipboard(folderPath);
             
@@ -258,24 +279,54 @@ export const useLocalFolders = () => {
             const isMac = folderPath.startsWith('/') || folderPath.startsWith('~');
             
             let instructions = '';
+            let helpOption = '';
+            
             if (isWindows) {
               instructions = `• לחץ Win+R, הדבק והקש Enter
 • או פתח File Explorer, הדבק בשורת הכתובת`;
+              helpOption = `
+
+🔧 פתרון מתקדם: הורד קבצי עזר
+לחץ "הורד קבצי עזר" למטה לקבלת פתרון מושלם!`;
             } else if (isMac) {
               instructions = `• לחץ ⌘+⇧+G ב-Finder, הדבק והקש Enter
 • או פתח Finder, הדבק בשורת הכתובת`;
+              helpOption = `
+
+🔧 פתרון מתקדם: הורד קבצי עזר
+לחץ "הורד קבצי עזר" למטה לקבלת פתרון מושלם!`;
             } else {
               instructions = `• פתח את סייר הקבצים והדבק את הנתיב`;
             }
             
-            toast.info(`🤖 הפתיחה האוטומטית נכשלה
+            // יצירת toast עם כפתור הורדה
+            const toastElement = toast.info(`🤖 הפתיחה האוטומטית נכשלה
             
 📋 הנתיב הועתק ללוח!
 
-${instructions}
+${instructions}${helpOption}
 
 נתיב: ${folderPath}`, {
-              duration: 10000
+              duration: 15000,
+              action: {
+                label: "הורד קבצי עזר",
+                onClick: () => {
+                  downloadHelperFiles();
+                  toast.success(`📥 קבצי העזר הורדו!
+
+🔧 ל-Windows: 
+1. הפעל את setup-folder-protocol.reg (כמנהל)
+2. השתמש ב-folder-opener.bat
+
+🔧 ל-Mac/Linux:
+1. תן הרשאת הפעלה: chmod +x folder-opener.sh
+2. השתמש בקובץ המוסך
+
+לאחר ההתקנה, פתיחת תיקיות תהיה אוטומטית! 🎉`, {
+                    duration: 12000
+                  });
+                }
+              }
             });
             
           } catch (error) {
