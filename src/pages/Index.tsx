@@ -85,6 +85,14 @@ const Index = () => {
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-info/5 rounded-full blur-3xl animate-float" style={{animationDelay: '2s'}}></div>
       </div>
 
+      {/* Left Sidebar - Projects Navigation */}
+      <div className="relative">
+        <ProjectNavigationSidebar 
+          tasks={tasks} 
+          onProjectSelect={handleProjectSelect}
+        />
+      </div>
+
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
@@ -161,15 +169,7 @@ const Index = () => {
         </main>
       </div>
 
-      {/* Right Sidebar - Projects Navigation */}
-      <div className="relative">
-        <ProjectNavigationSidebar 
-          tasks={tasks} 
-          onProjectSelect={handleProjectSelect}
-        />
-      </div>
-
-      {/* Quick Tasks Sidebar */}
+      {/* Right Sidebar - Quick Tasks */}
       {sidebarOpen && (
         <div className="relative">
           <QuickTaskSidebar />

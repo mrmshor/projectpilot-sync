@@ -67,121 +67,40 @@ export function ProjectNavigationSidebar({ tasks, onProjectSelect }: ProjectNavi
   };
 
   return (
-    <Card className="w-80 h-[calc(100vh-8rem)] overflow-hidden mac-card">
+    <Card className="w-64 h-[calc(100vh-8rem)] overflow-hidden mac-card">
       <CardHeader className="pb-3 border-b border-border/20">
         <CardTitle className="text-lg font-display gradient-text flex items-center gap-2">
-          <User className="h-5 w-5" />
-          לקוחות ופרויקטים
+          <FolderOpen className="h-5 w-5" />
+          פרויקטים
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0 h-full">
         <div className="overflow-y-auto h-full scrollbar-thin">
-          <div className="space-y-4 p-4">
-            {Object.entries(clientGroups).map(([clientName, clientTasks]) => (
-              <div key={clientName} className="space-y-2">
-                {/* Client Header */}
-                <div className="flex items-center gap-2 pb-2 border-b border-border/10">
-                  <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center">
-                    <User className="h-4 w-4 text-primary-foreground" />
+          <div className="space-y-2 p-4">
+            {tasks.map((task) => (
+              <Button
+                key={task.id}
+                variant="ghost"
+                className="w-full h-auto p-3 justify-start hover:bg-muted/50 rounded-xl group transition-all duration-200"
+                onClick={() => handleProjectClick(task.id)}
+              >
+                <div className="w-full flex items-center justify-between">
+                  {/* Project Name */}
+                  <div className="flex-1 text-right">
+                    <h4 className="font-medium text-sm text-foreground truncate leading-tight">
+                      {task.projectName}
+                    </h4>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium text-sm text-foreground truncate">{clientName}</h3>
-                    <p className="text-xs text-muted-foreground">{clientTasks.length} פרויקטים</p>
-                  </div>
+
+                  {/* Priority Badge */}
+                  <Badge 
+                    variant="outline" 
+                    className={cn("text-xs px-2 py-1 mr-2", getPriorityColor(task.priority))}
+                  >
+                    {PRIORITY_LABELS[task.priority]}
+                  </Badge>
                 </div>
-
-                {/* Client Projects */}
-                <div className="space-y-2 pr-2">
-                  {clientTasks.map((task) => (
-                    <Button
-                      key={task.id}
-                      variant="ghost"
-                      className="w-full h-auto p-3 justify-start hover:bg-muted/50 rounded-xl group transition-all duration-200"
-                      onClick={() => handleProjectClick(task.id)}
-                    >
-                      <div className="w-full space-y-2">
-                        {/* Project Header */}
-                        <div className="flex items-start gap-2">
-                          <div className="w-6 h-6 bg-gradient-subtle rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <FolderOpen className="h-3 w-3 text-muted-foreground" />
-                          </div>
-                          <div className="flex-1 text-right">
-                            <h4 className="font-medium text-xs text-foreground truncate leading-tight">
-                              {task.projectName}
-                            </h4>
-                            <p className="text-xs text-muted-foreground truncate mt-0.5">
-                              {task.projectDescription}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Project Status & Info */}
-                        <div className="flex items-center justify-between text-xs">
-                          <div className="flex items-center gap-1">
-                            <Badge 
-                              variant="outline" 
-                              className={cn("text-xs px-1.5 py-0.5", getPriorityColor(task.priority))}
-                            >
-                              {PRIORITY_LABELS[task.priority]}
-                            </Badge>
-                          </div>
-                          
-                          <div className="flex items-center gap-1">
-                            {task.isCompleted ? (
-                              <CheckCircle className="h-3 w-3 text-green-500" />
-                            ) : (
-                              <Clock className={cn("h-3 w-3", getStatusColor(task.workStatus))} />
-                            )}
-                            <span className={cn("text-xs", getStatusColor(task.workStatus))}>
-                              {WORK_STATUS_LABELS[task.workStatus]}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Price & Payment Status */}
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1">
-                            <DollarSign className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-xs text-muted-foreground">
-                              {task.price.toLocaleString()} {task.currency}
-                            </span>
-                          </div>
-                          
-                          <div className="flex items-center gap-1">
-                            {task.isPaid ? (
-                              <Badge variant="default" className="text-xs px-1.5 py-0.5 bg-green-500/10 text-green-600 border-green-200">
-                                שולם
-                              </Badge>
-                            ) : (
-                              <Badge variant="outline" className="text-xs px-1.5 py-0.5 bg-red-500/10 text-red-600 border-red-200">
-                                לא שולם
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Contact Info */}
-                        {(task.clientPhone || task.clientEmail) && (
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            {task.clientPhone && (
-                              <div className="flex items-center gap-1">
-                                <Phone className="h-3 w-3" />
-                                <span className="truncate">{task.clientPhone}</span>
-                              </div>
-                            )}
-                            {task.clientEmail && (
-                              <div className="flex items-center gap-1">
-                                <Mail className="h-3 w-3" />
-                                <span className="truncate">{task.clientEmail}</span>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </Button>
-                  ))}
-                </div>
-              </div>
+              </Button>
             ))}
 
             {tasks.length === 0 && (
