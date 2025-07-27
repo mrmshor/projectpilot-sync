@@ -25,133 +25,38 @@ jobs:
     - name: Build web app
       run: npm run build
     
-    - name: Install Electron dependencies
+    - name: Create simple desktop package
       run: |
-        npm install electron electron-builder @electron/rebuild --save-dev
-    
-    - name: Create Electron app structure
-      run: |
-        mkdir -p electron
+        mkdir -p desktop-package
+        cp -r dist/* desktop-package/
         
-        # Create main.js
-        cat > electron/main.js << 'EOF'
-        const { app, BrowserWindow, shell } = require('electron')
-        const path = require('path')
-        const { spawn } = require('child_process')
-        
-        let mainWindow
-        let serverProcess
-        
-        function createWindow() {
-          mainWindow = new BrowserWindow({
-            width: 1200,
-            height: 800,
-            webPreferences: {
-              nodeIntegration: false,
-              contextIsolation: true
-            },
-            icon: path.join(__dirname, 'assets/icon.png')
-          })
-          
-          // Start local server
-          const serverPath = path.join(__dirname, 'dist')
-          serverProcess = spawn('python3', ['-m', 'http.server', '3000'], {
-            cwd: serverPath,
-            stdio: 'pipe'
-          })
-          
-          // Wait a bit for server to start
-          setTimeout(() => {
-            mainWindow.loadURL('http://localhost:3000')
-          }, 2000)
-          
-          // Handle external links
-          mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-            shell.openExternal(url)
-            return { action: 'deny' }
-          })
-        }
-        
-        app.whenReady().then(createWindow)
-        
-        app.on('window-all-closed', () => {
-          if (serverProcess) {
-            serverProcess.kill()
-          }
-          if (process.platform !== 'darwin') {
-            app.quit()
-          }
-        })
-        
-        app.on('activate', () => {
-          if (BrowserWindow.getAllWindows().length === 0) {
-            createWindow()
-          }
-        })
+        # Create simple launcher scripts
+        cat > desktop-package/start.bat << 'EOF'
+        @echo off
+        start "" "index.html"
         EOF
         
-        # Create package.json for electron
-        cat > electron/package.json << 'EOF'
-        {
-          "name": "projectpilot-sync",
-          "version": "1.0.0",
-          "description": "ProjectPilot Sync Desktop App",
-          "main": "main.js",
-          "author": "ProjectPilot Team",
-          "license": "MIT",
-          "build": {
-            "appId": "app.projectpilot.sync",
-            "productName": "ProjectPilot Sync",
-            "directories": {
-              "output": "../dist-electron"
-            },
-            "files": [
-              "**/*",
-              "!node_modules/**/*"
-            ],
-            "win": {
-              "target": "nsis",
-              "icon": "assets/icon.ico"
-            },
-            "mac": {
-              "target": "dmg",
-              "icon": "assets/icon.icns"
-            },
-            "linux": {
-              "target": "AppImage",
-              "icon": "assets/icon.png"
-            },
-            "nsis": {
-              "oneClick": false,
-              "allowToChangeInstallationDirectory": true,
-              "createDesktopShortcut": true,
-              "createStartMenuShortcut": true,
-              "shortcutName": "ProjectPilot Sync"
-            }
-          }
-        }
+        cat > desktop-package/start.sh << 'EOF'
+        #!/bin/bash
+        open index.html 2>/dev/null || xdg-open index.html 2>/dev/null || start index.html
         EOF
+        chmod +x desktop-package/start.sh
         
-        # Copy built files to electron
-        cp -r dist electron/
-        
-        # Create basic icon (fallback)
-        mkdir -p electron/assets
-        echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==" | base64 -d > electron/assets/icon.png
+        # Create simple readme
+        cat > desktop-package/README.txt << 'EOF'
+        ProjectPilot Sync Desktop
 
-    - name: Build Electron apps
-      run: |
-        cd electron
-        npm install
+        To run:
+        1. Double-click start.bat (Windows) or start.sh (Mac/Linux)
+        2. Or open index.html in your browser
+        EOF
         
-        # Build for all platforms
-        npx electron-builder --win --linux --mac --publish=never
+        # Create zip
+        cd desktop-package
+        zip -r ../ProjectPilot-Sync-Desktop.zip .
     
-    - name: Upload Desktop Installers
+    - name: Upload Desktop Package
       uses: actions/upload-artifact@v4
       with:
-        name: desktop-installers
-        path: |
-          dist-electron/*.exe
-          dist-electron/*.dmg
-          dist-electron/*.AppImage
+        name: desktop-package  
+        path: ProjectPilot-Sync-Desktop.zip
