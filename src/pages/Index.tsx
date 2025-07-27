@@ -132,6 +132,10 @@ const Index = () => {
                   <Download className="h-4 w-4" />
                   ייצא CSV
                 </Button>
+                <Button variant="outline" onClick={() => window.open('/mobile', '_blank')} className="gap-2 mac-button hover-lift press-scale">
+                  <Users className="h-4 w-4" />
+                  גרסת מובייל
+                </Button>
                 <CreateTaskDialog onCreateTask={handleCreateTask} />
                 <ThemeToggle />
               </div>
