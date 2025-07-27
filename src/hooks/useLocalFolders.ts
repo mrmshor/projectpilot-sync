@@ -105,9 +105,24 @@ export const useLocalFolders = () => {
           // נתיב file:// - ניסיון פתיחה
           window.open(folderPath, '_blank');
         } else {
-          // נתיב מקומי - ניסיון פתיחה בדרכים שונות
+          // נתיב מקומי - בדפדפן אי אפשר לפתוח נתיבים מקומיים
+          // אם זה שם תיקיה בלבד (בלי סלאש), אנחנו לא יכולים לפתוח אותה
+          if (!folderPath.includes('/') && !folderPath.includes('\\')) {
+            toast.info(`📁 תיקיה: "${folderPath}"
+
+🔒 מסיבות אבטחה, דפדפנים לא מאפשרים פתיחת תיקיות מקומיות ישירות.
+
+💡 כדי לפתוח את התיקיה:
+• פתח את סייר הקבצים במחשב
+• חפש את התיקיה "${folderPath}"
+• או שמור נתיב מלא במקום שם התיקיה בלבד`, {
+              duration: 10000
+            });
+            return;
+          }
+          
+          // ניסיון פתיחת נתיב מלא
           try {
-            // ניסיון 1: יצירת file:// URL
             const fileUrl = folderPath.startsWith('/') ? 
               `file://${folderPath}` : 
               `file:///${folderPath.replace(/\\/g, '/')}`;
