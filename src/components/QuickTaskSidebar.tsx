@@ -32,9 +32,9 @@ export const QuickTaskSidebar = () => {
   const pendingTasks = quickTasks.filter(task => !task.completed);
 
   return (
-    <div className="w-80 h-full bg-background border-l border-border flex flex-col">
+    <div className="w-80 h-[calc(100vh-2rem)] bg-background border-l border-border flex flex-col sticky top-4 rounded-lg shadow-lg overflow-hidden">
       {/* Header */}
-      <div className="p-4 border-b border-border">
+      <div className="p-4 border-b border-border sticky top-0 bg-background/95 backdrop-blur-sm z-10">
         <h2 className="text-lg font-semibold mb-4">משימות מהירות</h2>
         
         {/* Add Task */}
@@ -57,7 +57,7 @@ export const QuickTaskSidebar = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 h-[calc(100%-8rem)]">
         
         {/* Pending Tasks */}
         {pendingTasks.length > 0 && (
