@@ -14,6 +14,29 @@ export const useLocalFolders = () => {
   const [isNative, setIsNative] = useState(Capacitor.isNativePlatform());
   const [currentPath, setCurrentPath] = useState<string>('');
 
+  // פונקציה להעתקת טקסט ללוח
+  const copyToClipboard = async (text: string) => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error);
+      throw error;
+    }
+  };
+
   // פונקציה לבחירת תיקייה
   const selectFolder = useCallback(async (): Promise<string | null> => {
     try {
@@ -132,35 +155,54 @@ export const useLocalFolders = () => {
           // נתיב מקומי - בדפדפן אי אפשר לפתוח נתיבים מקומיים
           // אם זה שם תיקיה בלבד (בלי סלאש), אנחנו לא יכולים לפתוח אותה
           if (!folderPath.includes('/') && !folderPath.includes('\\')) {
+            // העתק את שם התיקיה ללוח
+            copyToClipboard(folderPath);
             toast.info(`📁 תיקיה: "${folderPath}"
 
-🔒 מסיבות אבטחה, דפדפנים לא מאפשרים פתיחת תיקיות מקומיות ישירות.
+🔒 דפדפנים חוסמים פתיחת תיקיות מקומיות.
 
-💡 כדי לפתוח את התיקיה:
-• פתח את סייר הקבצים במחשב
+📋 השם הועתק ללוח! עכשיו:
+• פתח את סייר הקבצים
 • חפש את התיקיה "${folderPath}"
-• או שמור נתיב מלא במקום שם התיקיה בלבד`, {
-              duration: 10000
+• או לחץ ⌘+F (Mac) / Ctrl+F (Windows) והדבק`, {
+              duration: 8000
             });
             return;
           }
           
-          // ניסיון פתיחת נתיב מלא
+          // עבור נתיב מלא - ניסיון העתקה ללוח + הוראות
           try {
-            const fileUrl = folderPath.startsWith('/') ? 
-              `file://${folderPath}` : 
-              `file:///${folderPath.replace(/\\/g, '/')}`;
+            copyToClipboard(folderPath);
             
-            window.open(fileUrl, '_blank');
-            toast.success(`🔗 נפתח קישור: ${fileUrl}`);
+            const isWindows = folderPath.includes('\\') || folderPath.match(/^[A-Z]:/);
+            const isMac = folderPath.startsWith('/') || folderPath.startsWith('~');
+            
+            let instructions = '';
+            if (isWindows) {
+              instructions = `• לחץ Win+R, הדבק והקש Enter
+• או פתח File Explorer, הדבק בשורת הכתובת`;
+            } else if (isMac) {
+              instructions = `• לחץ ⌘+⇧+G ב-Finder, הדבק והקש Enter
+• או פתח Finder, הדבק בשורת הכתובת`;
+            } else {
+              instructions = `• פתח את סייר הקבצים והדבק את הנתיב`;
+            }
+            
+            toast.success(`📋 הנתיב הועתק ללוח!
+
+${instructions}
+
+נתיב: ${folderPath}`, {
+              duration: 10000
+            });
+            
           } catch (error) {
-            // אם לא עבד - הצגת מידע שימושי
+            // fallback - הצגת הנתיב
             toast.info(`📁 נתיב תיקייה: ${folderPath}
             
-💡 לפתיחה ידנית:
-• Windows: פתח File Explorer והדבק את הנתיב
-• Mac: פתח Finder והשתמש ב-⌘+⇧+G
-• או העתק לדפדפן: file://${folderPath}`, {
+💡 העתק את הנתיב ופתח ידנית:
+• Windows: Win+R ← הדבק ← Enter
+• Mac: ⌘+⇧+G ב-Finder ← הדבק ← Enter`, {
               duration: 8000
             });
           }
