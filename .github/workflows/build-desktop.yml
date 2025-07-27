@@ -23,64 +23,133 @@ jobs:
         node-version: '20'
         cache: 'npm'
     
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Build web app
-      run: npm run build
-    
-    - name: Setup Capacitor
+    - name: Install dependencies and build
       run: |
-        # Install Capacitor dependencies
-        npm install @capacitor/core @capacitor/cli @capacitor/electron --save-dev
+        npm ci
+        npm run build
     
-    - name: Add Electron platform
-      run: npx cap add @capacitor/electron
+    - name: Create Electron main file
+      run: |
+        mkdir -p electron-app
+        cat > electron-app/main.js << 'EOF'
+        const { app, BrowserWindow } = require('electron');
+        const path = require('path');
+        
+        function createWindow() {
+          const win = new BrowserWindow({
+            width: 1200,
+            height: 800,
+            icon: path.join(__dirname, 'assets/icon.png'),
+            webPreferences: {
+              nodeIntegration: false,
+              contextIsolation: true
+            }
+          });
+          
+          win.loadFile('dist/index.html');
+        }
+        
+        app.whenReady().then(createWindow);
+        
+        app.on('window-all-closed', () => {
+          if (process.platform !== 'darwin') {
+            app.quit();
+          }
+        });
+        
+        app.on('activate', () => {
+          if (BrowserWindow.getAllWindows().length === 0) {
+            createWindow();
+          }
+        });
+        EOF
     
-    - name: Sync Capacitor
-      run: npx cap sync electron
+    - name: Create Electron package.json
+      run: |
+        cat > electron-app/package.json << 'EOF'
+        {
+          "name": "projectpilot-sync",
+          "version": "1.0.0",
+          "description": "ProjectPilot Sync Desktop App",
+          "main": "main.js",
+          "scripts": {
+            "electron": "electron .",
+            "build-mac": "electron-builder --mac --publish=never",
+            "build-win": "electron-builder --win --publish=never", 
+            "build-linux": "electron-builder --linux --publish=never"
+          },
+          "build": {
+            "appId": "app.lovable.projectpilot.sync",
+            "productName": "ProjectPilot Sync",
+            "directories": {
+              "output": "dist-electron"
+            },
+            "files": [
+              "**/*",
+              "dist/**/*"
+            ],
+            "mac": {
+              "target": "dmg",
+              "category": "public.app-category.productivity"
+            },
+            "win": {
+              "target": "nsis"
+            },
+            "linux": {
+              "target": "AppImage"
+            }
+          },
+          "devDependencies": {
+            "electron": "latest",
+            "electron-builder": "latest"
+          }
+        }
+        EOF
+    
+    - name: Copy built files
+      run: |
+        cp -r dist electron-app/
+    
+    - name: Install Electron dependencies
+      run: |
+        cd electron-app
+        npm install
     
     - name: Build Mac App
       if: matrix.os == 'macos-latest'
       run: |
-        cd electron
-        npm install
-        npm install electron-builder --save-dev
-        npx electron-builder --mac --publish=never
+        cd electron-app
+        npm run build-mac
     
     - name: Build Windows App  
       if: matrix.os == 'windows-latest'
       run: |
-        cd electron
-        npm install
-        npm install electron-builder --save-dev
-        npx electron-builder --win --publish=never
+        cd electron-app
+        npm run build-win
     
     - name: Build Linux App
       if: matrix.os == 'ubuntu-latest' 
       run: |
-        cd electron
-        npm install
-        npm install electron-builder --save-dev
-        npx electron-builder --linux --publish=never
+        cd electron-app
+        npm run build-linux
     
     - name: Upload Mac App
       if: matrix.os == 'macos-latest'
       uses: actions/upload-artifact@v4
       with:
         name: ProjectPilot-Sync-Mac
-        path: electron/dist/mac/*.dmg
+        path: electron-app/dist-electron/*.dmg
         
     - name: Upload Windows App
       if: matrix.os == 'windows-latest'
       uses: actions/upload-artifact@v4
       with:
         name: ProjectPilot-Sync-Windows
-        path: electron/dist/win/*.exe
+        path: electron-app/dist-electron/*.exe
         
     - name: Upload Linux App
       if: matrix.os == 'ubuntu-latest'
       uses: actions/upload-artifact@v4
       with:
         name: ProjectPilot-Sync-Linux
-        path: electron/dist/linux/*.AppImage
+        path: electron-app/dist-electron/*.AppImage
