@@ -39,7 +39,17 @@ export const useLocalFolders = () => {
         
         if (isInIframe) {
           // אנחנו ב-iframe (כמו Lovable) - השתמש בקלט ידני
-          const folderPath = prompt('🗂️ הזן נתיב תיקייה או קישור:\n(לדוגמה: C:\\Documents\\Projects או https://drive.google.com/...)');
+          toast.info('💡 בחירת תיקיות עם הבוחר לא זמינה ב-Lovable\nאחרי העברה לגיטהאב זה יעבוד כרגיל', { duration: 4000 });
+          
+          const folderPath = prompt(
+            '🗂️ הזן נתיב תיקייה או קישור:\n\n' +
+            '📁 דוגמאות לנתיבים:\n' +
+            '• Windows: C:\\Users\\YourName\\Documents\\Projects\n' +
+            '• Mac: /Users/YourName/Documents/Projects\n' +
+            '• iCloud: https://www.icloud.com/iclouddrive/...\n' +
+            '• Google Drive: https://drive.google.com/drive/folders/...\n\n' +
+            'הזן נתיב:'
+          );
           if (folderPath && folderPath.trim()) {
             const cleanPath = folderPath.trim();
             localStorage.setItem('selectedFolder', cleanPath);
