@@ -37,6 +37,73 @@ export const useLocalFolders = () => {
     }
   };
 
+  // פונקציה לניסיון פתיחה אוטומטית של תיקיה
+  const attemptAutoOpen = async (folderPath: string): Promise<boolean> => {
+    const cleanPath = folderPath.trim();
+    
+    // ניסיון 1: Shell protocol (Windows)
+    if (cleanPath.includes('\\') || cleanPath.match(/^[A-Z]:/)) {
+      try {
+        // Windows - ניסיון עם shell: protocol
+        window.location.href = `shell:${cleanPath}`;
+        return true;
+      } catch (e) {
+        try {
+          // Windows - ניסיון עם ms-appinstaller
+          window.open(`ms-windows-store://navigate/?path=${encodeURIComponent(cleanPath)}`);
+          return true;
+        } catch (e2) {
+          // Windows - ניסיון עם explorer
+          const explorerUrl = `shell:AppsFolder\\Microsoft.WindowsTerminal_8wekyb3d8bbwe!App ${cleanPath}`;
+          window.location.href = explorerUrl;
+          return true;
+        }
+      }
+    }
+    
+    // ניסיון 2: Mac protocols
+    if (cleanPath.startsWith('/') || cleanPath.startsWith('~')) {
+      try {
+        // Mac - ניסיון עם finder protocol
+        window.open(`finder:${cleanPath}`);
+        return true;
+      } catch (e) {
+        try {
+          // Mac - ניסיון עם file protocol מיוחד
+          const macPath = cleanPath.replace(/\s/g, '%20');
+          window.open(`file://${macPath}`);
+          return true;
+        } catch (e2) {
+          console.log('Mac protocols failed');
+        }
+      }
+    }
+    
+    // ניסיון 3: Universal file protocol
+    try {
+      const fileUrl = cleanPath.startsWith('/') ? 
+        `file://${cleanPath}` : 
+        `file:///${cleanPath.replace(/\\/g, '/')}`;
+      
+      // יצירת link זמני לפתיחה
+      const link = document.createElement('a');
+      link.href = fileUrl;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      
+      // הוספה ללמחסור ופתיחה
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      return true;
+    } catch (e) {
+      console.log('File protocol failed');
+    }
+    
+    return false;
+  };
+
   // פונקציה לבחירת תיקייה
   const selectFolder = useCallback(async (): Promise<string | null> => {
     try {
@@ -170,7 +237,20 @@ export const useLocalFolders = () => {
             return;
           }
           
-          // עבור נתיב מלא - ניסיון העתקה ללוח + הוראות
+          // עבור נתיב מלא - ניסיון פתיחה אוטומטית ראשון!
+          console.log('🚀 מנסה פתיחה אוטומטית...');
+          const autoOpenSuccess = await attemptAutoOpen(folderPath);
+          
+          if (autoOpenSuccess) {
+            toast.success(`🎉 התיקיה נפתחה אוטומטית!
+            
+🗂️ נתיב: ${folderPath}`, {
+              duration: 5000
+            });
+            return;
+          }
+          
+          // אם הפתיחה האוטומטית נכשלה - fallback להעתקה ללוח
           try {
             copyToClipboard(folderPath);
             
@@ -188,7 +268,9 @@ export const useLocalFolders = () => {
               instructions = `• פתח את סייר הקבצים והדבק את הנתיב`;
             }
             
-            toast.success(`📋 הנתיב הועתק ללוח!
+            toast.info(`🤖 הפתיחה האוטומטית נכשלה
+            
+📋 הנתיב הועתק ללוח!
 
 ${instructions}
 
