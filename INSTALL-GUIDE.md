@@ -2,18 +2,19 @@
 
 ## 💻 התקנה במחשב (Desktop)
 
-### שלב 1: הורד את הקבצים
+### שלב 1: הורד את קבצי ההתקנה
 1. לך ל-GitHub Actions של הפרויקט
-2. בחר את הbuild האחרון שהצליח
-3. הורד את `desktop-package`
-4. חלץ את הZIP לתיקיה כלשהי
+2. בחר את הbuild האחרון שהצליח  
+3. הורד את `desktop-installers`
+4. חלץ את הZIP
 
-### שלב 2: הפעל את האפליקציה
-- **Windows**: לחץ פעמיים על `ProjectPilot-Sync.bat`
-- **macOS**: לחץ פעמיים על `ProjectPilot-Sync.command`  
-- **Linux**: לחץ פעמיים על `ProjectPilot-Sync.sh`
+### שלב 2: התקן את האפליקציה
+- **Windows**: הפעל את קובץ ה-.exe והתקן כרגיל
+- **macOS**: פתח את קובץ ה-.dmg וגרור לתיקיית Applications
+- **Linux**: הפעל את קובץ ה-.AppImage (אין צורך בהתקנה)
 
-האפליקציה תפתח באופן אוטומטי בדפדפן שלך!
+### שלב 3: הפעל את האפליקציה
+האפליקציה תופיע בתפריט הראשי של המערכת שלך ותפעל כאפליקציה עצמאית!
 
 ## 📱 התקנה במובייל
 

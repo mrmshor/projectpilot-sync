@@ -25,80 +25,133 @@ jobs:
     - name: Build web app
       run: npm run build
     
-    - name: Create desktop package structure
+    - name: Install Electron dependencies
       run: |
-        mkdir -p desktop-app
-        cp -r dist/* desktop-app/
-        
-        # Create launcher for macOS
-        cat > desktop-app/ProjectPilot-Sync.command << 'EOF'
-        #!/bin/bash
-        cd "$(dirname "$0")"
-        echo "Starting ProjectPilot Sync..."
-        open "http://localhost:3000" &
-        python3 -m http.server 3000
-        EOF
-        chmod +x desktop-app/ProjectPilot-Sync.command
-        
-        # Create launcher for Windows
-        cat > desktop-app/ProjectPilot-Sync.bat << 'EOF'
-        @echo off
-        cd /d "%~dp0"
-        echo Starting ProjectPilot Sync...
-        start "" "http://localhost:3000"
-        python -m http.server 3000
-        EOF
-        
-        # Create launcher for Linux
-        cat > desktop-app/ProjectPilot-Sync.sh << 'EOF'
-        #!/bin/bash
-        cd "$(dirname "$0")"
-        echo "Starting ProjectPilot Sync..."
-        xdg-open "http://localhost:3000" &
-        python3 -m http.server 3000
-        EOF
-        chmod +x desktop-app/ProjectPilot-Sync.sh
-        
-        # Create README
-        cat > desktop-app/README.txt << 'EOF'
-        ProjectPilot Sync - Desktop App
-
-        For macOS: Double-click ProjectPilot-Sync.command
-        For Windows: Double-click ProjectPilot-Sync.bat  
-        For Linux: Double-click ProjectPilot-Sync.sh
-        For any system: Open index.html in your browser
-
-        The app will start a local server on port 3000 and open in your browser.
-        EOF
-        
-        # Create installation instructions
-        cat > desktop-app/INSTALL.md << 'EOF'
-        # ProjectPilot Sync - Installation Guide
-
-        ## Quick Start
-        1. Extract this ZIP file to any folder
-        2. Run the appropriate launcher for your system:
-           - **macOS**: Double-click `ProjectPilot-Sync.command`
-           - **Windows**: Double-click `ProjectPilot-Sync.bat`
-           - **Linux**: Double-click `ProjectPilot-Sync.sh`
-
-        ## Requirements
-        - Python 3 (usually pre-installed on macOS/Linux)
-        - Modern web browser
-
-        ## Troubleshooting
-        - If Python is not found, install it from python.org
-        - If port 3000 is busy, the app will use another port
-        - Check firewall settings if the app doesn't open
-        EOF
+        npm install electron electron-builder @electron/rebuild --save-dev
     
-    - name: Create ZIP package
+    - name: Create Electron app structure
       run: |
-        cd desktop-app
-        zip -r ../ProjectPilot-Sync-Desktop.zip .
+        mkdir -p electron
+        
+        # Create main.js
+        cat > electron/main.js << 'EOF'
+        const { app, BrowserWindow, shell } = require('electron')
+        const path = require('path')
+        const { spawn } = require('child_process')
+        
+        let mainWindow
+        let serverProcess
+        
+        function createWindow() {
+          mainWindow = new BrowserWindow({
+            width: 1200,
+            height: 800,
+            webPreferences: {
+              nodeIntegration: false,
+              contextIsolation: true
+            },
+            icon: path.join(__dirname, 'assets/icon.png')
+          })
+          
+          // Start local server
+          const serverPath = path.join(__dirname, 'dist')
+          serverProcess = spawn('python3', ['-m', 'http.server', '3000'], {
+            cwd: serverPath,
+            stdio: 'pipe'
+          })
+          
+          // Wait a bit for server to start
+          setTimeout(() => {
+            mainWindow.loadURL('http://localhost:3000')
+          }, 2000)
+          
+          // Handle external links
+          mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+            shell.openExternal(url)
+            return { action: 'deny' }
+          })
+        }
+        
+        app.whenReady().then(createWindow)
+        
+        app.on('window-all-closed', () => {
+          if (serverProcess) {
+            serverProcess.kill()
+          }
+          if (process.platform !== 'darwin') {
+            app.quit()
+          }
+        })
+        
+        app.on('activate', () => {
+          if (BrowserWindow.getAllWindows().length === 0) {
+            createWindow()
+          }
+        })
+        EOF
+        
+        # Create package.json for electron
+        cat > electron/package.json << 'EOF'
+        {
+          "name": "projectpilot-sync",
+          "version": "1.0.0",
+          "description": "ProjectPilot Sync Desktop App",
+          "main": "main.js",
+          "author": "ProjectPilot Team",
+          "license": "MIT",
+          "build": {
+            "appId": "app.projectpilot.sync",
+            "productName": "ProjectPilot Sync",
+            "directories": {
+              "output": "../dist-electron"
+            },
+            "files": [
+              "**/*",
+              "!node_modules/**/*"
+            ],
+            "win": {
+              "target": "nsis",
+              "icon": "assets/icon.ico"
+            },
+            "mac": {
+              "target": "dmg",
+              "icon": "assets/icon.icns"
+            },
+            "linux": {
+              "target": "AppImage",
+              "icon": "assets/icon.png"
+            },
+            "nsis": {
+              "oneClick": false,
+              "allowToChangeInstallationDirectory": true,
+              "createDesktopShortcut": true,
+              "createStartMenuShortcut": true,
+              "shortcutName": "ProjectPilot Sync"
+            }
+          }
+        }
+        EOF
+        
+        # Copy built files to electron
+        cp -r dist electron/
+        
+        # Create basic icon (fallback)
+        mkdir -p electron/assets
+        echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==" | base64 -d > electron/assets/icon.png
+
+    - name: Build Electron apps
+      run: |
+        cd electron
+        npm install
+        
+        # Build for all platforms
+        npx electron-builder --win --linux --mac --publish=never
     
-    - name: Upload Desktop Package
+    - name: Upload Desktop Installers
       uses: actions/upload-artifact@v4
       with:
-        name: desktop-package
-        path: ProjectPilot-Sync-Desktop.zip
+        name: desktop-installers
+        path: |
+          dist-electron/*.exe
+          dist-electron/*.dmg
+          dist-electron/*.AppImage
