@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLocalFolders } from '../hooks/useLocalFolders';
+import { toast } from 'sonner';
 import { Task, TaskItem, WorkStatus, Priority, WORK_STATUS_LABELS, PRIORITY_LABELS, CURRENCIES } from '@/types/task';
 import { TaskListDialog } from '@/components/TaskListDialog';
 import { Button } from '@/components/ui/button';
@@ -111,6 +112,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
     }
   };
 
+  // פונקציה מאוחדת לפתיחת תיקיות (מקומיות וקישורים)
   const openFolder = async (path?: string) => {
     console.log('openFolder called with path:', path);
     if (!path) {
@@ -119,12 +121,27 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
     }
     
     try {
+      // אם זה קישור רשת - פתח ישירות
+      if (path.startsWith('http') || path.startsWith('https://')) {
+        window.open(path, '_blank');
+        return;
+      }
+      
+      // אם זה iCloud או קישור מיוחד
+      if (path.startsWith('icloud://')) {
+        window.open(path, '_blank');
+        return;
+      }
+      
+      // עבור נתיבים מקומיים - השתמש ב-hook שמטפל בהם נכון
       console.log('Calling openFolderHook with path:', path);
-      // השתמש ב-hook החדש לפתיחת תיקיות מקומיות
       await openFolderHook(path);
       console.log('openFolderHook completed successfully');
+      
     } catch (error) {
       console.error('Error opening folder:', error);
+      // במקום alert, נשתמש ב-toast מה-hook
+      toast.error(`❌ שגיאה בפתיחת התיקיה: ${path}`);
     }
   };
 
@@ -154,30 +171,6 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
   const sendEmail = (email?: string) => {
     if (email) {
       window.open(`mailto:${email}`);
-    }
-  };
-
-  const openFolderLink = (link?: string) => {
-    if (link) {
-      try {
-        // פתיחת קישור תיקיה - קישורי רשת
-        if (link.startsWith('http') || link.startsWith('https://')) {
-          window.open(link, '_blank');
-        } else if (link.startsWith('icloud://')) {
-          window.open(link, '_blank');
-        } else if (link.startsWith('file://')) {
-          window.open(link, '_blank');
-        } else {
-          // נתיב מקומי - ניסיון יצירת קישור file://
-          const fileUrl = link.startsWith('/') ? 
-            `file://${link}` : 
-            `file:///${link.replace(/\\/g, '/')}`;
-          window.open(fileUrl, '_blank');
-        }
-      } catch (error) {
-        console.error('Error opening folder link:', error);
-        alert(`❌ שגיאה בפתיחת הקישור: ${link}`);
-      }
     }
   };
 
@@ -449,7 +442,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                                <Button
                                  variant="ghost"
                                  size="sm"
-                                 onClick={() => openFolderLink(task.folderLink)}
+                                  onClick={() => openFolder(task.folderLink)}
                                  className="p-1 h-auto text-blue-600"
                                  title={`קישור תיקיה: ${task.folderLink}`}
                                >
@@ -488,7 +481,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                              <div className="flex items-center gap-1">
                                <FolderOpen className="h-3 w-3 text-blue-600" />
                                <span className="text-blue-600 cursor-pointer hover:underline" 
-                                     onClick={() => openFolderLink(task.folderLink)}>
+                                     onClick={() => openFolder(task.folderLink)}>
                                  קישור תיקיה
                                </span>
                              </div>
