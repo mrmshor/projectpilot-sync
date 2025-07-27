@@ -1,4 +1,4 @@
-name: Build Desktop & Mobile App
+name: Build Desktop App
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-web:
+  build-desktop:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -49,13 +49,47 @@ jobs:
         python -m http.server 3000
         EOF
         
+        # Create launcher for Linux
+        cat > desktop-app/ProjectPilot-Sync.sh << 'EOF'
+        #!/bin/bash
+        cd "$(dirname "$0")"
+        echo "Starting ProjectPilot Sync..."
+        xdg-open "http://localhost:3000" &
+        python3 -m http.server 3000
+        EOF
+        chmod +x desktop-app/ProjectPilot-Sync.sh
+        
         # Create README
         cat > desktop-app/README.txt << 'EOF'
         ProjectPilot Sync - Desktop App
 
         For macOS: Double-click ProjectPilot-Sync.command
-        For Windows: Double-click ProjectPilot-Sync.bat
+        For Windows: Double-click ProjectPilot-Sync.bat  
+        For Linux: Double-click ProjectPilot-Sync.sh
         For any system: Open index.html in your browser
+
+        The app will start a local server on port 3000 and open in your browser.
+        EOF
+        
+        # Create installation instructions
+        cat > desktop-app/INSTALL.md << 'EOF'
+        # ProjectPilot Sync - Installation Guide
+
+        ## Quick Start
+        1. Extract this ZIP file to any folder
+        2. Run the appropriate launcher for your system:
+           - **macOS**: Double-click `ProjectPilot-Sync.command`
+           - **Windows**: Double-click `ProjectPilot-Sync.bat`
+           - **Linux**: Double-click `ProjectPilot-Sync.sh`
+
+        ## Requirements
+        - Python 3 (usually pre-installed on macOS/Linux)
+        - Modern web browser
+
+        ## Troubleshooting
+        - If Python is not found, install it from python.org
+        - If port 3000 is busy, the app will use another port
+        - Check firewall settings if the app doesn't open
         EOF
     
     - name: Create ZIP package
@@ -68,45 +102,3 @@ jobs:
       with:
         name: desktop-package
         path: ProjectPilot-Sync-Desktop.zip
-
-  build-ios:
-    runs-on: macos-latest
-    needs: build-web
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Build web app
-      run: npm run build
-    
-    - name: Setup iOS Platform
-      run: |
-        npx cap add ios --no-open
-        npx cap sync ios
-    
-    - name: Create Simple iOS Build
-      run: |
-        cd ios/App
-        # Create a simple build without signing
-        xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug -sdk iphonesimulator -derivedDataPath ./build CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
-        
-    - name: Package iOS Build
-      run: |
-        cd ios/App
-        mkdir -p iOS-Package
-        find ./build -name "*.app" -exec cp -R {} iOS-Package/ \;
-        zip -r iOS-Package.zip iOS-Package/
-    
-    - name: Upload iOS Package
-      uses: actions/upload-artifact@v4
-      with:
-        name: ios-simulator-package
-        path: ios/App/iOS-Package.zip
