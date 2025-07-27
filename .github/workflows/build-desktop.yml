@@ -104,7 +104,12 @@ jobs:
                 "arch": ["x64", "arm64"]
               },
               "category": "public.app-category.productivity",
-              "artifactName": "${productName}-${version}-mac-${arch}.${ext}"
+              "artifactName": "${productName}-${version}-mac-${arch}.${ext}",
+              "identity": null,
+              "gatekeeperAssess": false,
+              "hardenedRuntime": false,
+              "entitlements": null,
+              "entitlementsInherit": null
             },
             "win": {
               "target": {
