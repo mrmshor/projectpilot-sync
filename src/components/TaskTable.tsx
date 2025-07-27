@@ -40,7 +40,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   
   // Hook לניהול תיקיות מקומיות
-  const { openFolder: openLocalFolder, selectFolder } = useLocalFolders();
+  const { openFolder: openFolderHook, selectFolder } = useLocalFolders();
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -116,7 +116,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
     
     try {
       // השתמש ב-hook החדש לפתיחת תיקיות מקומיות
-      await openLocalFolder(path);
+      await openFolderHook(path);
     } catch (error) {
       console.error('Error opening folder:', error);
     }
@@ -245,7 +245,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => openLocalFolder(task.folderPath)}
+                            onClick={() => openFolder(task.folderPath)}
                             className="text-sm text-primary hover:text-primary/80 flex items-center gap-2 p-2"
                           >
                             <FolderOpen className="h-4 w-4" />
@@ -452,7 +452,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                                <Button
                                  variant="ghost"
                                  size="sm"
-                                 onClick={() => openLocalFolder(task.folderLink)}
+                                 onClick={() => openFolder(task.folderLink)}
                                  className="p-1 h-auto text-green-600"
                                  title={`פתח תיקיה: ${task.folderLink}`}
                                >
@@ -473,7 +473,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                              <div className="flex items-center gap-1">
                                <FolderOpen className="h-3 w-3 text-green-600" />
                                <span className="text-green-600 cursor-pointer hover:underline" 
-                                      onClick={() => openLocalFolder(task.folderPath)}>
+                                      onClick={() => openFolder(task.folderPath)}>
                                  תיקיה מקומית
                                </span>
                              </div>
