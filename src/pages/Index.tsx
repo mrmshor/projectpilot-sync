@@ -5,6 +5,7 @@ import { CreateTaskDialog } from '@/components/CreateTaskDialog';
 import { Dashboard } from '@/components/Dashboard';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { QuickTaskSidebar } from '@/components/QuickTaskSidebar';
+import { ProjectNavigationSidebar } from '@/components/ProjectNavigationSidebar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -52,6 +53,17 @@ const Index = () => {
       title: 'ייצוא הושלם',
       description: 'המשימות יוצאו לקובץ CSV.',
     });
+  };
+
+  const handleProjectSelect = (projectId: string) => {
+    setActiveTab('projects');
+    // Optional: scroll to the specific project in the table
+    setTimeout(() => {
+      const projectElement = document.querySelector(`[data-project-id="${projectId}"]`);
+      if (projectElement) {
+        projectElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
   };
 
   if (loading) {
@@ -147,6 +159,14 @@ const Index = () => {
             </TabsContent>
           </Tabs>
         </main>
+      </div>
+
+      {/* Right Sidebar - Projects Navigation */}
+      <div className="relative">
+        <ProjectNavigationSidebar 
+          tasks={tasks} 
+          onProjectSelect={handleProjectSelect}
+        />
       </div>
 
       {/* Quick Tasks Sidebar */}
