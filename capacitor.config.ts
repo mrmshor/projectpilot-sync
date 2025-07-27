@@ -11,6 +11,12 @@ const config: CapacitorConfig = {
   // },
   ios: {
     scheme: 'ProjectPilot Sync'
+  },
+  plugins: {
+    Filesystem: {
+      androidDisplayName: 'ProjectPilot Files',
+      iosDisplayName: 'ProjectPilot Files'
+    }
   }
 };
 

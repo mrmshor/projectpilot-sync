@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocalFolders } from '../hooks/useLocalFolders';
 import { Task, TaskItem, WorkStatus, Priority, WORK_STATUS_LABELS, PRIORITY_LABELS, CURRENCIES } from '@/types/task';
 import { TaskListDialog } from '@/components/TaskListDialog';
 import { Button } from '@/components/ui/button';
@@ -37,6 +38,9 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState<SortField>('updatedAt');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  
+  // Hook לניהול תיקיות מקומיות
+  const { openFolder: openLocalFolder } = useLocalFolders();
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -97,42 +101,13 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
   };
 
   const openFolder = async (path?: string) => {
-    if (path) {
-      if (Capacitor.isNativePlatform()) {
-        try {
-          // In native app, try to open folder using system shell
-          if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
-            // For mobile, just show the path (folders don't work the same way)
-            alert(`📁 נתיב התיקייה: ${path}\n\n💡 במובייל, נתיבי תיקיות פועלים שונה מאשר במחשב`);
-          } else {
-            // For desktop/electron, can potentially open folders
-            alert(`📁 נתיב התיקייה: ${path}\n\n💡 באפליקציה מקורית, פתיחת תיקיות תתאפשר בעדכון עתידי`);
-          }
-        } catch (error) {
-          console.error('Error opening folder:', error);
-          alert(`❌ שגיאה בפתיחת התיקייה: ${path}`);
-        }
-      } else {
-        // Web version - copy to clipboard with instructions
-        try {
-          await navigator.clipboard.writeText(path);
-          const isWindows = navigator.userAgent.includes('Windows');
-          const isMac = navigator.userAgent.includes('Mac');
-          
-          let instruction = '';
-          if (isWindows) {
-            instruction = 'לחץ Win+R, הדבק הנתיב ולחץ Enter';
-          } else if (isMac) {
-            instruction = 'לחץ Cmd+Shift+G ב-Finder, הדבק הנתיב ולחץ Enter';
-          } else {
-            instruction = 'פתח את מנהל הקבצים והדבק את הנתיב';
-          }
-          
-          alert(`✅ נתיב התיקייה הועתק ללוח!\n\n📁 ${path}\n\n💡 ${instruction}\n\n🔧 לפתיחה אוטומטית של תיקיות, השתמש באפליקציה המקורית`);
-        } catch (error) {
-          alert(`📁 נתיב התיקייה: ${path}\n\n💡 העתק את הנתיב ופתח אותו במנהל הקבצים שלך`);
-        }
-      }
+    if (!path) return;
+    
+    try {
+      // השתמש ב-hook החדש לפתיחת תיקיות מקומיות
+      await openLocalFolder(path);
+    } catch (error) {
+      console.error('Error opening folder:', error);
     }
   };
 

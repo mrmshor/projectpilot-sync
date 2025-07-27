@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocalFolders } from '../hooks/useLocalFolders';
 import { Task, WorkStatus, Priority, WORK_STATUS_LABELS, PRIORITY_LABELS, CURRENCIES } from '@/types/task';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus } from 'lucide-react';
+import { Plus, FolderOpen } from 'lucide-react';
 
 interface CreateTaskDialogProps {
   onCreateTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => void;
@@ -15,6 +16,7 @@ interface CreateTaskDialogProps {
 
 export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
   const [open, setOpen] = useState(false);
+  const { selectFolder } = useLocalFolders();
   const [formData, setFormData] = useState({
     projectName: '',
     projectDescription: '',
@@ -34,29 +36,21 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
     isCompleted: false
   });
 
-  console.log('CreateTaskDialog rendered, open:', open);
-  console.log('Current form data:', formData);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('=== FORM SUBMIT STARTED ===');
-    console.log('Form data at submit:', formData);
     
     // Basic validation
     if (!formData.projectName.trim()) {
-      console.log('Validation failed: missing project name');
       alert('שם הפרויקט הוא שדה חובה');
       return;
     }
     
     if (!formData.clientName.trim()) {
-      console.log('Validation failed: missing client name');
       alert('שם הלקוח הוא שדה חובה');
       return;
     }
 
     try {
-      console.log('About to call onCreateTask...');
       onCreateTask({
         ...formData,
         folderPath: formData.folderPath || undefined,
@@ -68,8 +62,6 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
         clientWhatsapp2: formData.clientWhatsapp2 || undefined,
         clientEmail: formData.clientEmail || undefined
       });
-      
-      console.log('onCreateTask completed successfully');
       
       // Reset form
       setFormData({
@@ -91,9 +83,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
         isCompleted: false
       });
 
-      console.log('Form reset completed');
       setOpen(false);
-      console.log('=== DIALOG CLOSED ===');
     } catch (error) {
       console.error('Error creating task:', error);
       alert('שגיאה ביצירת הפרויקט: ' + error);
@@ -101,28 +91,20 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
   };
 
   const updateField = (field: string, value: any) => {
-    console.log(`Updating field "${field}" to:`, value);
-    setFormData(prev => {
-      const newData = { ...prev, [field]: value };
-      console.log('New form data after update:', newData);
-      return newData;
-    });
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleFolderSelect = async () => {
+    const selectedPath = await selectFolder();
+    if (selectedPath) {
+      updateField('folderPath', selectedPath);
+    }
   };
 
   return (
-    <Dialog open={open} onOpenChange={(newOpen) => {
-      console.log('Dialog onOpenChange called with:', newOpen);
-      setOpen(newOpen);
-    }}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button 
-          className="gap-2" 
-          onClick={(e) => {
-            console.log('=== CREATE PROJECT BUTTON CLICKED ===', e);
-            console.log('Current open state:', open);
-            setOpen(true);
-          }}
-        >
+        <Button className="gap-2">
           <Plus className="h-4 w-4" />
           פרויקט חדש
         </Button>
@@ -169,14 +151,25 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
 
               <div>
                 <Label htmlFor="folderPath" className="text-base font-medium mb-2 block">נתיב תיקייה (אופציונלי)</Label>
-                <Input
-                  id="folderPath"
-                  value={formData.folderPath}
-                  onChange={(e) => updateField('folderPath', e.target.value)}
-                  placeholder="/Users/yourname/Projects/ProjectName או C:\Projects\ProjectName"
-                  dir="rtl"
-                  className="text-base h-12"
-                />
+                <div className="flex gap-2">
+                  <Input
+                    id="folderPath"
+                    value={formData.folderPath}
+                    onChange={(e) => updateField('folderPath', e.target.value)}
+                    placeholder="נתיב התיקייה במחשב"
+                    className="text-base flex-1"
+                    dir="rtl"
+                  />
+                  <Button 
+                    type="button"
+                    variant="outline"
+                    onClick={handleFolderSelect}
+                    className="px-3 gap-1"
+                  >
+                    <FolderOpen className="h-4 w-4" />
+                    בחר
+                  </Button>
+                </div>
               </div>
 
               <div>
@@ -296,24 +289,14 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
                 <Label htmlFor="workStatus" className="text-base font-semibold mb-2 block">סטטוס עבודה</Label>
                 <Select 
                   value={formData.workStatus} 
-                  onValueChange={(value) => {
-                    console.log('Work status select changed to:', value);
-                    updateField('workStatus', value);
-                  }}
+                  onValueChange={(value) => updateField('workStatus', value)}
                 >
-                  <SelectTrigger 
-                    className="h-12 text-base border-2 border-purple-200/50 focus:border-purple-400/60"
-                    onClick={() => console.log('Work status trigger clicked')}
-                  >
+                  <SelectTrigger className="h-12 text-base border-2 border-purple-200/50 focus:border-purple-400/60">
                     <SelectValue placeholder="בחר סטטוס עבודה" />
                   </SelectTrigger>
                   <SelectContent>
                     {Object.entries(WORK_STATUS_LABELS).map(([value, label]) => (
-                      <SelectItem 
-                        key={value} 
-                        value={value}
-                        onClick={() => console.log('Work status item clicked:', value)}
-                      >
+                      <SelectItem key={value} value={value}>
                         {label}
                       </SelectItem>
                     ))}
@@ -325,15 +308,9 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
                 <Label htmlFor="priority" className="text-base font-semibold mb-2 block">רמת עדיפות</Label>
                 <Select 
                   value={formData.priority} 
-                  onValueChange={(value) => {
-                    console.log('Priority select changed to:', value);
-                    updateField('priority', value);
-                  }}
+                  onValueChange={(value) => updateField('priority', value)}
                 >
-                  <SelectTrigger 
-                    className="h-12 text-base border-2 border-purple-200/50 focus:border-purple-400/60"
-                    onClick={() => console.log('Priority trigger clicked')}
-                  >
+                  <SelectTrigger className="h-12 text-base border-2 border-purple-200/50 focus:border-purple-400/60">
                     <SelectValue placeholder="בחר רמת עדיפות" />
                   </SelectTrigger>
                   <SelectContent>
@@ -355,15 +332,9 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
                   <Label htmlFor="currency" className="text-sm font-medium mb-1 block">מטבע</Label>
                   <Select 
                     value={formData.currency} 
-                    onValueChange={(value) => {
-                      console.log('Currency select changed to:', value);
-                      updateField('currency', value);
-                    }}
+                    onValueChange={(value) => updateField('currency', value)}
                   >
-                    <SelectTrigger 
-                      className="h-11 text-base"
-                      onClick={() => console.log('Currency trigger clicked')}
-                    >
+                    <SelectTrigger className="h-11 text-base">
                       <SelectValue placeholder="מטבע" />
                     </SelectTrigger>
                     <SelectContent>
@@ -396,10 +367,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
                   <Checkbox
                     id="isPaid"
                     checked={formData.isPaid}
-                    onCheckedChange={(checked) => {
-                      console.log('isPaid checkbox changed to:', checked);
-                      updateField('isPaid', checked);
-                    }}
+                    onCheckedChange={(checked) => updateField('isPaid', checked)}
                     className="w-5 h-5"
                   />
                   <Label htmlFor="isPaid" className="text-base font-medium">שולם</Label>
@@ -409,10 +377,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
                   <Checkbox
                     id="isCompleted"
                     checked={formData.isCompleted}
-                    onCheckedChange={(checked) => {
-                      console.log('isCompleted checkbox changed to:', checked);
-                      updateField('isCompleted', checked);
-                    }}
+                    onCheckedChange={(checked) => updateField('isCompleted', checked)}
                     className="w-5 h-5"
                   />
                   <Label htmlFor="isCompleted" className="text-base font-medium">הושלם</Label>
@@ -427,7 +392,6 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
               type="submit" 
               size="lg"
               className="px-8 py-3 text-lg font-semibold"
-              onClick={() => console.log('Submit button clicked')}
             >
               ✅ צור פרויקט
             </Button>
@@ -436,10 +400,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
               variant="outline" 
               size="lg"
               className="px-8 py-3 text-lg"
-              onClick={() => {
-                console.log('Cancel button clicked');
-                setOpen(false);
-              }}
+              onClick={() => setOpen(false)}
             >
               ❌ ביטול
             </Button>
