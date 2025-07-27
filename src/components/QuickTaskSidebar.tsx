@@ -61,26 +61,27 @@ export const QuickTaskSidebar = () => {
         
         {/* Pending Tasks */}
         {pendingTasks.length > 0 && (
-          <Card>
+          <Card className="bg-gradient-to-br from-blue-500/10 to-purple-600/10 border-blue-300/30 shadow-md">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center gap-2">
+              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-blue-700 dark:text-blue-300">
                 <Square className="h-4 w-4" />
                 משימות ממתינות ({pendingTasks.length})
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-3">
               {pendingTasks.map(task => (
-                <div key={task.id} className="flex items-center gap-2 group">
+                <div key={task.id} className="flex items-center gap-3 group p-2 rounded-lg hover:bg-white/50 dark:hover:bg-white/5 transition-colors">
                   <Checkbox
                     checked={task.completed}
                     onCheckedChange={() => toggleQuickTask(task.id)}
+                    className="border-2 border-blue-400 data-[state=checked]:bg-blue-500"
                   />
-                  <span className="flex-1 text-sm">{task.title}</span>
+                  <span className="flex-1 text-sm font-medium text-foreground">{task.title}</span>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => deleteQuickTask(task.id)}
-                    className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive/80"
                   >
                     <Trash2 className="h-3 w-3" />
                   </Button>
@@ -92,26 +93,27 @@ export const QuickTaskSidebar = () => {
 
         {/* Completed Tasks */}
         {completedTasks.length > 0 && (
-          <Card>
+          <Card className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 border-green-300/30 shadow-md">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center gap-2 text-muted-foreground">
+              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-green-700 dark:text-green-300">
                 <CheckSquare className="h-4 w-4" />
                 הושלמו ({completedTasks.length})
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-3">
               {completedTasks.map(task => (
-                <div key={task.id} className="flex items-center gap-2 group opacity-60">
+                <div key={task.id} className="flex items-center gap-3 group p-2 rounded-lg hover:bg-white/30 dark:hover:bg-white/5 transition-colors opacity-70">
                   <Checkbox
                     checked={task.completed}
                     onCheckedChange={() => toggleQuickTask(task.id)}
+                    className="border-2 border-green-400 data-[state=checked]:bg-green-500"
                   />
-                  <span className="flex-1 text-sm line-through">{task.title}</span>
+                  <span className="flex-1 text-sm font-medium line-through text-muted-foreground">{task.title}</span>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => deleteQuickTask(task.id)}
-                    className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive/80"
                   >
                     <Trash2 className="h-3 w-3" />
                   </Button>

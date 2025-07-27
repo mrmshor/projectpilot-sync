@@ -206,9 +206,9 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                           className="text-2xl font-bold h-14 text-right"
                           dir="rtl"
                         />
-                      ) : (
-                        <h2 className="text-2xl font-bold text-primary break-words text-right">{task.projectName}</h2>
-                      )}
+                       ) : (
+                         <h2 className="text-3xl font-bold bg-gradient-to-r from-primary via-primary/90 to-primary/80 bg-clip-text text-transparent drop-shadow-sm break-words text-right tracking-tight">{task.projectName}</h2>
+                       )}
                     </div>
 
                     {/* Project Description */}
