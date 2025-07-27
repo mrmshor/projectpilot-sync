@@ -3,7 +3,7 @@
 ## 📋 דרישות מקדימות
 - macOS 12+ 
 - Xcode 14+
-- Node.js 18+
+- Node.js 20+
 - Git
 
 ## 🚀 הוראות מהירות
