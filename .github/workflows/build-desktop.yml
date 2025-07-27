@@ -29,8 +29,10 @@ jobs:
     - name: Build web app
       run: npm run build
     
-    - name: Initialize Capacitor
-      run: npx cap init "ProjectPilot Sync" "app.lovable.projectpilot.sync" --web-dir=dist
+    - name: Setup Capacitor
+      run: |
+        # Skip init since capacitor.config.ts already exists
+        npm install @capacitor/core @capacitor/cli @capacitor/electron --save-dev
     
     - name: Add Electron platform
       run: npx cap add @capacitor/electron
