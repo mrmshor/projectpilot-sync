@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Task, WORK_STATUS_LABELS, PRIORITY_LABELS } from '@/types/task';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Task, WORK_STATUS_LABELS, PRIORITY_LABELS, Priority } from '@/types/task';
 import { 
   FolderOpen, 
   User, 
@@ -11,7 +13,8 @@ import {
   Star,
   DollarSign,
   Phone,
-  Mail
+  Mail,
+  Filter
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -21,8 +24,15 @@ interface ProjectNavigationSidebarProps {
 }
 
 export function ProjectNavigationSidebar({ tasks, onProjectSelect }: ProjectNavigationSidebarProps) {
+  const [priorityFilter, setPriorityFilter] = useState<Priority | 'all'>('all');
+
+  // Filter tasks by priority first
+  const filteredTasks = priorityFilter === 'all' 
+    ? tasks 
+    : tasks.filter(task => task.priority === priorityFilter);
+
   // Group tasks by client
-  const clientGroups = tasks.reduce((acc, task) => {
+  const clientGroups = filteredTasks.reduce((acc, task) => {
     const clientName = task.clientName || 'ללא שם לקוח';
     if (!acc[clientName]) {
       acc[clientName] = [];
@@ -73,11 +83,27 @@ export function ProjectNavigationSidebar({ tasks, onProjectSelect }: ProjectNavi
           <FolderOpen className="h-5 w-5" />
           פרויקטים
         </CardTitle>
+        <div className="mt-3">
+          <Select value={priorityFilter} onValueChange={(value: Priority | 'all') => setPriorityFilter(value)}>
+            <SelectTrigger className="w-full text-sm">
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4" />
+                <SelectValue placeholder="סנן לפי דחיפות" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">כל הדחיפויות</SelectItem>
+              <SelectItem value="high">גבוהה</SelectItem>
+              <SelectItem value="medium">בינונית</SelectItem>
+              <SelectItem value="low">נמוכה</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </CardHeader>
       <CardContent className="p-0 h-[calc(100%-4rem)] relative">
         <div className="overflow-y-auto h-full scrollbar-thin absolute inset-0">
           <div className="space-y-2 p-4">
-            {tasks.map((task) => (
+            {filteredTasks.map((task) => (
               <Button
                 key={task.id}
                 variant="ghost"
@@ -103,6 +129,14 @@ export function ProjectNavigationSidebar({ tasks, onProjectSelect }: ProjectNavi
               </Button>
             ))}
 
+            {filteredTasks.length === 0 && tasks.length > 0 && (
+              <div className="text-center py-8">
+                <Filter className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
+                <p className="text-muted-foreground text-sm">אין פרויקטים ברמת דחיפות זו</p>
+                <p className="text-muted-foreground text-xs mt-1">נסה לשנות את הסינון</p>
+              </div>
+            )}
+            
             {tasks.length === 0 && (
               <div className="text-center py-8">
                 <FolderOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />

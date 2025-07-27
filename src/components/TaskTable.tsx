@@ -20,7 +20,8 @@ import {
   Save,
   X,
   ArrowUpDown,
-  Search
+  Search,
+  Filter
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Capacitor } from '@capacitor/core';
@@ -39,6 +40,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState<SortField>('updatedAt');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [priorityFilter, setPriorityFilter] = useState<Priority | 'all'>('all');
   
   // Hook לניהול תיקיות מקומיות
   const { openFolder: openFolderHook, selectFolder } = useLocalFolders();
@@ -61,11 +63,17 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
     return 0;
   });
 
-  const filteredTasks = sortedTasks.filter(task =>
-    task.projectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    task.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    task.projectDescription.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredTasks = sortedTasks.filter(task => {
+    // Filter by search term
+    const matchesSearch = task.projectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.projectDescription.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // Filter by priority
+    const matchesPriority = priorityFilter === 'all' || task.priority === priorityFilter;
+    
+    return matchesSearch && matchesPriority;
+  });
 
   const handleEdit = (task: Task) => {
     setEditingId(task.id);
@@ -176,16 +184,34 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
 
   return (
     <div className="space-y-4">
-      {/* Search Bar */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary h-5 w-5" />
-        <Input
-          placeholder="חפש פרויקטים, לקוחות או תיאורים..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-12 pr-4 h-12 border-2 border-primary/20 focus:border-primary/40 bg-accent/5 shadow-soft"
-          dir="rtl"
-        />
+      {/* Search and Filter Bar */}
+      <div className="flex gap-4 items-center">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary h-5 w-5" />
+          <Input
+            placeholder="חפש פרויקטים, לקוחות או תיאורים..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-12 pr-4 h-12 border-2 border-primary/20 focus:border-primary/40 bg-accent/5 shadow-soft"
+            dir="rtl"
+          />
+        </div>
+        <div className="w-48">
+          <Select value={priorityFilter} onValueChange={(value: Priority | 'all') => setPriorityFilter(value)}>
+            <SelectTrigger className="h-12">
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4" />
+                <SelectValue placeholder="סנן לפי דחיפות" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">כל הדחיפויות</SelectItem>
+              <SelectItem value="high">גבוהה</SelectItem>
+              <SelectItem value="medium">בינונית</SelectItem>
+              <SelectItem value="low">נמוכה</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Project Cards View */}
