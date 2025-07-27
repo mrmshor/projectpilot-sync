@@ -411,17 +411,28 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                               <Mail className="h-4 w-4" />
                             </Button>
                           )}
-                          {task.folderLink && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => openFolderLink(task.folderLink)}
-                              className="p-1 h-auto text-blue-600"
-                              title={`קישור תיקיה: ${task.folderLink}`}
-                            >
-                              <FolderOpen className="h-4 w-4" />
-                            </Button>
-                          )}
+                           {task.folderLink && (
+                             <div className="flex gap-1">
+                               <Button
+                                 variant="ghost"
+                                 size="sm"
+                                 onClick={() => openFolderLink(task.folderLink)}
+                                 className="p-1 h-auto text-blue-600"
+                                 title={`קישור תיקיה: ${task.folderLink}`}
+                               >
+                                 <FolderOpen className="h-4 w-4" />
+                               </Button>
+                               <Button
+                                 variant="ghost"
+                                 size="sm"
+                                 onClick={() => openFolder(task.folderLink)}
+                                 className="p-1 h-auto text-green-600"
+                                 title={`פתח תיקיה: ${task.folderLink}`}
+                               >
+                                 <FolderOpen className="h-4 w-4" />
+                               </Button>
+                             </div>
+                           )}
                         </div>
 
                         {/* Contact details */}

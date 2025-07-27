@@ -34,41 +34,32 @@ export const useLocalFolders = () => {
           return null;
         }
       } else {
-        // בדפדפן - שימוש ב-input file עם webkitdirectory
-        return new Promise((resolve) => {
-          const input = document.createElement('input');
-          input.type = 'file';
-          (input as any).webkitdirectory = true;
-          input.multiple = true;
+        // בדפדפן - קלט ידני לנתיב התיקיה
+        const folderPath = prompt(
+          '📁 הזן נתיב תיקייה למחשב או קישור:\n\n' +
+          '🖥️ דוגמאות לנתיבי מחשב:\n' +
+          '• Windows: C:\\Users\\YourName\\Documents\\Projects\n' +
+          '• Mac: /Users/YourName/Documents/Projects\n\n' +
+          '🌐 דוגמאות לקישורי רשת:\n' +
+          '• iCloud: https://www.icloud.com/iclouddrive/...\n' +
+          '• Google Drive: https://drive.google.com/drive/folders/...\n' +
+          '• OneDrive: https://onedrive.live.com/...\n\n' +
+          'הזן נתיב או קישור:'
+        );
+        
+        if (folderPath && folderPath.trim()) {
+          const cleanPath = folderPath.trim();
+          localStorage.setItem('selectedFolder', cleanPath);
           
-          input.addEventListener('change', (event: any) => {
-            const files = event.target.files;
-            if (files && files.length > 0) {
-              // קבלת נתיב התיקיה מהקובץ הראשון
-              const firstFile = files[0];
-              const pathParts = firstFile.webkitRelativePath.split('/');
-              const folderName = pathParts[0];
-              
-              // יצירת נתיב מקומי מלא (לשמירה ולהצגה)
-              const fullPath = (firstFile as any).path ? 
-                (firstFile as any).path.split('/').slice(0, -(pathParts.length - 1)).join('/') : 
-                folderName;
-              
-              localStorage.setItem('selectedFolder', fullPath);
-              toast.success(`✅ נבחרה תיקייה: ${folderName}`);
-              resolve(fullPath);
-            } else {
-              resolve(null);
-            }
-          });
+          if (cleanPath.startsWith('http')) {
+            toast.success(`🌐 נשמר קישור: ${cleanPath}`);
+          } else {
+            toast.success(`📁 נשמר נתיב: ${cleanPath}`);
+          }
           
-          input.addEventListener('cancel', () => {
-            resolve(null);
-          });
-          
-          // פתיחת דיאלוג בחירת תיקיות
-          input.click();
-        });
+          return cleanPath;
+        }
+        return null;
       }
     } catch (error) {
       console.error('Error selecting folder:', error);
