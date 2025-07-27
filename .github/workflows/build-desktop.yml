@@ -1,4 +1,4 @@
-name: Build Desktop App
+name: Build Desktop Apps
 
 on:
   push:
@@ -9,7 +9,11 @@ on:
 
 jobs:
   build-desktop:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    
     steps:
     - uses: actions/checkout@v4
     
@@ -25,38 +29,53 @@ jobs:
     - name: Build web app
       run: npm run build
     
-    - name: Create simple desktop package
-      run: |
-        mkdir -p desktop-package
-        cp -r dist/* desktop-package/
-        
-        # Create simple launcher scripts
-        cat > desktop-package/start.bat << 'EOF'
-        @echo off
-        start "" "index.html"
-        EOF
-        
-        cat > desktop-package/start.sh << 'EOF'
-        #!/bin/bash
-        open index.html 2>/dev/null || xdg-open index.html 2>/dev/null || start index.html
-        EOF
-        chmod +x desktop-package/start.sh
-        
-        # Create simple readme
-        cat > desktop-package/README.txt << 'EOF'
-        ProjectPilot Sync Desktop
-
-        To run:
-        1. Double-click start.bat (Windows) or start.sh (Mac/Linux)
-        2. Or open index.html in your browser
-        EOF
-        
-        # Create zip
-        cd desktop-package
-        zip -r ../ProjectPilot-Sync-Desktop.zip .
+    - name: Initialize Capacitor
+      run: npx cap init "ProjectPilot Sync" "app.lovable.projectpilot.sync" --web-dir=dist
     
-    - name: Upload Desktop Package
+    - name: Add Electron platform
+      run: npx cap add @capacitor/electron
+    
+    - name: Sync Capacitor
+      run: npx cap sync electron
+    
+    - name: Build Electron App (Mac)
+      if: matrix.os == 'macos-latest'
+      run: |
+        cd electron
+        npm install
+        npm run electron:pack-mac
+    
+    - name: Build Electron App (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        cd electron
+        npm install
+        npm run electron:pack-win
+    
+    - name: Build Electron App (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        cd electron
+        npm install
+        npm run electron:pack-linux
+    
+    - name: Upload Mac App
+      if: matrix.os == 'macos-latest'
       uses: actions/upload-artifact@v4
       with:
-        name: desktop-package  
-        path: ProjectPilot-Sync-Desktop.zip
+        name: ProjectPilot-Sync-Mac
+        path: electron/dist/mac/*.dmg
+        
+    - name: Upload Windows App
+      if: matrix.os == 'windows-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ProjectPilot-Sync-Windows
+        path: electron/dist/win/*.exe
+        
+    - name: Upload Linux App
+      if: matrix.os == 'ubuntu-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ProjectPilot-Sync-Linux
+        path: electron/dist/linux/*.AppImage
