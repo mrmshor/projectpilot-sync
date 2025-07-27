@@ -428,12 +428,6 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                         <div className="text-xs text-muted-foreground space-y-1">
                           {task.clientPhone && <div>📞 {task.clientPhone}</div>}
                           {task.clientPhone2 && <div>📞 {task.clientPhone2}</div>}
-                          {task.folderLink && (
-                            <div className="flex items-center gap-1">
-                              <FolderOpen className="h-3 w-3" />
-                              <span className="truncate">{task.folderLink}</span>
-                            </div>
-                          )}
                           {task.clientWhatsapp && <div>💬 {task.clientWhatsapp}</div>}
                           {task.clientWhatsapp2 && <div>💬 {task.clientWhatsapp2}</div>}
                           {task.clientEmail && <div>✉️ {task.clientEmail}</div>}
