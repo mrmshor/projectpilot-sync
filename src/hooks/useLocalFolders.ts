@@ -34,8 +34,21 @@ export const useLocalFolders = () => {
           return null;
         }
       } else {
-        // בדפדפן - שימוש ב-File System Access API
-        if ('showDirectoryPicker' in window) {
+        // בדפדפן - בדיקה אם אנחנו ב-iframe
+        const isInIframe = window.self !== window.top;
+        
+        if (isInIframe) {
+          // אנחנו ב-iframe (כמו Lovable) - השתמש בקלט ידני
+          const folderPath = prompt('🗂️ הזן נתיב תיקייה או קישור:\n(לדוגמה: C:\\Documents\\Projects או https://drive.google.com/...)');
+          if (folderPath && folderPath.trim()) {
+            const cleanPath = folderPath.trim();
+            localStorage.setItem('selectedFolder', cleanPath);
+            toast.success(`📁 נשמר נתיב: ${cleanPath}`);
+            return cleanPath;
+          }
+          return null;
+        } else if ('showDirectoryPicker' in window) {
+          // דפדפן רגיל עם תמיכה ב-File System Access API
           try {
             const dirHandle = await (window as any).showDirectoryPicker();
             const folderPath = dirHandle.name;
@@ -54,11 +67,12 @@ export const useLocalFolders = () => {
           }
         } else {
           // Fallback - קלט ידני
-          const folderPath = prompt('הזן נתיב תיקייה:');
-          if (folderPath) {
-            localStorage.setItem('selectedFolder', folderPath);
-            toast.success(`📁 נשמר נתיב: ${folderPath}`);
-            return folderPath;
+          const folderPath = prompt('🗂️ הזן נתיב תיקייה או קישור:\n(לדוגמה: C:\\Documents\\Projects או https://drive.google.com/...)');
+          if (folderPath && folderPath.trim()) {
+            const cleanPath = folderPath.trim();
+            localStorage.setItem('selectedFolder', cleanPath);
+            toast.success(`📁 נשמר נתיב: ${cleanPath}`);
+            return cleanPath;
           }
           return null;
         }
