@@ -191,7 +191,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
       {/* Project Cards View */}
       <div className="space-y-6" dir="rtl">
         {filteredTasks.map((task) => (
-          <Card key={task.id} className="mac-card hover-lift overflow-hidden">
+          <Card key={task.id} data-project-id={task.id} className="mac-card hover-lift overflow-hidden">
             <CardContent className="p-0">
               {/* Project Header */}
               <div className="bg-gradient-to-r from-primary/10 via-primary/15 to-primary/10 p-6 border-b border-border/30">

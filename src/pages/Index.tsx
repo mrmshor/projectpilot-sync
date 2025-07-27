@@ -57,13 +57,22 @@ const Index = () => {
 
   const handleProjectSelect = (projectId: string) => {
     setActiveTab('projects');
-    // Optional: scroll to the specific project in the table
+    // Scroll to the specific project in the table
     setTimeout(() => {
       const projectElement = document.querySelector(`[data-project-id="${projectId}"]`);
       if (projectElement) {
-        projectElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        projectElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center',
+          inline: 'nearest'
+        });
+        // Add a brief highlight effect
+        projectElement.classList.add('ring-2', 'ring-primary', 'ring-opacity-50');
+        setTimeout(() => {
+          projectElement.classList.remove('ring-2', 'ring-primary', 'ring-opacity-50');
+        }, 2000);
       }
-    }, 100);
+    }, 150);
   };
 
   if (loading) {
