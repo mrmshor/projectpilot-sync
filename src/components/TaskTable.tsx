@@ -174,8 +174,9 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
         } else if (link.startsWith('icloud://')) {
           window.open(link, '_blank');
         } else {
-          // אם זה לא URL מלא, נסה לפתוח כנתיב קובץ
-          window.open(`file://${link}`, '_blank');
+          // הדפדפן לא יכול לפתוח נתיבים מקומיים מסיבות ביטחון
+          console.error('Cannot open local file paths from browser:', link);
+          alert('❌ לא ניתן לפתוח נתיבים מקומיים מהדפדפן.\n\nלפתיחת תיקיות מקומיות, השתמש בקישור HTTP או iCloud:\n• https://icloud.com/iclouddrive/...\n• http://localhost/path/to/folder');
         }
       } catch (error) {
         console.error('Error opening folder link:', error);
