@@ -245,7 +245,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => openFolder(task.folderPath)}
+                            onClick={() => openLocalFolder(task.folderPath)}
                             className="text-sm text-primary hover:text-primary/80 flex items-center gap-2 p-2"
                           >
                             <FolderOpen className="h-4 w-4" />
@@ -452,7 +452,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                                <Button
                                  variant="ghost"
                                  size="sm"
-                                 onClick={() => openFolder(task.folderLink)}
+                                 onClick={() => openLocalFolder(task.folderLink)}
                                  className="p-1 h-auto text-green-600"
                                  title={`פתח תיקיה: ${task.folderLink}`}
                                >
@@ -473,7 +473,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                              <div className="flex items-center gap-1">
                                <FolderOpen className="h-3 w-3 text-green-600" />
                                <span className="text-green-600 cursor-pointer hover:underline" 
-                                     onClick={() => openFolder(task.folderPath)}>
+                                      onClick={() => openLocalFolder(task.folderPath)}>
                                  תיקיה מקומית
                                </span>
                              </div>
