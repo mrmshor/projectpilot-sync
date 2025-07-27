@@ -34,32 +34,55 @@ export const useLocalFolders = () => {
           return null;
         }
       } else {
-        // בדפדפן - קלט ידני לנתיב התיקיה
-        const folderPath = prompt(
-          '📁 הזן נתיב תיקייה למחשב או קישור:\n\n' +
-          '🖥️ דוגמאות לנתיבי מחשב:\n' +
-          '• Windows: C:\\Users\\YourName\\Documents\\Projects\n' +
-          '• Mac: /Users/YourName/Documents/Projects\n\n' +
-          '🌐 דוגמאות לקישורי רשת:\n' +
-          '• iCloud: https://www.icloud.com/iclouddrive/...\n' +
-          '• Google Drive: https://drive.google.com/drive/folders/...\n' +
-          '• OneDrive: https://onedrive.live.com/...\n\n' +
-          'הזן נתיב או קישור:'
-        );
-        
-        if (folderPath && folderPath.trim()) {
-          const cleanPath = folderPath.trim();
-          localStorage.setItem('selectedFolder', cleanPath);
-          
-          if (cleanPath.startsWith('http')) {
-            toast.success(`🌐 נשמר קישור: ${cleanPath}`);
-          } else {
-            toast.success(`📁 נשמר נתיב: ${cleanPath}`);
+        // בדפדפן - בחירת תיקיה עם File System Access API או webkitdirectory
+        if ('showDirectoryPicker' in window) {
+          // דפדפן מודרני עם File System Access API
+          try {
+            const dirHandle = await (window as any).showDirectoryPicker();
+            const folderPath = dirHandle.name;
+            
+            localStorage.setItem('selectedFolder', folderPath);
+            toast.success(`✅ נבחרה תיקייה: ${folderPath}`);
+            return folderPath;
+          } catch (error) {
+            if (error.name !== 'AbortError') {
+              console.error('Directory picker error:', error);
+              toast.error('❌ שגיאה בבחירת התיקייה');
+            }
+            return null;
           }
-          
-          return cleanPath;
+        } else {
+          // Fallback - שימוש ב-webkitdirectory
+          return new Promise((resolve) => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            (input as any).webkitdirectory = true;
+            input.multiple = true;
+            
+            input.addEventListener('change', (event: any) => {
+              const files = event.target.files;
+              if (files && files.length > 0) {
+                const firstFile = files[0];
+                const pathParts = firstFile.webkitRelativePath.split('/');
+                const folderName = pathParts[0];
+                
+                // שמירת נתיב התיקיה
+                localStorage.setItem('selectedFolder', folderName);
+                toast.success(`✅ נבחרה תיקייה: ${folderName}`);
+                resolve(folderName);
+              } else {
+                resolve(null);
+              }
+            });
+            
+            input.addEventListener('cancel', () => {
+              resolve(null);
+            });
+            
+            // פתיחת דיאלוג בחירת תיקיות
+            input.click();
+          });
         }
-        return null;
       }
     } catch (error) {
       console.error('Error selecting folder:', error);
