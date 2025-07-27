@@ -34,27 +34,45 @@ export const useLocalFolders = () => {
           return null;
         }
       } else {
-        // בדפדפן - שימוש ב-File System Access API בלבד (בלי העלאת קבצים)
-        if ('showDirectoryPicker' in window) {
-          try {
-            const dirHandle = await (window as any).showDirectoryPicker();
-            // קבלת הנתיב המלא של התיקיה
-            const folderPath = dirHandle.name;
-            
-            localStorage.setItem('selectedFolder', folderPath);
-            toast.success(`✅ נבחרה תיקייה: ${folderPath}`);
-            return folderPath;
-          } catch (error) {
-            if (error.name !== 'AbortError') {
-              console.error('Directory picker error:', error);
-              toast.error('❌ שגיאה בבחירת התיקיה');
+        // בדפדפן - שימוש ב-webkitdirectory לבחירת תיקיה (בלי העלאת קבצים)
+        return new Promise((resolve) => {
+          const input = document.createElement('input');
+          input.type = 'file';
+          (input as any).webkitdirectory = true;
+          input.multiple = false; // לא צריך קבצים מרובים
+          
+          input.addEventListener('change', (event: any) => {
+            const files = event.target.files;
+            if (files && files.length > 0) {
+              const firstFile = files[0];
+              // חילוץ נתיב התיקיה מהקובץ הראשון
+              const webkitPath = firstFile.webkitRelativePath;
+              const folderName = webkitPath.split('/')[0];
+              
+              // ניסיון לקבל נתיב מלא אם זמין
+              let fullPath = folderName;
+              if (firstFile.path) {
+                // אם יש נתיב מלא - נחלץ את תיקיית האב
+                const pathParts = firstFile.path.split('/');
+                pathParts.pop(); // הסרת שם הקובץ
+                fullPath = pathParts.join('/');
+              }
+              
+              localStorage.setItem('selectedFolder', fullPath);
+              toast.success(`✅ נבחרה תיקייה: ${folderName}`);
+              resolve(fullPath);
+            } else {
+              resolve(null);
             }
-            return null;
-          }
-        } else {
-          toast.error('❌ הדפדפן לא תומך בבחירת תיקיות');
-          return null;
-        }
+          });
+          
+          input.addEventListener('cancel', () => {
+            resolve(null);
+          });
+          
+          // פתיחת סייר הקבצים
+          input.click();
+        });
       }
     } catch (error) {
       console.error('Error selecting folder:', error);
