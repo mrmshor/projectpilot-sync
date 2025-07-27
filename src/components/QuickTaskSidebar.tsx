@@ -76,7 +76,7 @@ export const QuickTaskSidebar = () => {
                     onCheckedChange={() => toggleQuickTask(task.id)}
                     className="border-2 border-blue-400 data-[state=checked]:bg-blue-500"
                   />
-                  <span className="flex-1 text-sm font-medium text-foreground">{task.title}</span>
+                  <span className="flex-1 text-base font-medium text-foreground">{task.title}</span>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -108,7 +108,7 @@ export const QuickTaskSidebar = () => {
                     onCheckedChange={() => toggleQuickTask(task.id)}
                     className="border-2 border-green-400 data-[state=checked]:bg-green-500"
                   />
-                  <span className="flex-1 text-sm font-medium line-through text-muted-foreground">{task.title}</span>
+                  <span className="flex-1 text-base font-medium line-through text-muted-foreground">{task.title}</span>
                   <Button
                     variant="ghost"
                     size="sm"
