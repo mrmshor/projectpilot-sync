@@ -9,6 +9,7 @@ export interface Task {
   projectName: string;
   projectDescription: string;
   folderPath?: string;
+  folderLink?: string; // קישור לתיקיה או iCloud Drive
   tasks: TaskItem[];
   clientName: string;
   clientPhone?: string;

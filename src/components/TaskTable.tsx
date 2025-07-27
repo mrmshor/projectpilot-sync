@@ -165,6 +165,25 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
     }
   };
 
+  const openFolderLink = (link?: string) => {
+    if (link) {
+      try {
+        // פתיחת קישור תיקיה
+        if (link.startsWith('http') || link.startsWith('https://')) {
+          window.open(link, '_blank');
+        } else if (link.startsWith('icloud://')) {
+          window.open(link, '_blank');
+        } else {
+          // אם זה לא URL מלא, נסה לפתוח כנתיב קובץ
+          window.open(`file://${link}`, '_blank');
+        }
+      } catch (error) {
+        console.error('Error opening folder link:', error);
+        alert(`❌ שגיאה בפתיחת הקישור: ${link}`);
+      }
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* Search Bar */}
@@ -347,6 +366,13 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                           className="text-sm"
                           dir="rtl"
                         />
+                        <Input
+                          placeholder="קישור תיקיה (iCloud/URL)"
+                          value={task.folderLink || ''}
+                          onChange={(e) => handleFieldUpdate(task.id, 'folderLink', e.target.value)}
+                          className="text-sm"
+                          dir="rtl"
+                        />
                       </div>
                     ) : (
                       <div className="space-y-2">
@@ -409,6 +435,17 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                               <Mail className="h-4 w-4" />
                             </Button>
                           )}
+                          {task.folderLink && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => openFolderLink(task.folderLink)}
+                              className="p-1 h-auto text-blue-600"
+                              title={`קישור תיקיה: ${task.folderLink}`}
+                            >
+                              <FolderOpen className="h-4 w-4" />
+                            </Button>
+                          )}
                         </div>
 
                         {/* Contact details */}
@@ -418,6 +455,15 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                           {task.clientWhatsapp && <div>💬 {task.clientWhatsapp}</div>}
                           {task.clientWhatsapp2 && <div>💬 {task.clientWhatsapp2}</div>}
                           {task.clientEmail && <div>✉️ {task.clientEmail}</div>}
+                          {task.folderLink && (
+                            <div className="flex items-center gap-1">
+                              <FolderOpen className="h-3 w-3 text-blue-600" />
+                              <span className="text-blue-600 cursor-pointer hover:underline" 
+                                    onClick={() => openFolderLink(task.folderLink)}>
+                                קישור תיקיה
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}

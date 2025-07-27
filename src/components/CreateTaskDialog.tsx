@@ -19,6 +19,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
     projectName: '',
     projectDescription: '',
     folderPath: '',
+    folderLink: '',
     clientName: '',
     clientPhone: '',
     clientPhone2: '',
@@ -59,6 +60,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
       onCreateTask({
         ...formData,
         folderPath: formData.folderPath || undefined,
+        folderLink: formData.folderLink || undefined,
         tasks: [],
         clientPhone: formData.clientPhone || undefined,
         clientPhone2: formData.clientPhone2 || undefined,
@@ -74,6 +76,7 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
         projectName: '',
         projectDescription: '',
         folderPath: '',
+        folderLink: '',
         clientName: '',
         clientPhone: '',
         clientPhone2: '',
@@ -174,6 +177,21 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
                   dir="rtl"
                   className="text-base h-12"
                 />
+              </div>
+
+              <div>
+                <Label htmlFor="folderLink" className="text-base font-medium mb-2 block">קישור תיקיה (iCloud/URL)</Label>
+                <Input
+                  id="folderLink"
+                  value={formData.folderLink}
+                  onChange={(e) => updateField('folderLink', e.target.value)}
+                  placeholder="https://icloud.com/... או קישור אחר לתיקיה"
+                  dir="rtl"
+                  className="text-base h-12"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  קישור ישיר לתיקיה ב-iCloud Drive או שירות אחסון אחר
+                </p>
               </div>
             </div>
           </div>
