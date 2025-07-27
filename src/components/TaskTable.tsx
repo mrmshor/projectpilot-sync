@@ -40,7 +40,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   
   // Hook לניהול תיקיות מקומיות
-  const { openFolder: openLocalFolder } = useLocalFolders();
+  const { openFolder: openLocalFolder, selectFolder } = useLocalFolders();
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -80,6 +80,17 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
 
   const handleFieldUpdate = (taskId: string, field: string, value: any) => {
     onUpdateTask(taskId, { [field]: value });
+  };
+
+  const handleFolderSelect = async (taskId: string) => {
+    const selectedPath = await selectFolder();
+    if (selectedPath) {
+      handleFieldUpdate(taskId, 'folderPath', selectedPath);
+      // אם זה קישור רשת, נוסיף גם ל-folderLink
+      if (selectedPath.startsWith('http')) {
+        handleFieldUpdate(taskId, 'folderLink', selectedPath);
+      }
+    }
   };
 
   const getPriorityColor = (priority: Priority) => {
@@ -345,14 +356,26 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                           onChange={(e) => handleFieldUpdate(task.id, 'clientEmail', e.target.value)}
                           className="text-sm"
                           dir="rtl"
-                        />
-                        <Input
-                          placeholder="קישור תיקיה (iCloud/URL)"
-                          value={task.folderLink || ''}
-                          onChange={(e) => handleFieldUpdate(task.id, 'folderLink', e.target.value)}
-                          className="text-sm"
-                          dir="rtl"
-                        />
+                         />
+                         <div className="flex gap-2">
+                           <Input
+                             placeholder="קישור תיקיה (iCloud/URL)"
+                             value={task.folderLink || ''}
+                             onChange={(e) => handleFieldUpdate(task.id, 'folderLink', e.target.value)}
+                             className="text-sm flex-1"
+                             dir="rtl"
+                           />
+                           <Button 
+                             type="button"
+                             variant="outline"
+                             size="sm"
+                             onClick={() => handleFolderSelect(task.id)}
+                             className="px-2 gap-1"
+                           >
+                             <FolderOpen className="h-3 w-3" />
+                             בחר
+                           </Button>
+                         </div>
                       </div>
                     ) : (
                       <div className="space-y-2">
@@ -446,15 +469,24 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                           {task.clientWhatsapp && <div>💬 {task.clientWhatsapp}</div>}
                           {task.clientWhatsapp2 && <div>💬 {task.clientWhatsapp2}</div>}
                           {task.clientEmail && <div>✉️ {task.clientEmail}</div>}
-                          {task.folderLink && (
-                            <div className="flex items-center gap-1">
-                              <FolderOpen className="h-3 w-3 text-blue-600" />
-                              <span className="text-blue-600 cursor-pointer hover:underline" 
-                                    onClick={() => openFolderLink(task.folderLink)}>
-                                קישור תיקיה
-                              </span>
-                            </div>
-                          )}
+                           {task.folderPath && (
+                             <div className="flex items-center gap-1">
+                               <FolderOpen className="h-3 w-3 text-green-600" />
+                               <span className="text-green-600 cursor-pointer hover:underline" 
+                                     onClick={() => openFolder(task.folderPath)}>
+                                 תיקיה מקומית
+                               </span>
+                             </div>
+                           )}
+                           {task.folderLink && (
+                             <div className="flex items-center gap-1">
+                               <FolderOpen className="h-3 w-3 text-blue-600" />
+                               <span className="text-blue-600 cursor-pointer hover:underline" 
+                                     onClick={() => openFolderLink(task.folderLink)}>
+                                 קישור תיקיה
+                               </span>
+                             </div>
+                           )}
                         </div>
                       </div>
                     )}
