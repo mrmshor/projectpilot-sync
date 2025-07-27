@@ -89,22 +89,34 @@ export const useLocalFolders = () => {
           }
         }
       } else {
-        // בדפדפן - בדיקה אם זה קישור או נתיב מקומי
-        if (folderPath.startsWith('http') || folderPath.startsWith('file://')) {
+        // בדפדפן - ניסיון פתיחת תיקיות מחשב
+        if (folderPath.startsWith('http') || folderPath.startsWith('https://')) {
+          // קישור רשת - פתיחה רגילה
+          window.open(folderPath, '_blank');
+        } else if (folderPath.startsWith('file://')) {
+          // נתיב file:// - ניסיון פתיחה
           window.open(folderPath, '_blank');
         } else {
-          // נתיב מקומי - הצגת הודעה מועילה
-          toast.error(`❌ לא ניתן לפתוח נתיבים מקומיים מהדפדפן.
-
-💡 פתרונות:
-• העבר לאפליקציה המותקנת במחשב
-• השתמש בקישור HTTP/HTTPS
-• השתמש בקישור iCloud Drive
-• השתמש ב-file:// URLs (במקרים מסוימים)
-
-📁 נתיב: ${folderPath}`, {
-            duration: 6000
-          });
+          // נתיב מקומי - ניסיון פתיחה בדרכים שונות
+          try {
+            // ניסיון 1: יצירת file:// URL
+            const fileUrl = folderPath.startsWith('/') ? 
+              `file://${folderPath}` : 
+              `file:///${folderPath.replace(/\\/g, '/')}`;
+            
+            window.open(fileUrl, '_blank');
+            toast.success(`🔗 נפתח קישור: ${fileUrl}`);
+          } catch (error) {
+            // אם לא עבד - הצגת מידע שימושי
+            toast.info(`📁 נתיב תיקייה: ${folderPath}
+            
+💡 לפתיחה ידנית:
+• Windows: פתח File Explorer והדבק את הנתיב
+• Mac: פתח Finder והשתמש ב-⌘+⇧+G
+• או העתק לדפדפן: file://${folderPath}`, {
+              duration: 8000
+            });
+          }
         }
       }
     } catch (error) {

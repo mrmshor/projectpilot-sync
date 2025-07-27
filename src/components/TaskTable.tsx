@@ -143,15 +143,19 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
   const openFolderLink = (link?: string) => {
     if (link) {
       try {
-        // פתיחת קישור תיקיה
+        // פתיחת קישור תיקיה - קישורי רשת
         if (link.startsWith('http') || link.startsWith('https://')) {
           window.open(link, '_blank');
         } else if (link.startsWith('icloud://')) {
           window.open(link, '_blank');
+        } else if (link.startsWith('file://')) {
+          window.open(link, '_blank');
         } else {
-          // הדפדפן לא יכול לפתוח נתיבים מקומיים מסיבות ביטחון
-          console.error('Cannot open local file paths from browser:', link);
-          alert('❌ לא ניתן לפתוח נתיבים מקומיים מהדפדפן.\n\nלפתיחת תיקיות מקומיות, השתמש בקישור HTTP או iCloud:\n• https://icloud.com/iclouddrive/...\n• http://localhost/path/to/folder');
+          // נתיב מקומי - ניסיון יצירת קישור file://
+          const fileUrl = link.startsWith('/') ? 
+            `file://${link}` : 
+            `file:///${link.replace(/\\/g, '/')}`;
+          window.open(fileUrl, '_blank');
         }
       } catch (error) {
         console.error('Error opening folder link:', error);
