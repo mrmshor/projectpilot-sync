@@ -34,40 +34,64 @@ export const useLocalFolders = () => {
           return null;
         }
       } else {
-        // בדפדפן - שימוש ב-webkitdirectory לבחירת תיקיה (בלי העלאת קבצים)
-        return new Promise((resolve) => {
-          const input = document.createElement('input');
-          input.type = 'file';
-          (input as any).webkitdirectory = true;
-          input.multiple = false; // לא צריך קבצים מרובים
+        // בדפדפן - שתי אפשרויות: בחירת תיקיה או נתיב מלא
+        const choice = confirm(`🗂️ בחירת תיקיה במחשב:
+
+✅ אישור = בחר תיקיה (רק שם התיקיה יישמר)
+❌ ביטול = הזן נתיב מלא (פתיחה ישירה אפשרית)
+
+בחר את האפשרות המועדפת עליך:`);
+        
+        if (!choice) {
+          // הזנת נתיב מלא ידני
+          const manualPath = prompt(`📁 הזן נתיב מלא לתיקיה:
+
+🖥️ דוגמאות:
+• Windows: C:\\Users\\YourName\\Documents\\Projects
+• Mac: /Users/YourName/Documents/Projects
+• iCloud: ~/Library/Mobile Documents/com~apple~CloudDocs/Projects
+
+הזן נתיב מלא:`);
           
-          input.addEventListener('change', (event: any) => {
-            const files = event.target.files;
-            if (files && files.length > 0) {
-              const firstFile = files[0];
-              // רק חילוץ נתיב התיקיה - בלי גישה לתוכן הקבצים
-              const webkitPath = firstFile.webkitRelativePath;
-              const folderName = webkitPath.split('/')[0];
-              
-              // שמירת רק הנתיב - לא הקבצים
-              localStorage.setItem('selectedFolder', folderName);
-              toast.success(`✅ נקשרה תיקייה: ${folderName}`);
-              resolve(folderName);
-              
-              // איפוס הקלט מיד כדי שלא יישארו קבצים
-              input.value = '';
-            } else {
+          if (manualPath && manualPath.trim()) {
+            const cleanPath = manualPath.trim();
+            localStorage.setItem('selectedFolder', cleanPath);
+            toast.success(`✅ נשמר נתיב: ${cleanPath}`);
+            return cleanPath;
+          }
+          return null;
+        } else {
+          // בחירת תיקיה רגילה (רק שם)
+          return new Promise((resolve) => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            (input as any).webkitdirectory = true;
+            input.multiple = false;
+            
+            input.addEventListener('change', (event: any) => {
+              const files = event.target.files;
+              if (files && files.length > 0) {
+                const firstFile = files[0];
+                const webkitPath = firstFile.webkitRelativePath;
+                const folderName = webkitPath.split('/')[0];
+                
+                localStorage.setItem('selectedFolder', folderName);
+                toast.success(`✅ נקשרה תיקיה: ${folderName} (שם בלבד)`);
+                resolve(folderName);
+                
+                input.value = '';
+              } else {
+                resolve(null);
+              }
+            });
+            
+            input.addEventListener('cancel', () => {
               resolve(null);
-            }
+            });
+            
+            input.click();
           });
-          
-          input.addEventListener('cancel', () => {
-            resolve(null);
-          });
-          
-          // פתיחת סייר הקבצים
-          input.click();
-        });
+        }
       }
     } catch (error) {
       console.error('Error selecting folder:', error);
