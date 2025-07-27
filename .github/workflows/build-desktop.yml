@@ -28,87 +28,95 @@ jobs:
         npm ci
         npm run build
     
+    - name: Create Electron app directory
+      run: |
+        node -e "const fs = require('fs'); fs.mkdirSync('electron-app', { recursive: true });"
+    
     - name: Create Electron main file
       run: |
-        mkdir -p electron-app
-        cat > electron-app/main.js << 'EOF'
-        const { app, BrowserWindow } = require('electron');
-        const path = require('path');
-        
-        function createWindow() {
-          const win = new BrowserWindow({
-            width: 1200,
-            height: 800,
-            icon: path.join(__dirname, 'assets/icon.png'),
-            webPreferences: {
-              nodeIntegration: false,
-              contextIsolation: true
-            }
-          });
-          
-          win.loadFile('dist/index.html');
-        }
-        
-        app.whenReady().then(createWindow);
-        
-        app.on('window-all-closed', () => {
-          if (process.platform !== 'darwin') {
-            app.quit();
-          }
-        });
-        
-        app.on('activate', () => {
-          if (BrowserWindow.getAllWindows().length === 0) {
-            createWindow();
-          }
-        });
-        EOF
+        node -e "
+        const fs = require('fs');
+        const mainJs = \`const { app, BrowserWindow } = require('electron');
+const path = require('path');
+
+function createWindow() {
+  const win = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    icon: path.join(__dirname, 'assets/icon.png'),
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  });
+  
+  win.loadFile('dist/index.html');
+}
+
+app.whenReady().then(createWindow);
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
+
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
+  }
+});
+\`;
+        fs.writeFileSync('electron-app/main.js', mainJs);
+        "
     
     - name: Create Electron package.json
       run: |
-        cat > electron-app/package.json << 'EOF'
-        {
-          "name": "projectpilot-sync",
-          "version": "1.0.0",
-          "description": "ProjectPilot Sync Desktop App",
-          "main": "main.js",
-          "scripts": {
-            "electron": "electron .",
-            "build-mac": "electron-builder --mac --publish=never",
-            "build-win": "electron-builder --win --publish=never", 
-            "build-linux": "electron-builder --linux --publish=never"
+        node -e "
+        const fs = require('fs');
+        const packageJson = {
+          name: 'projectpilot-sync',
+          version: '1.0.0',
+          description: 'ProjectPilot Sync Desktop App',
+          main: 'main.js',
+          scripts: {
+            electron: 'electron .',
+            'build-mac': 'electron-builder --mac --publish=never',
+            'build-win': 'electron-builder --win --publish=never',
+            'build-linux': 'electron-builder --linux --publish=never'
           },
-          "build": {
-            "appId": "app.lovable.projectpilot.sync",
-            "productName": "ProjectPilot Sync",
-            "directories": {
-              "output": "dist-electron"
+          build: {
+            appId: 'app.lovable.projectpilot.sync',
+            productName: 'ProjectPilot Sync',
+            directories: {
+              output: 'dist-electron'
             },
-            "files": [
-              "**/*",
-              "dist/**/*"
+            files: [
+              '**/*',
+              'dist/**/*'
             ],
-            "mac": {
-              "target": "dmg",
-              "category": "public.app-category.productivity"
+            mac: {
+              target: 'dmg',
+              category: 'public.app-category.productivity'
             },
-            "win": {
-              "target": "nsis"
+            win: {
+              target: 'nsis'
             },
-            "linux": {
-              "target": "AppImage"
+            linux: {
+              target: 'AppImage'
             }
           },
-          "devDependencies": {
-            "electron": "latest",
-            "electron-builder": "latest"
+          devDependencies: {
+            electron: 'latest',
+            'electron-builder': 'latest'
           }
-        }
-        EOF
+        };
+        fs.writeFileSync('electron-app/package.json', JSON.stringify(packageJson, null, 2));
+        "
     
     - name: Copy built files
       run: |
-        cp -r dist electron-app/
+        node -e "const fs = require('fs'); const path = require('path'); function copyDir(src, dest) { fs.mkdirSync(dest, { recursive: true }); const entries = fs.readdirSync(src, { withFileTypes: true }); for (let entry of entries) { const srcPath = path.join(src, entry.name); const destPath = path.join(dest, entry.name); if (entry.isDirectory()) { copyDir(srcPath, destPath); } else { fs.copyFileSync(srcPath, destPath); } } } copyDir('dist', 'electron-app/dist');"
     
     - name: Install Electron dependencies
       run: |
