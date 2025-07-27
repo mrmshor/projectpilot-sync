@@ -112,11 +112,17 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
   };
 
   const openFolder = async (path?: string) => {
-    if (!path) return;
+    console.log('openFolder called with path:', path);
+    if (!path) {
+      console.log('No path provided');
+      return;
+    }
     
     try {
+      console.log('Calling openFolderHook with path:', path);
       // השתמש ב-hook החדש לפתיחת תיקיות מקומיות
       await openFolderHook(path);
+      console.log('openFolderHook completed successfully');
     } catch (error) {
       console.error('Error opening folder:', error);
     }
