@@ -35,65 +35,34 @@ jobs:
         npm install @capacitor/core @capacitor/cli @capacitor/electron --save-dev
     
     - name: Add Electron platform
-      run: |
-        npx cap add @capacitor/electron
-        
-    - name: Check electron directory
-      run: |
-        ls -la
-        if [ -d "electron" ]; then
-          echo "Electron directory found"
-          ls -la electron/
-        else
-          echo "Electron directory not found, creating basic structure"
-          mkdir -p electron
-          cd electron
-          npm init -y
-          npm install electron electron-builder --save-dev
-        fi
+      run: npx cap add @capacitor/electron
     
     - name: Sync Capacitor
       run: npx cap sync electron
     
-    - name: Build Electron App (Mac)
+    - name: Build Mac App
       if: matrix.os == 'macos-latest'
       run: |
         cd electron
-        if [ ! -f package.json ]; then
-          npm init -y
-          npm install electron electron-builder --save-dev
-        fi
-        # Create a basic build script if it doesn't exist
-        if ! grep -q "electron:pack-mac" package.json; then
-          npm pkg set scripts.electron:pack-mac="electron-builder --mac --publish=never"
-        fi
-        npm run electron:pack-mac || echo "Mac build failed, creating simple package"
+        npm install
+        npm install electron-builder --save-dev
+        npx electron-builder --mac --publish=never
     
-    - name: Build Electron App (Windows)
+    - name: Build Windows App  
       if: matrix.os == 'windows-latest'
       run: |
         cd electron
-        if [ ! -f package.json ]; then
-          npm init -y
-          npm install electron electron-builder --save-dev
-        fi
-        if ! grep -q "electron:pack-win" package.json; then
-          npm pkg set scripts.electron:pack-win="electron-builder --win --publish=never"
-        fi
-        npm run electron:pack-win || echo "Windows build failed, creating simple package"
+        npm install
+        npm install electron-builder --save-dev
+        npx electron-builder --win --publish=never
     
-    - name: Build Electron App (Linux)
-      if: matrix.os == 'ubuntu-latest'
+    - name: Build Linux App
+      if: matrix.os == 'ubuntu-latest' 
       run: |
         cd electron
-        if [ ! -f package.json ]; then
-          npm init -y
-          npm install electron electron-builder --save-dev
-        fi
-        if ! grep -q "electron:pack-linux" package.json; then
-          npm pkg set scripts.electron:pack-linux="electron-builder --linux --publish=never"
-        fi
-        npm run electron:pack-linux || echo "Linux build failed, creating simple package"
+        npm install
+        npm install electron-builder --save-dev
+        npx electron-builder --linux --publish=never
     
     - name: Upload Mac App
       if: matrix.os == 'macos-latest'
