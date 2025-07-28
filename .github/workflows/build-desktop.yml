@@ -34,8 +34,9 @@ jobs:
         
         # Create main.js
         cat > electron-app/main.js << 'EOF'
-        const { app, BrowserWindow } = require('electron');
+        const { app, BrowserWindow, shell } = require('electron');
         const path = require('path');
+        const { readFileSync } = require('fs');
         
         function createWindow() {
           const win = new BrowserWindow({
@@ -43,11 +44,28 @@ jobs:
             height: 800,
             webPreferences: {
               nodeIntegration: false,
-              contextIsolation: true
-            }
+              contextIsolation: true,
+              webSecurity: false
+            },
+            icon: path.join(__dirname, 'assets/icon.png')
           });
           
-          win.loadFile('dist/index.html');
+          // בדיקה שהקובץ קיים
+          const indexPath = path.join(__dirname, 'dist', 'index.html');
+          try {
+            readFileSync(indexPath);
+            win.loadFile(indexPath);
+          } catch (error) {
+            console.error('Cannot find index.html:', error);
+            // fallback - load from URL if file not found
+            win.loadURL('data:text/html,<h1>Error: Cannot load app</h1>');
+          }
+          
+          // פתח קישורים חיצוניים בדפדפן
+          win.webContents.setWindowOpenHandler(({ url }) => {
+            shell.openExternal(url);
+            return { action: 'deny' };
+          });
         }
         
         app.whenReady().then(createWindow);
@@ -91,13 +109,6 @@ jobs:
               "package.json",
               "dist/**/*"
             ],
-            "extraResources": [
-              {
-                "from": "dist",
-                "to": "dist",
-                "filter": ["**/*"]
-              }
-            ],
             "mac": {
               "target": {
                 "target": "dmg",
@@ -110,12 +121,7 @@ jobs:
               "hardenedRuntime": false,
               "entitlements": null,
               "entitlementsInherit": null,
-              "type": "distribution",
-              "extendInfo": {
-                "NSAppleEventsUsageDescription": "This app needs to access Apple Events.",
-                "NSMicrophoneUsageDescription": "This app needs access to microphone.",
-                "NSCameraUsageDescription": "This app needs access to camera."
-              }
+              "type": "distribution"
             },
             "win": {
               "target": {
@@ -137,7 +143,10 @@ jobs:
               "allowToChangeInstallationDirectory": true,
               "createDesktopShortcut": true,
               "createStartMenuShortcut": true,
-              "artifactName": "${productName}-${version}-setup.${ext}"
+              "artifactName": "${productName}-${version}-setup.${ext}",
+              "runAfterFinish": false,
+              "createStartMenuShortcut": true,
+              "perMachine": false
             }
           },
           "devDependencies": {
@@ -148,9 +157,12 @@ jobs:
         EOF
       shell: bash
     
-    - name: Copy built files
+    - name: Copy built files and create assets
       run: |
         cp -r dist electron-app/
+        mkdir -p electron-app/assets
+        # יצירת איקון זמני אם לא קיים
+        touch electron-app/assets/icon.png
       shell: bash
     
     - name: Install Electron dependencies
