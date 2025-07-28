@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuickTasks } from '@/hooks/useQuickTasks';
 import { useQuickTasksExport } from '@/hooks/useQuickTasksExport';
+import { GoogleTasksSettings } from './GoogleTasksSettings';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,7 +11,9 @@ import {
   Trash2, 
   CheckSquare,
   Square,
-  FileText
+  FileText,
+  Settings,
+  Download
 } from 'lucide-react';
 
 export const QuickTaskSidebar = () => {
@@ -21,8 +24,9 @@ export const QuickTaskSidebar = () => {
     deleteQuickTask
   } = useQuickTasks();
 
-  const { exportQuickTasksToNotes } = useQuickTasksExport();
+  const { exportQuickTasksToNotes, exportQuickTasksToGoogleTasks, isGoogleTasksAuthenticated } = useQuickTasksExport();
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [showSettings, setShowSettings] = useState(false);
 
   const handleAddTask = () => {
     if (newTaskTitle.trim()) {
@@ -40,18 +44,43 @@ export const QuickTaskSidebar = () => {
       <div className="p-4 border-b border-border sticky top-0 bg-background/95 backdrop-blur-sm z-10">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold">משימות מהירות</h2>
-          {pendingTasks.length > 0 && (
+          <Button
+            onClick={() => setShowSettings(!showSettings)}
+            size="sm"
+            variant="ghost"
+          >
+            <Settings className="h-4 w-4" />
+          </Button>
+        </div>
+        
+        {showSettings && (
+          <div className="mb-4">
+            <GoogleTasksSettings />
+          </div>
+        )}
+        
+        {pendingTasks.length > 0 && (
+          <div className="flex gap-2 mb-4">
+            <Button
+              onClick={() => exportQuickTasksToGoogleTasks(pendingTasks)}
+              size="sm"
+              variant={isGoogleTasksAuthenticated ? "default" : "outline"}
+              className="flex-1"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              {isGoogleTasksAuthenticated ? 'Google Tasks' : 'התחבר ל-Google'}
+            </Button>
             <Button 
               onClick={() => exportQuickTasksToNotes(pendingTasks)}
               size="sm"
               variant="outline"
-              className="gap-1 text-xs"
+              className="flex-1"
             >
-              <FileText className="h-3 w-3" />
-              שלח לפתקים
+              <FileText className="h-4 w-4 mr-2" />
+              פתקים Mac
             </Button>
-          )}
-        </div>
+          </div>
+        )}
         
         {/* Add Task */}
         <div className="flex gap-2">

@@ -1,7 +1,9 @@
 import { QuickTask } from '@/types/quickTask';
 import { toast } from 'sonner';
+import { useGoogleTasks } from './useGoogleTasks';
 
 export const useQuickTasksExport = () => {
+  const { createTaskListFromQuickTasks, isAuthenticated } = useGoogleTasks();
   const formatQuickTasksForNotes = (tasks: QuickTask[]): string => {
     if (tasks.length === 0) {
       return `📝 רשימת משימות - ${new Date().toLocaleDateString('he-IL')}
@@ -21,6 +23,25 @@ export const useQuickTasksExport = () => {
     notesContent += `📅 נוצר: ${new Date().toLocaleDateString('he-IL')}`;
     
     return notesContent;
+  };
+
+  const exportQuickTasksToGoogleTasks = async (tasks: QuickTask[]) => {
+    try {
+      console.log('exportQuickTasksToGoogleTasks called with tasks:', tasks);
+      
+      if (!isAuthenticated) {
+        toast.error('❌ יש להתחבר ל-Google Tasks תחילה');
+        return;
+      }
+
+      const success = await createTaskListFromQuickTasks(tasks);
+      if (success) {
+        console.log('Task list created successfully');
+      }
+    } catch (error) {
+      console.error('Error exporting quick tasks to Google Tasks:', error);
+      toast.error('❌ שגיאה בייצוא הרשימה ל-Google Tasks');
+    }
   };
 
   const exportQuickTasksToNotes = async (tasks: QuickTask[]) => {
@@ -87,6 +108,8 @@ export const useQuickTasksExport = () => {
 
   return {
     exportQuickTasksToNotes,
-    formatQuickTasksForNotes
+    exportQuickTasksToGoogleTasks,
+    formatQuickTasksForNotes,
+    isGoogleTasksAuthenticated: isAuthenticated
   };
 };
