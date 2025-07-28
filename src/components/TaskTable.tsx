@@ -122,9 +122,7 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
 
   // פונקציה מאוחדת לפתיחת תיקיות (מקומיות וקישורים)
   const openFolder = async (path?: string) => {
-    console.log('openFolder called with path:', path);
     if (!path) {
-      console.log('No path provided');
       return;
     }
     
@@ -142,14 +140,11 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
       }
       
       // עבור נתיבים מקומיים - השתמש ב-hook שמטפל בהם נכון
-      console.log('Calling openFolderHook with path:', path);
       await openFolderHook(path);
-      console.log('openFolderHook completed successfully');
       
     } catch (error) {
       console.error('Error opening folder:', error);
-      // במקום alert, נשתמש ב-toast מה-hook
-      toast.error(`❌ שגיאה בפתיחת התיקיה: ${path}`);
+      toast.error(`❌ שגיאה בפתיחת התיקיה`);
     }
   };
 

@@ -101,30 +101,51 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
         const result = await (window as any).electronAPI.selectFolder();
         if (result.success && result.path) {
           updateField('folderPath', result.path);
+          // הודעה שהתיקיה נקשרה בהצלחה
+          console.log('Folder selected successfully:', result.path);
+        } else if (result.canceled) {
+          console.log('Folder selection was canceled');
+        } else {
+          console.error('Folder selection failed:', result.error);
         }
       } else {
-        // In browser - use directory picker
-        if ('showDirectoryPicker' in window) {
-          const dirHandle = await (window as any).showDirectoryPicker();
-          updateField('folderPath', dirHandle.name);
+        // In browser - prefer manual path entry for better folder opening
+        const manualPath = prompt(`📁 הזן נתיב מלא לתיקיה:
+
+🖥️ דוגמאות:
+• Windows: C:\\Users\\YourName\\Documents\\Projects
+• Mac: /Users/YourName/Documents/Projects
+• iCloud: ~/Library/Mobile Documents/com~apple~CloudDocs/Projects
+
+הזן נתיב מלא:`);
+
+        if (manualPath && manualPath.trim()) {
+          updateField('folderPath', manualPath.trim());
+          console.log('Manual folder path entered:', manualPath.trim());
         } else {
-          // Fallback for older browsers
-          const input = document.createElement('input');
-          input.type = 'file';
-          (input as any).webkitdirectory = true;
-          input.multiple = false;
-          
-          input.addEventListener('change', (event: any) => {
-            const files = event.target.files;
-            if (files && files.length > 0) {
-              const firstFile = files[0];
-              const webkitPath = firstFile.webkitRelativePath;
-              const folderName = webkitPath.split('/')[0];
-              updateField('folderPath', folderName);
-            }
-          });
-          
-          input.click();
+          // Fallback to directory picker
+          if ('showDirectoryPicker' in window) {
+            const dirHandle = await (window as any).showDirectoryPicker();
+            updateField('folderPath', dirHandle.name);
+          } else {
+            // Fallback for older browsers
+            const input = document.createElement('input');
+            input.type = 'file';
+            (input as any).webkitdirectory = true;
+            input.multiple = false;
+            
+            input.addEventListener('change', (event: any) => {
+              const files = event.target.files;
+              if (files && files.length > 0) {
+                const firstFile = files[0];
+                const webkitPath = firstFile.webkitRelativePath;
+                const folderName = webkitPath.split('/')[0];
+                updateField('folderPath', folderName);
+              }
+            });
+            
+            input.click();
+          }
         }
       }
     } catch (error) {

@@ -225,7 +225,8 @@ export const useLocalFolders = () => {
         try {
           const result = await (window as any).electronAPI.openFolder(folderPath);
           if (result.success) {
-            toast.success(`✅ נפתחה תיקיה: ${folderPath}`);
+            // אל תראה הודעת הצלחה - התיקיה נפתחה ישירות
+            return;
           } else {
             toast.error(`❌ לא ניתן לפתוח תיקיה: ${result.error}`);
           }
@@ -269,12 +270,29 @@ export const useLocalFolders = () => {
             return;
           }
           
-          // עבור נתיב מלא - הצגת פרטים ברורים והעתקה
+          // עבור נתיב מלא - נסה לפתוח ישירות קודם
+          const isWindows = folderPath.includes('\\') || folderPath.match(/^[A-Z]:/);
+          const isMac = folderPath.startsWith('/') || folderPath.startsWith('~');
+          
+          // ניסיון פתיחה ישירה של התיקיה
+          try {
+            if (isWindows) {
+              // ניסיון פתיחה ב-Windows
+              const winPath = folderPath.replace(/\//g, '\\');
+              window.open(`file:///${winPath}`, '_blank');
+              return; // אם הצליח - צא מהפונקציה
+            } else if (isMac) {
+              // ניסיון פתיחה ב-Mac
+              window.open(`file://${folderPath}`, '_blank');
+              return; // אם הצליח - צא מהפונקציה
+            }
+          } catch (error) {
+            console.log('Direct open failed, falling back to clipboard');
+          }
+          
+          // אם הפתיחה הישירה נכשלה - העתק ללוח והראה הוראות
           try {
             copyToClipboard(folderPath);
-            
-            const isWindows = folderPath.includes('\\') || folderPath.match(/^[A-Z]:/);
-            const isMac = folderPath.startsWith('/') || folderPath.startsWith('~');
             
             let osInstructions = '';
             if (isWindows) {
@@ -293,14 +311,14 @@ export const useLocalFolders = () => {
 • הדבק את הנתיב בשורת הכתובת`;
             }
             
-            toast.success(`📋 הנתיב הועתק ללוח! 
+            toast.info(`📋 הנתיב הועתק ללוח! 
 
 ${osInstructions}
 
 📁 נתיב: ${folderPath}
 
 💡 טיפ: שמור קיצורי דרך לתיקיות נפוצות בדסקטופ`, {
-              duration: 12000
+              duration: 8000
             });
             
           } catch (error) {
