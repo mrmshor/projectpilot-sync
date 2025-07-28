@@ -109,7 +109,13 @@ jobs:
               "gatekeeperAssess": false,
               "hardenedRuntime": false,
               "entitlements": null,
-              "entitlementsInherit": null
+              "entitlementsInherit": null,
+              "type": "distribution",
+              "extendInfo": {
+                "NSAppleEventsUsageDescription": "This app needs to access Apple Events.",
+                "NSMicrophoneUsageDescription": "This app needs access to microphone.",
+                "NSCameraUsageDescription": "This app needs access to camera."
+              }
             },
             "win": {
               "target": {
