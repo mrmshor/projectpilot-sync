@@ -13,12 +13,13 @@ export const useQuickTasksExport = () => {
 
     let notesContent = `📝 רשימת משימות - ${new Date().toLocaleDateString('he-IL')}\n\n`;
     
-    pendingTasks.forEach((task, index) => {
-      notesContent += `${index + 1}. ☐ ${task.title}\n`;
+    pendingTasks.forEach((task) => {
+      notesContent += `☐ ${task.title}\n`;
     });
     
-    notesContent += `\n📊 סיכום:\n`;
-    notesContent += `• סה"כ משימות פתוחות: ${pendingTasks.length}\n`;
+    notesContent += `\n📊 סה"כ משימות פתוחות: ${pendingTasks.length}\n`;
+    notesContent += `📅 נוצר: ${new Date().toLocaleDateString('he-IL')}\n\n`;
+    notesContent += `💡 כדי לסמן משימה כהושלמה - סמן ✓ ליד הטקסט`;
     
     return notesContent;
   };
@@ -26,49 +27,32 @@ export const useQuickTasksExport = () => {
   const exportQuickTasksToNotes = async (tasks: QuickTask[]) => {
     try {
       console.log('exportQuickTasksToNotes called with tasks:', tasks);
-      const pendingTasks = tasks.filter(task => !task.completed);
+      const notesContent = formatQuickTasksForNotes(tasks);
+      console.log('formatted content:', notesContent);
       
-      if (pendingTasks.length === 0) {
-        toast.success('🎉 כל המשימות הושלמו! אין משימות ליצירת פתקים');
-        return;
-      }
-
       // בדיקה שelectronAPI קיים
       if (!(window as any).electronAPI) {
         console.error('electronAPI not available');
         toast.error('❌ האפליקציה לא זמינה במצב שולחני');
-        // יצירת פתק אחד עם כל המשימות כ-fallback
-        const notesContent = formatQuickTasksForNotes(tasks);
         await fallbackToClipboard(notesContent);
         return;
       }
       
-      // יצירת פתק נפרד לכל משימה
-      console.log(`Creating ${pendingTasks.length} separate notes...`);
-      let successCount = 0;
-      
-      for (const task of pendingTasks) {
-        const taskNoteContent = `☐ ${task.title}
-
-📅 נוצר: ${new Date().toLocaleDateString('he-IL')}
-
-✅ כדי לסמן כהושלם - סמן את התיבה למעלה`;
-        
-        try {
-          const success = await (window as any).electronAPI.createNote(taskNoteContent);
-          if (success) {
-            successCount++;
-          }
-        } catch (error) {
-          console.error(`Failed to create note for task ${task.id}:`, error);
+      // אפליקציית שולחן - יצירה ישירה של פתק אחד
+      console.log('Attempting to create note via electronAPI...');
+      try {
+        const success = await (window as any).electronAPI.createNote(notesContent);
+        console.log('createNote result:', success);
+        if (success) {
+          console.log('Note created successfully');
+          toast.success('📝 נוצר פתק חדש באפליקציית הפתקים');
+        } else {
+          console.log('Failed to create note, fallback to clipboard');
+          await fallbackToClipboard(notesContent);
+          toast.success('📝 הועתק ללוח - הדבק באפליקציית הפתקים');
         }
-      }
-      
-      if (successCount > 0) {
-        toast.success(`📝 נוצרו ${successCount} פתקים באפליקציית הפתקים`);
-      } else {
-        console.log('Failed to create any notes, fallback to clipboard');
-        const notesContent = formatQuickTasksForNotes(tasks);
+      } catch (error) {
+        console.error('Failed to create note:', error);
         await fallbackToClipboard(notesContent);
         toast.success('📝 הועתק ללוח - הדבק באפליקציית הפתקים');
       }
