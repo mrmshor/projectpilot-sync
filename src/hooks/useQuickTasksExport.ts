@@ -27,10 +27,24 @@ export const useQuickTasksExport = () => {
     try {
       const notesContent = formatQuickTasksForNotes(tasks);
       
-      // בדיקה אם זה מכשיר Apple
-      const isAppleDevice = /Mac|iPhone|iPad|iPod/.test(navigator.userAgent);
+      // בדיקה אם זה אפליקציית Electron או Mac
+      const isElectron = !!(window as any).electronAPI;
+      const isMac = navigator.platform.toLowerCase().includes('mac');
       
-      if (isAppleDevice && 'navigator' in window && 'share' in navigator) {
+      if (isElectron && isMac) {
+        // באפליקציית Electron על Mac - פתיחה ישירה של Notes עם הטקסט
+        try {
+          // יצירת URL מיוחד לפתיחת Notes עם הטקסט
+          const notesUrl = `notes://new?body=${encodeURIComponent(notesContent)}`;
+          window.open(notesUrl, '_blank');
+          toast.success('📝 נפתח פתק חדש באפליקציית הפתקים');
+        } catch (error) {
+          // אם נכשל, נעתיק ללוח ונפתח Notes
+          fallbackToClipboard(notesContent);
+          window.open('notes://', '_blank');
+          toast.success('📝 הועתק ללוח ונפתחה אפליקציית הפתקים - הדבק את התוכן');
+        }
+      } else if (isMac && 'navigator' in window && 'share' in navigator) {
         // שימוש ב-Web Share API על מכשירי Apple
         (navigator as any).share({
           title: 'רשימת משימות',

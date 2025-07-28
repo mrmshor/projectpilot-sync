@@ -134,7 +134,19 @@ export const useLocalFolders = () => {
   // פונקציה לבחירת תיקייה
   const selectFolder = useCallback(async (): Promise<string | null> => {
     try {
-      if (isNative) {
+      if (isElectron) {
+        // באפליקציית Electron - השתמש בדיאלוג המובנה
+        const result = await (window as any).electronAPI.selectFolder();
+        if (result.success && result.path) {
+          toast.success(`✅ נבחרה תיקיה: ${result.path}`);
+          return result.path;
+        } else if (result.canceled) {
+          return null; // משתמש ביטל
+        } else {
+          toast.error('❌ שגיאה בבחירת התיקייה');
+          return null;
+        }
+      } else if (isNative) {
         // בחירת תיקייה באפליקציה נטיבית
         const result = await Filesystem.requestPermissions();
         if (result.publicStorage === 'granted') {
@@ -222,7 +234,10 @@ export const useLocalFolders = () => {
     try {
       if (isElectron) {
         // באפליקציית Electron - פתיחה ישירה בלי הודעות
-        await (window as any).electronAPI.openFolder(folderPath);
+        const result = await (window as any).electronAPI.openFolder(folderPath);
+        if (!result.success) {
+          console.error('Failed to open folder:', result.error);
+        }
         return;
       } else if (isNative) {
         // באפליקציה נטיבית - ניתן לפתוח בחלקם
