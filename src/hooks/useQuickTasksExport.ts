@@ -29,46 +29,31 @@ export const useQuickTasksExport = () => {
       const notesContent = formatQuickTasksForNotes(tasks);
       console.log('formatted content:', notesContent);
       
-      // בדיקה אם זה אפליקציית Electron או Mac
+      // בדיקה אם זה אפליקציית Electron
       const isElectron = !!(window as any).electronAPI;
-      const isMac = navigator.platform.toLowerCase().includes('mac');
-      console.log('isElectron:', isElectron, 'isMac:', isMac);
+      console.log('isElectron:', isElectron);
       
-      if (isElectron && isMac) {
-        // באפליקציית Electron על Mac - פתיחה ישירה של Notes עם הטקסט
-        console.log('Attempting to create note via electronAPI...');
-        try {
-          // שימוש ב-electronAPI ליצירת פתק
-          const success = await (window as any).electronAPI.createNote(notesContent);
-          if (success) {
-            console.log('Note created successfully');
-            toast.success('📝 נוצר פתק חדש באפליקציית הפתקים');
-          } else {
-            console.log('Failed to create note, fallback to clipboard');
-            fallbackToClipboard(notesContent);
-            toast.success('📝 הועתק ללוח - הדבק באפליקציית הפתקים');
-          }
-        } catch (error) {
-          console.error('Failed to create note:', error);
-          // אם נכשל, נעתיק ללוח
-          fallbackToClipboard(notesContent);
+      if (!isElectron) {
+        toast.error('❌ פונקציה זו זמינה רק באפליקציית השולחן');
+        return;
+      }
+      
+      // באפליקציית Electron - יצירה ישירה של פתק
+      console.log('Attempting to create note via electronAPI...');
+      try {
+        const success = await (window as any).electronAPI.createNote(notesContent);
+        if (success) {
+          console.log('Note created successfully');
+          toast.success('📝 נוצר פתק חדש באפליקציית הפתקים');
+        } else {
+          console.log('Failed to create note, fallback to clipboard');
+          await fallbackToClipboard(notesContent);
           toast.success('📝 הועתק ללוח - הדבק באפליקציית הפתקים');
         }
-      } else if (isMac && 'navigator' in window && 'share' in navigator) {
-        // שימוש ב-Web Share API על מכשירי Apple
-        (navigator as any).share({
-          title: 'רשימת משימות',
-          text: notesContent
-        }).then(() => {
-          toast.success('📝 הרשימה נשלחה לשיתוף - בחר באפליקציית הפתקים');
-        }).catch((error: any) => {
-          console.log('Share failed:', error);
-          // אם השיתוף נכשל, נעבור להעתקה ללוח
-          fallbackToClipboard(notesContent);
-        });
-      } else {
-        // Fallback להעתקה ללוח
-        fallbackToClipboard(notesContent);
+      } catch (error) {
+        console.error('Failed to create note:', error);
+        await fallbackToClipboard(notesContent);
+        toast.success('📝 הועתק ללוח - הדבק באפליקציית הפתקים');
       }
     } catch (error) {
       console.error('Error exporting quick tasks to notes:', error);

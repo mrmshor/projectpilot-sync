@@ -21,7 +21,7 @@ import {
   FileText
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useNotesExport } from '@/hooks/useNotesExport';
+import { useQuickTasksExport } from '@/hooks/useQuickTasksExport';
 
 const Index = () => {
   const { tasks, loading, createTask, updateTask, deleteTask, getTaskStats, exportToCSV } = useTasks();
@@ -29,7 +29,7 @@ const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   
   const { toast } = useToast();
-  const { exportToNotes, downloadAsFile } = useNotesExport();
+  const { exportQuickTasksToNotes } = useQuickTasksExport();
   const stats = getTaskStats();
 
   const handleCreateTask = (taskData: Parameters<typeof createTask>[0]) => {
@@ -59,11 +59,14 @@ const Index = () => {
   };
 
   const handleExportToNotes = () => {
-    exportToNotes(tasks);
-  };
-
-  const handleDownloadFile = () => {
-    downloadAsFile(tasks);
+    // ממיר את המשימות הרגילות לפורמט QuickTask ושולח לפתקים
+    const quickTasksFormat = tasks.map(task => ({
+      id: task.id,
+      title: `${task.projectName} - ${task.clientName}`,
+      completed: task.isCompleted,
+      createdAt: new Date()
+    }));
+    exportQuickTasksToNotes(quickTasksFormat);
   };
 
   const handleProjectSelect = (projectId: string) => {

@@ -91,6 +91,30 @@ ipcMain.handle('select-folder', async (event) => {
   }
 });
 
+ipcMain.handle('create-note', async (event, content) => {
+  const { exec } = require('child_process');
+  
+  return new Promise((resolve) => {
+    // יצירת AppleScript ליצירת פתק חדש
+    const appleScript = `osascript -e 'tell application "Notes"
+      activate
+      tell account "iCloud"
+        make new note with properties {body:"${content.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"}
+      end tell
+    end tell'`;
+    
+    exec(appleScript, (error, stdout, stderr) => {
+      if (error) {
+        console.error('AppleScript error:', error);
+        resolve(false);
+      } else {
+        console.log('AppleScript success:', stdout);
+        resolve(true);
+      }
+    });
+  });
+});
+
 app.on('web-contents-created', (event, contents) => {
   contents.on('new-window', (navigationEvent, navigationUrl) => {
     event.preventDefault();

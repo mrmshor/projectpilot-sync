@@ -134,170 +134,61 @@ export const useLocalFolders = () => {
     return false;
   };
 
-  // פונקציה לבחירת תיקייה
+  // פונקציה לבחירת תיקייה - רק עבור Electron
   const selectFolder = useCallback(async (): Promise<string | null> => {
     try {
       console.log('selectFolder called, isElectron:', isElectron);
       console.log('electronAPI available:', !!(window as any).electronAPI);
       
-      if (isElectron) {
-        // באפליקציית Electron - השתמש בדיאלוג המובנה של המערכת
-        console.log('Calling electronAPI.selectFolder...');
-        const result = await (window as any).electronAPI.selectFolder();
-        console.log('selectFolder result:', result);
-        if (result && result.success && result.path) {
-          localStorage.setItem('selectedFolder', result.path);
-          toast.success(`✅ נבחרה תיקיה: ${result.path}`);
-          return result.path;
-        } else if (result && result.canceled) {
-          return null; // משתמש ביטל
-        } else {
-          toast.error('❌ שגיאה בבחירת התיקייה');
-          return null;
-        }
-      } else if (isNative) {
-        // בחירת תיקייה באפליקציה נטיבית
-        const result = await Filesystem.requestPermissions();
-        if (result.publicStorage === 'granted') {
-          // פתיחת תיקיית Documents
-          const documentsPath = await Filesystem.getUri({
-            directory: Directory.Documents,
-            path: ''
-          });
-          
-          toast.success('✅ גישה לתיקיות אושרה!');
-          return documentsPath.uri;
-        } else {
-          toast.error('❌ נדרשת הרשאה לגישה לתיקיות');
-          return null;
-        }
+      if (!isElectron) {
+        toast.error('❌ פונקציה זו זמינה רק באפליקציית השולחן');
+        return null;
+      }
+      
+      // באפליקציית Electron - השתמש בדיאלוג המובנה של המערכת
+      console.log('Calling electronAPI.selectFolder...');
+      const result = await (window as any).electronAPI.selectFolder();
+      console.log('selectFolder result:', result);
+      
+      if (result && result.success && result.path) {
+        localStorage.setItem('selectedFolder', result.path);
+        toast.success(`✅ נבחרה תיקיה: ${result.path}`);
+        return result.path;
+      } else if (result && result.canceled) {
+        return null; // משתמש ביטל
       } else {
-        // בדפדפן - שתי אפשרויות: בחירת תיקיה או נתיב מלא
-        const choice = confirm(`🗂️ בחירת תיקיה במחשב:
-
-✅ אישור = בחר תיקיה (רק שם התיקיה יישמר)
-❌ ביטול = הזן נתיב מלא (פתיחה ישירה אפשרית)
-
-בחר את האפשרות המועדפת עליך:`);
-        
-        if (!choice) {
-          // הזנת נתיב מלא ידני
-          const manualPath = prompt(`📁 הזן נתיב מלא לתיקיה:
-
-🖥️ דוגמאות:
-• Windows: C:\\Users\\YourName\\Documents\\Projects
-• Mac: /Users/YourName/Documents/Projects
-• iCloud: ~/Library/Mobile Documents/com~apple~CloudDocs/Projects
-
-הזן נתיב מלא:`);
-          
-          if (manualPath && manualPath.trim()) {
-            const cleanPath = manualPath.trim();
-            localStorage.setItem('selectedFolder', cleanPath);
-            toast.success(`✅ נשמר נתיב: ${cleanPath}`);
-            return cleanPath;
-          }
-          return null;
-        } else {
-          // בחירת תיקיה רגילה (רק שם)
-          return new Promise((resolve) => {
-            const input = document.createElement('input');
-            input.type = 'file';
-            (input as any).webkitdirectory = true;
-            input.multiple = false;
-            
-            input.addEventListener('change', (event: any) => {
-              const files = event.target.files;
-              if (files && files.length > 0) {
-                const firstFile = files[0];
-                const webkitPath = firstFile.webkitRelativePath;
-                const folderName = webkitPath.split('/')[0];
-                
-                localStorage.setItem('selectedFolder', folderName);
-                toast.success(`✅ נקשרה תיקיה: ${folderName} (שם בלבד)`);
-                resolve(folderName);
-                
-                input.value = '';
-              } else {
-                resolve(null);
-              }
-            });
-            
-            input.addEventListener('cancel', () => {
-              resolve(null);
-            });
-            
-            input.click();
-          });
-        }
+        toast.error('❌ שגיאה בבחירת התיקייה');
+        return null;
       }
     } catch (error) {
       console.error('Error selecting folder:', error);
       toast.error('❌ שגיאה בבחירת התיקייה');
       return null;
     }
-  }, [isNative]);
+  }, [isElectron]);
 
-  // פונקציה לפתיחת תיקייה
+  // פונקציה לפתיחת תיקייה - רק עבור Electron
   const openFolder = useCallback(async (folderPath: string) => {
     try {
       console.log('openFolder called with path:', folderPath);
       console.log('isElectron:', isElectron);
       console.log('electronAPI available:', !!(window as any).electronAPI);
       
-      if (isElectron) {
-        // באפליקציית Electron - פתיחה ישירה של התיקיה בסייר הקבצים
-        console.log('Calling electronAPI.openFolder...');
-        await (window as any).electronAPI.openFolder(folderPath);
-        console.log('openFolder completed successfully');
+      if (!isElectron) {
+        toast.error('❌ פונקציה זו זמינה רק באפליקציית השולחן');
         return;
-      } else if (isNative) {
-        // באפליקציה נטיבית - ניתן לפתוח בחלקם
-        if (Capacitor.getPlatform() === 'ios') {
-          // iOS - פתיחת Files app
-          window.open(`shareddocuments://${folderPath}`, '_system');
-        } else if (Capacitor.getPlatform() === 'android') {
-          // Android - ניסיון פתיחת File Manager
-          window.open(`content://com.android.externalstorage.documents/document/${encodeURIComponent(folderPath)}`, '_system');
-        }
-      } else {
-        // בדפדפן - ניסיון פתיחת תיקיות מחשב
-        if (folderPath.startsWith('http') || folderPath.startsWith('https://')) {
-          // קישור רשת - פתיחה רגילה
-          window.open(folderPath, '_blank');
-        } else if (folderPath.startsWith('file://')) {
-          // נתיב file:// - ניסיון פתיחה
-          window.open(folderPath, '_blank');
-        } else {
-          // נתיב מקומי - אסור להציג הודעות! רק פתח את התיקיה
-          console.log('Opening local folder path:', folderPath);
-          
-          // אם זה שם תיקיה בלבד (בלי סלאש), פשוט אל תעשה כלום
-          if (!folderPath.includes('/') && !folderPath.includes('\\')) {
-            console.log('Simple folder name detected, doing nothing');
-            return;
-          }
-          
-          // עבור נתיב מלא - נסה לפתוח ישירות
-          const isWindows = folderPath.includes('\\') || folderPath.match(/^[A-Z]:/);
-          const isMac = folderPath.startsWith('/') || folderPath.startsWith('~');
-          
-          try {
-            if (isWindows) {
-              window.open(`file:///${folderPath.replace(/\//g, '\\')}`, '_blank');
-            } else if (isMac) {
-              window.open(`file://${folderPath}`, '_blank');
-            }
-          } catch (error) {
-            console.log('Failed to open folder directly');
-          }
-        }
       }
+      
+      // באפליקציית Electron - פתיחה ישירה של התיקיה בסייר הקבצים
+      console.log('Calling electronAPI.openFolder...');
+      await (window as any).electronAPI.openFolder(folderPath);
+      console.log('openFolder completed successfully');
+      toast.success(`✅ תיקיה נפתחה: ${folderPath}`);
     } catch (error) {
       console.error('Error opening folder:', error);
       toast.error('❌ שגיאה בפתיחת התיקייה');
     }
-  }, [isNative, isElectron]);
+  }, [isElectron]);
 
   // פונקציה לקריאת תוכן תיקייה
   const readFolderContents = useCallback(async (path: string): Promise<FolderInfo[]> => {
