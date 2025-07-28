@@ -21,43 +21,60 @@ export const useGoogleTasks = () => {
   // Initialize Google APIs
   const initializeGoogleAPI = useCallback(async (clientId: string, apiKey: string) => {
     try {
+      console.log('🚀 Starting Google API initialization...', { clientId: clientId.substring(0, 20) + '...', apiKey: apiKey.substring(0, 10) + '...' });
       setIsLoading(true);
       setConfig({ clientId, apiKey });
 
       // Load Google API
       if (!window.gapi) {
+        console.log('📦 Loading Google API script...');
         await loadScript('https://apis.google.com/js/api.js');
+        console.log('✅ Google API script loaded');
+      } else {
+        console.log('✅ Google API already loaded');
       }
 
       // Load Google Identity Services
       if (!window.google?.accounts) {
+        console.log('🔐 Loading Google Identity Services...');
         await loadScript('https://accounts.google.com/gsi/client');
+        console.log('✅ Google Identity Services loaded');
+      } else {
+        console.log('✅ Google Identity Services already loaded');
       }
 
       // Initialize GAPI client
+      console.log('🔧 Initializing GAPI client...');
       await new Promise((resolve) => {
         window.gapi.load('client', resolve);
       });
+      console.log('✅ GAPI client loaded');
 
+      console.log('🔧 Initializing GAPI with API key and discovery docs...');
       await window.gapi.client.init({
         apiKey: apiKey,
         discoveryDocs: [DISCOVERY_DOC],
       });
+      console.log('✅ GAPI client initialized');
 
       // Initialize OAuth2
+      console.log('🔐 Initializing OAuth2 token client...');
       const client = window.google.accounts.oauth2.initTokenClient({
         client_id: clientId,
         scope: SCOPES,
         callback: (response: any) => {
+          console.log('🔐 OAuth callback received:', response);
           if (response.error) {
-            console.error('OAuth error:', response.error);
-            toast.error('❌ שגיאה באימות Google');
+            console.error('❌ OAuth error:', response.error);
+            toast.error('❌ שגיאה באימות Google: ' + response.error);
             return;
           }
+          console.log('✅ OAuth successful, setting authenticated');
           setIsAuthenticated(true);
           toast.success('✅ מחובר ל-Google Tasks בהצלחה');
         },
       });
+      console.log('✅ OAuth2 token client initialized');
 
       setGapi(window.gapi);
       setTokenClient(client);
@@ -72,14 +89,21 @@ export const useGoogleTasks = () => {
 
   // Authenticate user
   const authenticate = useCallback(() => {
+    console.log('🔑 Starting authentication...');
     if (!tokenClient) {
+      console.error('❌ Token client not initialized');
       toast.error('❌ יש לאתחל את API תחילה');
       return;
     }
 
-    if (gapi.client.getToken() === null) {
+    const currentToken = gapi.client.getToken();
+    console.log('🔍 Current token:', currentToken);
+    
+    if (currentToken === null) {
+      console.log('🔐 No existing token, requesting with consent...');
       tokenClient.requestAccessToken({ prompt: 'consent' });
     } else {
+      console.log('🔐 Existing token found, requesting access...');
       tokenClient.requestAccessToken({ prompt: '' });
     }
   }, [tokenClient, gapi]);
