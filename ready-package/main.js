@@ -14,9 +14,12 @@ function createWindow() {
     show: false
   });
   
-  // טען את האפליקציה עם הנתיב הנכון
+  // טען את האפליקציה כ-URL מלא
   const indexPath = path.join(__dirname, 'dist', 'index.html');
-  win.loadFile(indexPath);
+  win.loadURL(`file://${indexPath}`);
+  
+  // פתח את DevTools לניפוי שגיאות
+  win.webContents.openDevTools();
   
   win.once('ready-to-show', () => {
     win.show();
