@@ -3,23 +3,22 @@ import { toast } from 'sonner';
 
 export const useQuickTasksExport = () => {
   const formatQuickTasksForNotes = (tasks: QuickTask[]): string => {
-    const pendingTasks = tasks.filter(task => !task.completed);
-    
-    if (pendingTasks.length === 0) {
+    if (tasks.length === 0) {
       return `📝 רשימת משימות - ${new Date().toLocaleDateString('he-IL')}
 
 🎉 כל המשימות הושלמו!`;
     }
 
+    // יצירת רשימת checklist עבור Notes app
     let notesContent = `📝 רשימת משימות - ${new Date().toLocaleDateString('he-IL')}\n\n`;
     
-    pendingTasks.forEach((task) => {
-      notesContent += `☐ ${task.title}\n`;
+    tasks.forEach((task) => {
+      // שימוש בפורמט markdown checklist שמזוהה על ידי Notes app
+      notesContent += `- [ ] ${task.title}\n`;
     });
     
-    notesContent += `\n📊 סה"כ משימות פתוחות: ${pendingTasks.length}\n`;
-    notesContent += `📅 נוצר: ${new Date().toLocaleDateString('he-IL')}\n\n`;
-    notesContent += `💡 כדי לסמן משימה כהושלמה - סמן ✓ ליד הטקסט`;
+    notesContent += `\n📊 סה"כ משימות: ${tasks.length}\n`;
+    notesContent += `📅 נוצר: ${new Date().toLocaleDateString('he-IL')}`;
     
     return notesContent;
   };
