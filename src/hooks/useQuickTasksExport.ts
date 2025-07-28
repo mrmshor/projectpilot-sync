@@ -9,12 +9,12 @@ export const useQuickTasksExport = () => {
 🎉 כל המשימות הושלמו!`;
     }
 
-    // יצירת רשימת checklist עבור Notes app
+    // יצירת כותרת הפתק
     let notesContent = `📝 רשימת משימות - ${new Date().toLocaleDateString('he-IL')}\n\n`;
     
+    // הוספת המשימות כרשימת checklist
     tasks.forEach((task) => {
-      // שימוש בפורמט markdown checklist שמזוהה על ידי Notes app
-      notesContent += `- [ ] ${task.title}\n`;
+      notesContent += `${task.title}\n`;
     });
     
     notesContent += `\n📊 סה"כ משימות: ${tasks.length}\n`;
