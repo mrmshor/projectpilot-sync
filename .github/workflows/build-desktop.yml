@@ -1,4 +1,4 @@
-name: Build Electron App
+name: Build Desktop App
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-mac:
     runs-on: macos-latest
     
     steps:
@@ -27,50 +27,71 @@ jobs:
     - name: Build React app
       run: npm run build
       
-    - name: Setup Mac installer directory
+    - name: Create Mac installer directory
       run: |
+        echo "🍎 הכנת תיקיית Mac installer..."
+        rm -rf mac-installer
         mkdir -p mac-installer/dist
         mkdir -p mac-installer/assets
+        
+    - name: Copy built files
+      run: |
+        echo "📋 העתקת קבצים..."
+        # Copy React build
         cp -r dist/* mac-installer/dist/
+        
+        # Copy Electron files
         cp electron-main.js mac-installer/main.js
         cp preload.js mac-installer/preload.js
         cp electron-package.json mac-installer/package.json
-        cp -r ready-package/assets mac-installer/ 2>/dev/null || echo "No assets found"
+        
+        # Create default icon if doesn't exist
+        if [ ! -f "ready-package/assets/icon.png" ]; then
+          mkdir -p ready-package/assets
+          # Create a simple default icon (base64 encoded 1x1 PNG)
+          echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" | base64 -d > ready-package/assets/icon.png
+        fi
+        
+        # Copy assets
+        cp -r ready-package/assets mac-installer/ 2>/dev/null || echo "יצירת תיקיית assets ריקה"
+        
+    - name: Verify files
+      run: |
+        echo "✅ בדיקת קבצים שהועתקו:"
+        ls -la mac-installer/
+        ls -la mac-installer/main.js mac-installer/preload.js mac-installer/package.json
+        ls -la mac-installer/assets/ || echo "אין תיקיית assets"
         
     - name: Install Electron dependencies
       run: |
+        echo "⚡ התקנת תלויות Electron..."
         cd mac-installer
         npm install electron@^28.0.0 electron-builder@^24.13.3
         
-    - name: Build Electron app (DMG)
+    - name: Build Electron DMG
       run: |
+        echo "🔨 בניית DMG..."
         cd mac-installer
+        # Build for both Intel and Apple Silicon
         npx electron-builder --mac dmg --publish never
         
-    - name: Upload DMG artifact
+    - name: List build output
+      run: |
+        echo "📦 קובצי Build שנוצרו:"
+        find mac-installer/dist -name "*.dmg" -type f | head -10
+        
+    - name: Upload DMG artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ProjectPilot-Sync-Mac
+        name: ProjectPilot-Sync-Mac-DMG
         path: mac-installer/dist/*.dmg
+        retention-days: 30
         
-    - name: Create Release (on tag)
-      if: startsWith(github.ref, 'refs/tags/')
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload build info
+      uses: actions/upload-artifact@v4
       with:
-        tag_name: ${{ github.ref }}
-        release_name: ProjectPilot Sync ${{ github.ref }}
-        draft: false
-        prerelease: false
-        
-    - name: Upload Release Asset (on tag)
-      if: startsWith(github.ref, 'refs/tags/')
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: mac-installer/dist/*.dmg
-        asset_name: ProjectPilot-Sync-Mac.dmg
-        asset_content_type: application/x-apple-diskimage
+        name: build-info
+        path: |
+          mac-installer/package.json
+          mac-installer/dist/*.json
+        retention-days: 7

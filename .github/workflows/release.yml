@@ -1,12 +1,18 @@
-name: Release
+name: Release DMG
 
 on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.0)'
+        required: true
+        default: 'v1.0.0'
 
 jobs:
-  release:
+  release-mac:
     runs-on: macos-latest
     
     steps:
@@ -27,36 +33,53 @@ jobs:
       
     - name: Prepare Mac installer
       run: |
+        echo "🍎 הכנת Mac installer..."
+        rm -rf mac-installer
         mkdir -p mac-installer/dist
         mkdir -p mac-installer/assets
+        
+        # Copy React build
         cp -r dist/* mac-installer/dist/
+        
+        # Copy Electron files
         cp electron-main.js mac-installer/main.js
         cp preload.js mac-installer/preload.js
         cp electron-package.json mac-installer/package.json
-        # Copy icon if exists
-        if [ -f "ready-package/assets/icon.png" ]; then
-          cp -r ready-package/assets mac-installer/
-        else
-          mkdir -p mac-installer/assets
-          touch mac-installer/assets/icon.png
+        
+        # Create/copy icon
+        if [ ! -f "ready-package/assets/icon.png" ]; then
+          mkdir -p ready-package/assets
+          # Create default icon
+          echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" | base64 -d > ready-package/assets/icon.png
         fi
+        cp -r ready-package/assets mac-installer/
         
     - name: Install Electron dependencies
       run: |
         cd mac-installer
         npm install electron@^28.0.0 electron-builder@^24.13.3
         
-    - name: Build Electron app
+    - name: Build Electron DMG
       run: |
         cd mac-installer
         npx electron-builder --mac dmg --publish never
         
-    - name: Get DMG file name
+    - name: Get DMG files info
       id: get_dmg
       run: |
-        DMG_FILE=$(find mac-installer/dist -name "*.dmg" -type f | head -n 1)
-        echo "dmg_path=$DMG_FILE" >> $GITHUB_OUTPUT
-        echo "dmg_name=$(basename $DMG_FILE)" >> $GITHUB_OUTPUT
+        # Find all DMG files
+        DMG_FILES=$(find mac-installer/dist -name "*.dmg" -type f)
+        echo "Found DMG files:"
+        echo "$DMG_FILES"
+        
+        # Get the first DMG file for the main release
+        MAIN_DMG=$(echo "$DMG_FILES" | head -n 1)
+        echo "main_dmg_path=$MAIN_DMG" >> $GITHUB_OUTPUT
+        echo "main_dmg_name=$(basename $MAIN_DMG)" >> $GITHUB_OUTPUT
+        
+        # Create a comma-separated list of all DMG files
+        ALL_DMGS=$(echo "$DMG_FILES" | tr '\n' ',' | sed 's/,$//')
+        echo "all_dmgs=$ALL_DMGS" >> $GITHUB_OUTPUT
         
     - name: Create Release
       id: create_release
@@ -64,35 +87,74 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref_name }}
-        release_name: ProjectPilot Sync ${{ github.ref_name }}
+        tag_name: ${{ github.ref_name || github.event.inputs.version }}
+        release_name: ProjectPilot Sync ${{ github.ref_name || github.event.inputs.version }}
         body: |
-          ## ProjectPilot Sync for Mac
+          # ProjectPilot Sync for Mac 🍎
           
-          ### הורדה והתקנה:
-          1. הורד את קובץ ה-DMG מטה
-          2. פתח את הקובץ
-          3. גרור את האפליקציה לתיקיית Applications
-          4. פתח את האפליקציה
+          ## הורדה והתקנה מהירה
           
-          ### תכונות:
-          - ניהול פרויקטים ומשימות
-          - בחירת תיקיות ישירות ממערכת ההפעלה
-          - יצירת פתקים באפליקציית הפתקים של Mac
-          - ממשק משתמש מותאם לעברית
+          1. **הורד** את קובץ ה-DMG המתאים למעבד שלך:
+             - **Apple Silicon (M1/M2/M3)**: הורד את הקובץ עם `arm64`
+             - **Intel Mac**: הורד את הקובץ עם `x64`
+             - **לא בטוח?** הורד את שני הקבצים ונסה תחילה את `arm64`
           
-          ### דרישות מערכת:
-          - macOS 10.14 ומעלה
-          - Intel או Apple Silicon
+          2. **פתח** את קובץ ה-DMG
+          
+          3. **גרור** את האפליקציה לתיקיית Applications
+          
+          4. **פתח** את האפליקציה (לחץ ימני ← "פתח" אם מופיעה אזהרת אבטחה)
+          
+          ## ✨ תכונות חדשות
+          
+          - 🎯 ניהול פרויקטים מתקדם עם מעקב סטטוס ועדיפויות
+          - 📝 משימות מהירות עם ייצוא לפתקים של Mac
+          - 📁 בחירה ופתיחה ישירה של תיקיות ממערכת ההפעלה
+          - 🎨 ממשק מותאם לעברית (RTL) עם מצב כהה ובהיר
+          - 💰 מעקב מחירים ותשלומים
+          - 📞 ניהול פרטי לקוחות מלאים
+          
+          ## 🔧 דרישות מערכת
+          
+          - **macOS**: 10.14 (Mojave) ומעלה
+          - **זיכרון**: 4GB RAM מומלץ
+          - **שטח דיסק**: 100MB פנויים
+          - **מעבד**: Intel x64 או Apple Silicon (M1/M2/M3)
+          
+          ## 🆘 פתרון בעיות
+          
+          **אזהרת אבטחה?**
+          - לחץ ימני על האפליקציה ← "פתח"
+          - או: System Preferences → Security & Privacy → "Open Anyway"
+          
+          **האפליקציה לא נפתחת?**
+          - ודא שהורדת את הקובץ הנכון למעבד שלך
+          - נסה להפעיל מ-Applications ולא מ-Downloads
+          
+          ---
+          
+          💬 **תמיכה**: פתח Issue ב-GitHub או צור קשר
+          
+          🇮🇱 **מפותח באהבה לקהילת היוצרים הישראלית**
         draft: false
         prerelease: false
         
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
+    - name: Upload DMG files to release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ steps.get_dmg.outputs.dmg_path }}
-        asset_name: ${{ steps.get_dmg.outputs.dmg_name }}
-        asset_content_type: application/x-apple-diskimage
+      run: |
+        # Upload all DMG files
+        UPLOAD_URL="${{ steps.create_release.outputs.upload_url }}"
+        
+        for dmg_file in $(find mac-installer/dist -name "*.dmg" -type f); do
+          filename=$(basename "$dmg_file")
+          echo "📤 מעלה: $filename"
+          
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Content-Type: application/x-apple-diskimage" \
+            "${UPLOAD_URL%\{*}?name=${filename}" \
+            --data-binary @"$dmg_file"
+        done
