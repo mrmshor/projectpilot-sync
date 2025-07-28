@@ -13,6 +13,8 @@ if [ ! -d "dist" ]; then
     exit 1
 fi
 
+echo "✅ הבנייה הושלמה בהצלחה"
+
 # שלב 2: נקה ויצור תיקיית mac-installer
 echo "🧹 מנקה ויוצר תיקיית mac-installer..."
 rm -rf mac-installer

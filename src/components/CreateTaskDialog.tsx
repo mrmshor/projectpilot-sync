@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useLocalFolders } from '../hooks/useLocalFolders';
+import React, { useState } from 'react';
 import { Task, WorkStatus, Priority, WORK_STATUS_LABELS, PRIORITY_LABELS, CURRENCIES } from '@/types/task';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

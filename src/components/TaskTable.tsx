@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useLocalFolders } from '../hooks/useLocalFolders';
 import { toast } from 'sonner';
 import { Task, TaskItem, WorkStatus, Priority, WORK_STATUS_LABELS, PRIORITY_LABELS, CURRENCIES } from '@/types/task';
 import { TaskListDialog } from '@/components/TaskListDialog';
@@ -42,8 +41,31 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [priorityFilter, setPriorityFilter] = useState<Priority | 'all'>('all');
   
-  // Hook לניהול תיקיות מקומיות
-  const { openFolder: openFolderHook, selectFolder } = useLocalFolders();
+  // פונקציית פתיחת תיקייה ישירה
+  const openFolderHook = async (folderPath: string) => {
+    try {
+      console.log('openFolder called with path:', folderPath);
+      
+      if (!(window as any).electronAPI) {
+        console.error('electronAPI not available');
+        toast.error('❌ פתיחת תיקייה זמינה רק באפליקציית השולחן');
+        return;
+      }
+      
+      const result = await (window as any).electronAPI.openFolder(folderPath);
+      console.log('openFolder result:', result);
+      
+      if (result && result.success) {
+        toast.success(`✅ תיקיה נפתחה: ${folderPath}`);
+      } else {
+        console.error('openFolder failed:', result);
+        toast.error('❌ שגיאה בפתיחת התיקייה');
+      }
+    } catch (error) {
+      console.error('Error opening folder:', error);
+      toast.error('❌ שגיאה בפתיחת התיקייה');
+    }
+  };
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -92,13 +114,23 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
   };
 
   const handleFolderSelect = async (taskId: string) => {
-    const selectedPath = await selectFolder();
-    if (selectedPath) {
-      handleFieldUpdate(taskId, 'folderPath', selectedPath);
-      // אם זה קישור רשת, נוסיף גם ל-folderLink
-      if (selectedPath.startsWith('http')) {
-        handleFieldUpdate(taskId, 'folderLink', selectedPath);
+    try {
+      if (!(window as any).electronAPI) {
+        console.error('electronAPI not available');
+        toast.error('❌ בחירת תיקייה זמינה רק באפליקציית השולחן');
+        return;
       }
+      
+      const result = await (window as any).electronAPI.selectFolder();
+      console.log('handleFolderSelect result:', result);
+      
+      if (result && result.success && result.path) {
+        handleFieldUpdate(taskId, 'folderPath', result.path);
+        toast.success(`✅ נבחרה תיקיה: ${result.path}`);
+      }
+    } catch (error) {
+      console.error('Error selecting folder:', error);
+      toast.error('❌ שגיאה בבחירת התיקייה');
     }
   };
 

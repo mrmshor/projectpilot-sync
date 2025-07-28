@@ -1,4 +1,4 @@
-name: Create Release
+name: Release
 
 on:
   push:
@@ -6,77 +6,93 @@ on:
       - 'v*'
 
 jobs:
-  build-and-release:
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
-    steps:
-    - uses: actions/checkout@v4
+  release:
+    runs-on: macos-latest
     
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: '18'
         cache: 'npm'
-    
+        
     - name: Install dependencies
-      run: npm ci
-    
-    - name: Build web app
+      run: npm install
+      
+    - name: Build React app
       run: npm run build
-    
-    - name: Create desktop package
+      
+    - name: Prepare Mac installer
       run: |
-        mkdir -p desktop-app
-        cp -r dist/* desktop-app/
+        mkdir -p mac-installer/dist
+        mkdir -p mac-installer/assets
+        cp -r dist/* mac-installer/dist/
+        cp electron-main.js mac-installer/main.js
+        cp preload.js mac-installer/preload.js
+        cp electron-package.json mac-installer/package.json
+        # Copy icon if exists
+        if [ -f "ready-package/assets/icon.png" ]; then
+          cp -r ready-package/assets mac-installer/
+        else
+          mkdir -p mac-installer/assets
+          touch mac-installer/assets/icon.png
+        fi
         
-        # Create launcher for macOS
-        cat > desktop-app/ProjectPilot-Sync.command << 'EOF'
-        #!/bin/bash
-        cd "$(dirname "$0")"
-        echo "Starting ProjectPilot Sync..."
-        open "http://localhost:3000" &
-        python3 -m http.server 3000
-        EOF
-        chmod +x desktop-app/ProjectPilot-Sync.command
+    - name: Install Electron dependencies
+      run: |
+        cd mac-installer
+        npm install electron@^28.0.0 electron-builder@^24.13.3
         
-        # Create launcher for Windows
-        cat > desktop-app/ProjectPilot-Sync.bat << 'EOF'
-        @echo off
-        cd /d "%~dp0"
-        echo Starting ProjectPilot Sync...
-        start "" "http://localhost:3000"
-        python -m http.server 3000
-        EOF
+    - name: Build Electron app
+      run: |
+        cd mac-installer
+        npx electron-builder --mac dmg --publish never
         
-        # Create README
-        cat > desktop-app/README.txt << 'EOF'
-        ProjectPilot Sync - Desktop App
-
-        For macOS: Double-click ProjectPilot-Sync.command
-        For Windows: Double-click ProjectPilot-Sync.bat
-        For any system: Open index.html in your browser
-        EOF
+    - name: Get DMG file name
+      id: get_dmg
+      run: |
+        DMG_FILE=$(find mac-installer/dist -name "*.dmg" -type f | head -n 1)
+        echo "dmg_path=$DMG_FILE" >> $GITHUB_OUTPUT
+        echo "dmg_name=$(basename $DMG_FILE)" >> $GITHUB_OUTPUT
         
-        cd desktop-app
-        zip -r ../ProjectPilot-Sync-Desktop-${{ github.ref_name }}.zip .
-    
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: ProjectPilot Sync ${{ github.ref }}
+        tag_name: ${{ github.ref_name }}
+        release_name: ProjectPilot Sync ${{ github.ref_name }}
+        body: |
+          ## ProjectPilot Sync for Mac
+          
+          ### הורדה והתקנה:
+          1. הורד את קובץ ה-DMG מטה
+          2. פתח את הקובץ
+          3. גרור את האפליקציה לתיקיית Applications
+          4. פתח את האפליקציה
+          
+          ### תכונות:
+          - ניהול פרויקטים ומשימות
+          - בחירת תיקיות ישירות ממערכת ההפעלה
+          - יצירת פתקים באפליקציית הפתקים של Mac
+          - ממשק משתמש מותאם לעברית
+          
+          ### דרישות מערכת:
+          - macOS 10.14 ומעלה
+          - Intel או Apple Silicon
         draft: false
         prerelease: false
-    
+        
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./ProjectPilot-Sync-Desktop-${{ github.ref_name }}.zip
-        asset_name: ProjectPilot-Sync-Desktop-${{ github.ref_name }}.zip
-        asset_content_type: application/zip
+        asset_path: ${{ steps.get_dmg.outputs.dmg_path }}
+        asset_name: ${{ steps.get_dmg.outputs.dmg_name }}
+        asset_content_type: application/x-apple-diskimage
