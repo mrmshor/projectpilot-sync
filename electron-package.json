@@ -18,10 +18,12 @@
       "assets/**/*"
     ],
     "mac": {
-      "target": {
-        "target": "dmg",
-        "arch": ["x64", "arm64"]
-      },
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        }
+      ],
       "category": "public.app-category.productivity",
       "identity": null,
       "gatekeeperAssess": false,
@@ -29,29 +31,38 @@
       "entitlements": null,
       "entitlementsInherit": null,
       "icon": "assets/icon.png",
-      "artifactName": "ProjectPilot-Sync-${version}-Mac-${arch}.${ext}"
+      "artifactName": "ProjectPilot-Sync-${version}-Mac-${arch}.${ext}",
+      "extendInfo": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLName": "folder protocol",
+            "CFBundleURLSchemes": ["folder"]
+          }
+        ]
+      }
     },
     "dmg": {
-      "title": "ProjectPilot Sync",
+      "title": "ProjectPilot Sync - גרור לתיקיית Applications",
       "icon": "assets/icon.png",
-      "background": null,
+      "iconSize": 100,
       "window": {
-        "width": 600,
+        "width": 660,
         "height": 400
       },
       "contents": [
         {
-          "x": 150,
-          "y": 200,
+          "x": 180,
+          "y": 170,
           "type": "file"
         },
         {
-          "x": 450,
-          "y": 200,
+          "x": 480,
+          "y": 170,
           "type": "link",
           "path": "/Applications"
         }
-      ]
+      ],
+      "backgroundColor": "#f0f0f0"
     }
   },
   "devDependencies": {

@@ -62,7 +62,12 @@ jobs:
     - name: Build Electron DMG
       run: |
         cd mac-installer
-        npx electron-builder --mac dmg --publish never
+        # Build for both architectures separately for better compatibility
+        npx electron-builder --mac dmg --x64 --arm64 --publish never
+        
+        # Show what was built
+        echo "📦 קבצי DMG שנבנו:"
+        find dist -name "*.dmg" -type f -exec ls -lh {} \;
         
     - name: Get DMG files info
       id: get_dmg

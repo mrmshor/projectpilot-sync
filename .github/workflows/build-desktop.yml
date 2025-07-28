@@ -72,8 +72,12 @@ jobs:
       run: |
         echo "🔨 בניית DMG..."
         cd mac-installer
-        # Build for both Intel and Apple Silicon
-        npx electron-builder --mac dmg --publish never
+        # Build for both Intel and Apple Silicon with better settings
+        npx electron-builder --mac dmg --x64 --arm64 --publish never
+        
+        # Verify DMG files were created
+        echo "📦 קבצי DMG שנוצרו:"
+        find dist -name "*.dmg" -type f -exec ls -lh {} \;
         
     - name: List build output
       run: |
