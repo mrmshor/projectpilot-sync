@@ -70,6 +70,27 @@ ipcMain.handle('show-item-in-folder', async (event, itemPath) => {
   }
 });
 
+// Handle folder selection dialog
+ipcMain.handle('select-folder', async (event) => {
+  const { dialog } = require('electron');
+  try {
+    const result = await dialog.showOpenDialog({
+      properties: ['openDirectory'],
+      title: 'בחר תיקיה',
+      buttonLabel: 'בחר תיקיה זו'
+    });
+    
+    if (!result.canceled && result.filePaths.length > 0) {
+      return { success: true, path: result.filePaths[0] };
+    } else {
+      return { success: false, canceled: true };
+    }
+  } catch (error) {
+    console.error('Error selecting folder:', error);
+    return { success: false, error: error.message };
+  }
+});
+
 app.on('web-contents-created', (event, contents) => {
   contents.on('new-window', (navigationEvent, navigationUrl) => {
     event.preventDefault();

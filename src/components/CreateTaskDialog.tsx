@@ -16,7 +16,6 @@ interface CreateTaskDialogProps {
 
 export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
   const [open, setOpen] = useState(false);
-  const { selectFolder } = useLocalFolders();
   const [formData, setFormData] = useState({
     projectName: '',
     projectDescription: '',
@@ -95,13 +94,41 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
   };
 
   const handleFolderSelect = async () => {
-    const selectedPath = await selectFolder();
-    if (selectedPath) {
-      updateField('folderPath', selectedPath);
-      // אם זה קישור רשת, נוסיף גם ל-folderLink
-      if (selectedPath.startsWith('http')) {
-        updateField('folderLink', selectedPath);
+    try {
+      // Use native file picker for folder selection
+      if ((window as any).electronAPI) {
+        // In Electron app - use native folder dialog
+        const result = await (window as any).electronAPI.selectFolder();
+        if (result.success && result.path) {
+          updateField('folderPath', result.path);
+        }
+      } else {
+        // In browser - use directory picker
+        if ('showDirectoryPicker' in window) {
+          const dirHandle = await (window as any).showDirectoryPicker();
+          updateField('folderPath', dirHandle.name);
+        } else {
+          // Fallback for older browsers
+          const input = document.createElement('input');
+          input.type = 'file';
+          (input as any).webkitdirectory = true;
+          input.multiple = false;
+          
+          input.addEventListener('change', (event: any) => {
+            const files = event.target.files;
+            if (files && files.length > 0) {
+              const firstFile = files[0];
+              const webkitPath = firstFile.webkitRelativePath;
+              const folderName = webkitPath.split('/')[0];
+              updateField('folderPath', folderName);
+            }
+          });
+          
+          input.click();
+        }
       }
+    } catch (error) {
+      console.error('Error selecting folder:', error);
     }
   };
 

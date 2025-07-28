@@ -17,9 +17,11 @@ import {
   Users,
   DollarSign,
   PanelLeftOpen,
-  PanelLeftClose
+  PanelLeftClose,
+  FileText
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useNotesExport } from '@/hooks/useNotesExport';
 
 const Index = () => {
   const { tasks, loading, createTask, updateTask, deleteTask, getTaskStats, exportToCSV } = useTasks();
@@ -27,6 +29,7 @@ const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   
   const { toast } = useToast();
+  const { exportToNotes, downloadAsFile } = useNotesExport();
   const stats = getTaskStats();
 
   const handleCreateTask = (taskData: Parameters<typeof createTask>[0]) => {
@@ -53,6 +56,14 @@ const Index = () => {
       title: 'ייצוא הושלם',
       description: 'המשימות יוצאו לקובץ CSV.',
     });
+  };
+
+  const handleExportToNotes = () => {
+    exportToNotes(tasks);
+  };
+
+  const handleDownloadFile = () => {
+    downloadAsFile(tasks);
   };
 
   const handleProjectSelect = (projectId: string) => {
@@ -131,6 +142,10 @@ const Index = () => {
                 <Button variant="outline" onClick={handleExport} className="gap-2 mac-button hover-lift press-scale">
                   <Download className="h-4 w-4" />
                   ייצא CSV
+                </Button>
+                <Button variant="outline" onClick={handleExportToNotes} className="gap-2 mac-button hover-lift press-scale">
+                  <FileText className="h-4 w-4" />
+                  שלח לפתקים
                 </Button>
                 <Button variant="outline" onClick={() => window.open('/mobile', '_blank')} className="gap-2 mac-button hover-lift press-scale">
                   <Users className="h-4 w-4" />
