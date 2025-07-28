@@ -27,6 +27,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     }
     return { success: true, path: result.filePaths[0] };
   },
+  createNote: (content) => {
+    console.log('electronAPI.createNote called with content length:', content.length);
+    return ipcRenderer.invoke('create-note', content);
+  },
   isElectron: true
 });
 

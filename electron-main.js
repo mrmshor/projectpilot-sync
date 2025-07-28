@@ -56,3 +56,27 @@ ipcMain.handle('open-folder', async (event, folderPath) => {
 ipcMain.handle('show-item-in-folder', async (event, itemPath) => {
   return shell.showItemInFolder(itemPath);
 });
+
+ipcMain.handle('create-note', async (event, content) => {
+  const { exec } = require('child_process');
+  
+  return new Promise((resolve) => {
+    // יצירת AppleScript ליצירת פתק חדש
+    const appleScript = `osascript -e 'tell application "Notes"
+      activate
+      tell account "iCloud"
+        make new note with properties {body:"${content.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"}
+      end tell
+    end tell'`;
+    
+    exec(appleScript, (error, stdout, stderr) => {
+      if (error) {
+        console.error('AppleScript error:', error);
+        resolve(false);
+      } else {
+        console.log('AppleScript success:', stdout);
+        resolve(true);
+      }
+    });
+  });
+});

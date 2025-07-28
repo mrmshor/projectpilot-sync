@@ -23,7 +23,7 @@ export const useQuickTasksExport = () => {
     return notesContent;
   };
 
-  const exportQuickTasksToNotes = (tasks: QuickTask[]) => {
+  const exportQuickTasksToNotes = async (tasks: QuickTask[]) => {
     try {
       console.log('exportQuickTasksToNotes called with tasks:', tasks);
       const notesContent = formatQuickTasksForNotes(tasks);
@@ -36,32 +36,20 @@ export const useQuickTasksExport = () => {
       
       if (isElectron && isMac) {
         // באפליקציית Electron על Mac - פתיחה ישירה של Notes עם הטקסט
-        console.log('Attempting to create note via AppleScript...');
+        console.log('Attempting to create note via electronAPI...');
         try {
-          // יצירת AppleScript לפתיחת Notes עם התוכן
-          const { exec } = require('child_process');
-          
-          // פקודת AppleScript ליצירת פתק חדש עם התוכן
-          const appleScript = `osascript -e 'tell application "Notes"
-            activate
-            tell account "iCloud"
-              make new note with properties {body:"${notesContent.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"}
-            end tell
-          end tell'`;
-          
-          exec(appleScript, (error, stdout, stderr) => {
-            if (error) {
-              console.error('AppleScript error:', error);
-              fallbackToClipboard(notesContent);
-              toast.success('📝 הועתק ללוח - הדבק באפליקציית הפתקים');
-            } else {
-              console.log('AppleScript success:', stdout);
-              toast.success('📝 נוצר פתק חדש באפליקציית הפתקים');
-            }
-          });
-          
+          // שימוש ב-electronAPI ליצירת פתק
+          const success = await (window as any).electronAPI.createNote(notesContent);
+          if (success) {
+            console.log('Note created successfully');
+            toast.success('📝 נוצר פתק חדש באפליקציית הפתקים');
+          } else {
+            console.log('Failed to create note, fallback to clipboard');
+            fallbackToClipboard(notesContent);
+            toast.success('📝 הועתק ללוח - הדבק באפליקציית הפתקים');
+          }
         } catch (error) {
-          console.error('Failed to execute AppleScript:', error);
+          console.error('Failed to create note:', error);
           // אם נכשל, נעתיק ללוח
           fallbackToClipboard(notesContent);
           toast.success('📝 הועתק ללוח - הדבק באפליקציית הפתקים');
