@@ -14,7 +14,11 @@ function createWindow() {
     show: false
   });
   
-  win.loadFile('dist/index.html');
+  // נסה קודם עם URL מקומי לטיפול בנתיבים יחסיים
+  win.loadFile('dist/index.html').catch(() => {
+    // אם זה לא עובד, נסה עם file:// protocol
+    win.loadURL(`file://${path.join(__dirname, 'dist', 'index.html')}`);
+  });
   
   win.once('ready-to-show', () => {
     win.show();
