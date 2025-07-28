@@ -1,4 +1,4 @@
-const { app, BrowserWindow, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('path');
 
 function createWindow() {
@@ -8,7 +8,8 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      webSecurity: false
+      webSecurity: false,
+      preload: path.join(__dirname, 'preload.js')
     },
     icon: path.join(__dirname, 'assets/icon.png'),
     show: false
@@ -21,8 +22,14 @@ function createWindow() {
   win.once('ready-to-show', () => {
     win.show();
   });
-  
+
+  // Handle folder opening
   win.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('file://') || url.startsWith('folder://')) {
+      const folderPath = url.replace('folder://', '').replace('file://', '');
+      shell.openPath(decodeURIComponent(folderPath));
+      return { action: 'deny' };
+    }
     shell.openExternal(url);
     return { action: 'deny' };
   });
@@ -39,6 +46,27 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
+  }
+});
+
+// Handle IPC messages for folder operations
+ipcMain.handle('open-folder', async (event, folderPath) => {
+  try {
+    await shell.openPath(folderPath);
+    return { success: true };
+  } catch (error) {
+    console.error('Error opening folder:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('show-item-in-folder', async (event, itemPath) => {
+  try {
+    shell.showItemInFolder(itemPath);
+    return { success: true };
+  } catch (error) {
+    console.error('Error showing item in folder:', error);
+    return { success: false, error: error.message };
   }
 });
 

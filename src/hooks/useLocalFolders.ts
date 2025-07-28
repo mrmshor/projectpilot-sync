@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { toast } from 'sonner';
@@ -12,7 +12,13 @@ export interface FolderInfo {
 
 export const useLocalFolders = () => {
   const [isNative, setIsNative] = useState(Capacitor.isNativePlatform());
+  const [isElectron, setIsElectron] = useState(false);
   const [currentPath, setCurrentPath] = useState<string>('');
+
+  // Check if running in Electron
+  React.useEffect(() => {
+    setIsElectron(!!(window as any).electronAPI);
+  }, []);
 
   // פונקציה להעתקת טקסט ללוח
   const copyToClipboard = async (text: string) => {
@@ -214,7 +220,19 @@ export const useLocalFolders = () => {
   // פונקציה לפתיחת תיקייה
   const openFolder = useCallback(async (folderPath: string) => {
     try {
-      if (isNative) {
+      if (isElectron) {
+        // באפליקציית Electron - פתיחה ישירה של תיקיות
+        try {
+          const result = await (window as any).electronAPI.openFolder(folderPath);
+          if (result.success) {
+            toast.success(`✅ נפתחה תיקיה: ${folderPath}`);
+          } else {
+            toast.error(`❌ לא ניתן לפתוח תיקיה: ${result.error}`);
+          }
+        } catch (error) {
+          toast.error(`❌ שגיאה בפתיחת תיקיה: ${error}`);
+        }
+      } else if (isNative) {
         // באפליקציה נטיבית - ניתן לפתוח בחלקם
         if (Capacitor.getPlatform() === 'ios') {
           // iOS - פתיחת Files app
@@ -222,14 +240,6 @@ export const useLocalFolders = () => {
         } else if (Capacitor.getPlatform() === 'android') {
           // Android - ניסיון פתיחת File Manager
           window.open(`content://com.android.externalstorage.documents/document/${encodeURIComponent(folderPath)}`, '_system');
-        } else {
-          // Desktop/Electron
-          if ((window as any).electronAPI) {
-            (window as any).electronAPI.openFolder(folderPath);
-          } else {
-            console.log('נתיב תיקייה:', folderPath);
-            toast.info(`📁 נתיב: ${folderPath}`);
-          }
         }
       } else {
         // בדפדפן - ניסיון פתיחת תיקיות מחשב
@@ -312,7 +322,7 @@ ${folderPath}
       console.error('Error opening folder:', error);
       toast.error('❌ שגיאה בפתיחת התיקייה');
     }
-  }, [isNative]);
+  }, [isNative, isElectron]);
 
   // פונקציה לקריאת תוכן תיקייה
   const readFolderContents = useCallback(async (path: string): Promise<FolderInfo[]> => {
@@ -383,6 +393,7 @@ ${folderPath}
 
   return {
     isNative,
+    isElectron,
     currentPath,
     selectFolder,
     openFolder,
