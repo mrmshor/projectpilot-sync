@@ -135,12 +135,13 @@ export const useLocalFolders = () => {
   const selectFolder = useCallback(async (): Promise<string | null> => {
     try {
       if (isElectron) {
-        // באפליקציית Electron - השתמש בדיאלוג המובנה
+        // באפליקציית Electron - השתמש בדיאלוג המובנה של המערכת
         const result = await (window as any).electronAPI.selectFolder();
-        if (result.success && result.path) {
+        if (result && result.success && result.path) {
+          localStorage.setItem('selectedFolder', result.path);
           toast.success(`✅ נבחרה תיקיה: ${result.path}`);
           return result.path;
-        } else if (result.canceled) {
+        } else if (result && result.canceled) {
           return null; // משתמש ביטל
         } else {
           toast.error('❌ שגיאה בבחירת התיקייה');
@@ -234,11 +235,7 @@ export const useLocalFolders = () => {
     try {
       if (isElectron) {
         // באפליקציית Electron - פתיחה ישירה של התיקיה בסייר הקבצים
-        const result = await (window as any).electronAPI.openFolder(folderPath);
-        if (!result.success) {
-          console.error('Failed to open folder:', result.error);
-          toast.error('❌ שגיאה בפתיחת התיקיה');
-        }
+        await (window as any).electronAPI.openFolder(folderPath);
         return;
       } else if (isNative) {
         // באפליקציה נטיבית - ניתן לפתוח בחלקם

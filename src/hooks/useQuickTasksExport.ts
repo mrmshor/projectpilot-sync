@@ -34,14 +34,38 @@ export const useQuickTasksExport = () => {
       if (isElectron && isMac) {
         // באפליקציית Electron על Mac - פתיחה ישירה של Notes עם הטקסט
         try {
-          // יצירת URL מיוחד לפתיחת Notes עם הטקסט
-          const notesUrl = `notes://new?body=${encodeURIComponent(notesContent)}`;
-          window.open(notesUrl, '_blank');
-          toast.success('📝 נפתח פתק חדש באפליקציית הפתקים');
+          // יצירת AppleScript לפתיחת Notes עם התוכן
+          const { shell } = require('@electron/remote') || require('electron');
+          
+          // פקודת AppleScript ליצירת פתק חדש עם התוכן
+          const appleScript = `
+            tell application "Notes"
+              activate
+              tell account "iCloud"
+                make new note with properties {body:"${notesContent.replace(/"/g, '\\"')}"}
+              end tell
+            end tell
+          `;
+          
+          // הרצת AppleScript דרך shell
+          const { spawn } = require('child_process');
+          const osascript = spawn('osascript', ['-e', appleScript]);
+          
+          osascript.on('close', (code) => {
+            if (code === 0) {
+              toast.success('📝 נוצר פתק חדש באפליקציית הפתקים');
+            } else {
+              fallbackToClipboard(notesContent);
+              shell.openExternal('notes://');
+              toast.success('📝 הועתק ללוח ונפתחה אפליקציית הפתקים - הדבק את התוכן');
+            }
+          });
+          
         } catch (error) {
           // אם נכשל, נעתיק ללוח ונפתח Notes
           fallbackToClipboard(notesContent);
-          window.open('notes://', '_blank');
+          const { shell } = require('@electron/remote') || require('electron');
+          shell.openExternal('notes://');
           toast.success('📝 הועתק ללוח ונפתחה אפליקציית הפתקים - הדבק את התוכן');
         }
       } else if (isMac && 'navigator' in window && 'share' in navigator) {
