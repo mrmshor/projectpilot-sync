@@ -233,10 +233,11 @@ export const useLocalFolders = () => {
   const openFolder = useCallback(async (folderPath: string) => {
     try {
       if (isElectron) {
-        // באפליקציית Electron - פתיחה ישירה בלי הודעות
+        // באפליקציית Electron - פתיחה ישירה של התיקיה בסייר הקבצים
         const result = await (window as any).electronAPI.openFolder(folderPath);
         if (!result.success) {
           console.error('Failed to open folder:', result.error);
+          toast.error('❌ שגיאה בפתיחת התיקיה');
         }
         return;
       } else if (isNative) {
