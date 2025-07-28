@@ -42,7 +42,7 @@ export const QuickTaskSidebar = () => {
           <h2 className="text-lg font-semibold">משימות מהירות</h2>
           {pendingTasks.length > 0 && (
             <Button 
-              onClick={() => exportQuickTasksToNotes(quickTasks)}
+              onClick={() => exportQuickTasksToNotes(pendingTasks)}
               size="sm"
               variant="outline"
               className="gap-1 text-xs"
