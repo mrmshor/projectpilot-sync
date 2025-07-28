@@ -13,7 +13,8 @@ import {
   Square,
   FileText,
   Settings,
-  Download
+  Download,
+  Copy
 } from 'lucide-react';
 
 export const QuickTaskSidebar = () => {
@@ -27,6 +28,18 @@ export const QuickTaskSidebar = () => {
   const { exportQuickTasksToNotes, exportQuickTasksToGoogleTasks, isGoogleTasksAuthenticated } = useQuickTasksExport();
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [showSettings, setShowSettings] = useState(false);
+
+  const copyPendingTasks = async () => {
+    const formattedTasks = pendingTasks.map(task => `☐\t${task.title}`).join('\n');
+    
+    try {
+      await navigator.clipboard.writeText(formattedTasks);
+      // Simple success feedback without toast to keep it minimal
+      console.log('Tasks copied to clipboard');
+    } catch (err) {
+      console.error('Failed to copy tasks:', err);
+    }
+  };
 
   const handleAddTask = () => {
     if (newTaskTitle.trim()) {
@@ -60,25 +73,36 @@ export const QuickTaskSidebar = () => {
         )}
         
         {pendingTasks.length > 0 && (
-          <div className="flex gap-2 mb-4">
+          <div className="space-y-2 mb-4">
             <Button
-              onClick={() => exportQuickTasksToGoogleTasks(pendingTasks)}
+              onClick={copyPendingTasks}
               size="sm"
-              variant={isGoogleTasksAuthenticated ? "default" : "outline"}
-              className="flex-1"
+              variant="default"
+              className="w-full"
             >
-              <Download className="h-4 w-4 mr-2" />
-              {isGoogleTasksAuthenticated ? 'Google Tasks' : 'התחבר ל-Google'}
+              <Copy className="h-4 w-4 mr-2" />
+              העתק משימות
             </Button>
-            <Button 
-              onClick={() => exportQuickTasksToNotes(pendingTasks)}
-              size="sm"
-              variant="outline"
-              className="flex-1"
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              פתקים Mac
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => exportQuickTasksToGoogleTasks(pendingTasks)}
+                size="sm"
+                variant={isGoogleTasksAuthenticated ? "secondary" : "outline"}
+                className="flex-1"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                {isGoogleTasksAuthenticated ? 'Google Tasks' : 'התחבר ל-Google'}
+              </Button>
+              <Button 
+                onClick={() => exportQuickTasksToNotes(pendingTasks)}
+                size="sm"
+                variant="outline"
+                className="flex-1"
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                פתקים Mac
+              </Button>
+            </div>
           </div>
         )}
         
