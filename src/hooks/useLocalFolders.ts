@@ -17,7 +17,10 @@ export const useLocalFolders = () => {
 
   // Check if running in Electron
   React.useEffect(() => {
-    setIsElectron(!!(window as any).electronAPI);
+    const electronAPI = (window as any).electronAPI;
+    setIsElectron(!!electronAPI);
+    console.log('Electron detection - electronAPI exists:', !!electronAPI);
+    console.log('Electron detection - setting isElectron to:', !!electronAPI);
   }, []);
 
   // פונקציה להעתקת טקסט ללוח
@@ -266,88 +269,27 @@ export const useLocalFolders = () => {
           // נתיב file:// - ניסיון פתיחה
           window.open(folderPath, '_blank');
         } else {
-          // נתיב מקומי - פתרון פשוט ויעיל
-          // אם זה שם תיקיה בלבד (בלי סלאש), הראה הודעה ברורה
+          // נתיב מקומי - אסור להציג הודעות! רק פתח את התיקיה
+          console.log('Opening local folder path:', folderPath);
+          
+          // אם זה שם תיקיה בלבד (בלי סלאש), פשוט אל תעשה כלום
           if (!folderPath.includes('/') && !folderPath.includes('\\')) {
-            copyToClipboard(folderPath);
-            toast.info(`📁 תיקיה: "${folderPath}"
-
-📋 השם הועתק ללוח!
-
-💡 איך לפתוח:
-• פתח את סייר הקבצים במחשב
-• חפש את התיקיה "${folderPath}"
-• או לחץ Ctrl+F והדבק את השם
-
-🔒 דפדפנים לא מאפשרים פתיחת תיקיות ישירות מסיבות אבטחה`, {
-              duration: 8000
-            });
+            console.log('Simple folder name detected, doing nothing');
             return;
           }
           
-          // עבור נתיב מלא - נסה לפתוח ישירות קודם
+          // עבור נתיב מלא - נסה לפתוח ישירות
           const isWindows = folderPath.includes('\\') || folderPath.match(/^[A-Z]:/);
           const isMac = folderPath.startsWith('/') || folderPath.startsWith('~');
           
-          // ניסיון פתיחה ישירה של התיקיה
           try {
             if (isWindows) {
-              // ניסיון פתיחה ב-Windows
-              const winPath = folderPath.replace(/\//g, '\\');
-              window.open(`file:///${winPath}`, '_blank');
-              return; // אם הצליח - צא מהפונקציה
+              window.open(`file:///${folderPath.replace(/\//g, '\\')}`, '_blank');
             } else if (isMac) {
-              // ניסיון פתיחה ב-Mac
               window.open(`file://${folderPath}`, '_blank');
-              return; // אם הצליח - צא מהפונקציה
             }
           } catch (error) {
-            console.log('Direct open failed, falling back to clipboard');
-          }
-          
-          // אם הפתיחה הישירה נכשלה - העתק ללוח והראה הוראות
-          try {
-            copyToClipboard(folderPath);
-            
-            let osInstructions = '';
-            if (isWindows) {
-              osInstructions = `🪟 Windows:
-• לחץ Win+R
-• הדבק את הנתיב והקש Enter
-• או פתח File Explorer והדבק בשורת הכתובת`;
-            } else if (isMac) {
-              osInstructions = `🍎 Mac:
-• פתח Finder
-• לחץ ⌘+⇧+G (Go to Folder)
-• הדבק את הנתיב והקש Enter`;
-            } else {
-              osInstructions = `🐧 Linux:
-• פתח את File Manager
-• הדבק את הנתיב בשורת הכתובת`;
-            }
-            
-            toast.info(`📋 הנתיב הועתק ללוח! 
-
-${osInstructions}
-
-📁 נתיב: ${folderPath}
-
-💡 טיפ: שמור קיצורי דרך לתיקיות נפוצות בדסקטופ`, {
-              duration: 8000
-            });
-            
-          } catch (error) {
-            // אם העתקה נכשלה - לפחות הצג את הנתיב
-            toast.info(`📁 נתיב התיקיה:
-
-${folderPath}
-
-💡 העתק את הנתיב ופתח את סייר הקבצים:
-• Windows: Win+R ← הדבק ← Enter  
-• Mac: ⌘+⇧+G ב-Finder ← הדבק ← Enter
-• Linux: Ctrl+L ב-File Manager ← הדבק ← Enter`, {
-              duration: 10000
-            });
+            console.log('Failed to open folder directly');
           }
         }
       }

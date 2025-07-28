@@ -36,40 +36,35 @@ export const useQuickTasksExport = () => {
       
       if (isElectron && isMac) {
         // באפליקציית Electron על Mac - פתיחה ישירה של Notes עם הטקסט
+        console.log('Attempting to create note via AppleScript...');
         try {
           // יצירת AppleScript לפתיחת Notes עם התוכן
-          const { shell } = require('@electron/remote') || require('electron');
+          const { exec } = require('child_process');
           
           // פקודת AppleScript ליצירת פתק חדש עם התוכן
-          const appleScript = `
-            tell application "Notes"
-              activate
-              tell account "iCloud"
-                make new note with properties {body:"${notesContent.replace(/"/g, '\\"')}"}
-              end tell
+          const appleScript = `osascript -e 'tell application "Notes"
+            activate
+            tell account "iCloud"
+              make new note with properties {body:"${notesContent.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"}
             end tell
-          `;
+          end tell'`;
           
-          // הרצת AppleScript דרך shell
-          const { spawn } = require('child_process');
-          const osascript = spawn('osascript', ['-e', appleScript]);
-          
-          osascript.on('close', (code) => {
-            if (code === 0) {
-              toast.success('📝 נוצר פתק חדש באפליקציית הפתקים');
-            } else {
+          exec(appleScript, (error, stdout, stderr) => {
+            if (error) {
+              console.error('AppleScript error:', error);
               fallbackToClipboard(notesContent);
-              shell.openExternal('notes://');
-              toast.success('📝 הועתק ללוח ונפתחה אפליקציית הפתקים - הדבק את התוכן');
+              toast.success('📝 הועתק ללוח - הדבק באפליקציית הפתקים');
+            } else {
+              console.log('AppleScript success:', stdout);
+              toast.success('📝 נוצר פתק חדש באפליקציית הפתקים');
             }
           });
           
         } catch (error) {
-          // אם נכשל, נעתיק ללוח ונפתח Notes
+          console.error('Failed to execute AppleScript:', error);
+          // אם נכשל, נעתיק ללוח
           fallbackToClipboard(notesContent);
-          const { shell } = require('@electron/remote') || require('electron');
-          shell.openExternal('notes://');
-          toast.success('📝 הועתק ללוח ונפתחה אפליקציית הפתקים - הדבק את התוכן');
+          toast.success('📝 הועתק ללוח - הדבק באפליקציית הפתקים');
         }
       } else if (isMac && 'navigator' in window && 'share' in navigator) {
         // שימוש ב-Web Share API על מכשירי Apple
