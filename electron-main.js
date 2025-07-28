@@ -11,12 +11,25 @@ function createWindow() {
       webSecurity: false,
       preload: path.join(__dirname, 'preload.js')
     },
-    icon: path.join(__dirname, 'assets/icon.png')
+    icon: path.join(__dirname, 'assets/icon.png'),
+    show: false
   });
   
-  win.loadFile('dist/index.html');
+  // טען את האפליקציה כ-URL מלא
+  const indexPath = path.join(__dirname, 'dist', 'index.html');
+  win.loadURL(`file://${indexPath}`);
   
+  win.once('ready-to-show', () => {
+    win.show();
+  });
+  
+  // Handle folder opening
   win.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('file://') || url.startsWith('folder://')) {
+      const folderPath = url.replace('folder://', '').replace('file://', '');
+      shell.openPath(decodeURIComponent(folderPath));
+      return { action: 'deny' };
+    }
     shell.openExternal(url);
     return { action: 'deny' };
   });
@@ -36,25 +49,45 @@ app.on('activate', () => {
   }
 });
 
-// IPC handlers
-ipcMain.handle('select-folder', async () => {
-  const result = await dialog.showOpenDialog({
-    properties: ['openDirectory']
-  });
-  
-  if (result.canceled) {
-    return { canceled: true };
-  }
-  
-  return { success: true, path: result.filePaths[0] };
-});
-
+// Handle IPC messages for folder operations
 ipcMain.handle('open-folder', async (event, folderPath) => {
-  return shell.openPath(folderPath);
+  try {
+    await shell.openPath(folderPath);
+    return { success: true };
+  } catch (error) {
+    console.error('Error opening folder:', error);
+    return { success: false, error: error.message };
+  }
 });
 
 ipcMain.handle('show-item-in-folder', async (event, itemPath) => {
-  return shell.showItemInFolder(itemPath);
+  try {
+    shell.showItemInFolder(itemPath);
+    return { success: true };
+  } catch (error) {
+    console.error('Error showing item in folder:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Handle folder selection dialog
+ipcMain.handle('select-folder', async (event) => {
+  try {
+    const result = await dialog.showOpenDialog({
+      properties: ['openDirectory'],
+      title: 'בחר תיקיה',
+      buttonLabel: 'בחר תיקיה זו'
+    });
+    
+    if (!result.canceled && result.filePaths.length > 0) {
+      return { success: true, path: result.filePaths[0] };
+    } else {
+      return { success: false, canceled: true };
+    }
+  } catch (error) {
+    console.error('Error selecting folder:', error);
+    return { success: false, error: error.message };
+  }
 });
 
 ipcMain.handle('create-note', async (event, content) => {
@@ -78,5 +111,12 @@ ipcMain.handle('create-note', async (event, content) => {
         resolve(true);
       }
     });
+  });
+});
+
+app.on('web-contents-created', (event, contents) => {
+  contents.on('new-window', (navigationEvent, navigationUrl) => {
+    event.preventDefault();
+    shell.openExternal(navigationUrl);
   });
 });
