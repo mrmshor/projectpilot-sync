@@ -208,3 +208,11 @@ jobs:
       with:
         name: ProjectPilot-Sync-Linux
         path: electron-app/dist-electron/*.AppImage
+        
+    # העלה את תיקיית dist הגולמית עבור Packages
+    - name: Upload dist folder for Packages
+      if: matrix.os == 'ubuntu-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist-folder-for-packages
+        path: dist/
