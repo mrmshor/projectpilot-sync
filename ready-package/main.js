@@ -14,11 +14,9 @@ function createWindow() {
     show: false
   });
   
-  // נסה קודם עם URL מקומי לטיפול בנתיבים יחסיים
-  win.loadFile('dist/index.html').catch(() => {
-    // אם זה לא עובד, נסה עם file:// protocol
-    win.loadURL(`file://${path.join(__dirname, 'dist', 'index.html')}`);
-  });
+  // טען את האפליקציה עם הנתיב הנכון
+  const indexPath = path.join(__dirname, 'dist', 'index.html');
+  win.loadFile(indexPath);
   
   win.once('ready-to-show', () => {
     win.show();
