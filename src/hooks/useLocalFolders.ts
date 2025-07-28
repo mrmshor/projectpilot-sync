@@ -221,18 +221,9 @@ export const useLocalFolders = () => {
   const openFolder = useCallback(async (folderPath: string) => {
     try {
       if (isElectron) {
-        // באפליקציית Electron - פתיחה ישירה של תיקיות
-        try {
-          const result = await (window as any).electronAPI.openFolder(folderPath);
-          if (result.success) {
-            // אל תראה הודעת הצלחה - התיקיה נפתחה ישירות
-            return;
-          } else {
-            toast.error(`❌ לא ניתן לפתוח תיקיה: ${result.error}`);
-          }
-        } catch (error) {
-          toast.error(`❌ שגיאה בפתיחת תיקיה: ${error}`);
-        }
+        // באפליקציית Electron - פתיחה ישירה בלי הודעות
+        await (window as any).electronAPI.openFolder(folderPath);
+        return;
       } else if (isNative) {
         // באפליקציה נטיבית - ניתן לפתוח בחלקם
         if (Capacitor.getPlatform() === 'ios') {
