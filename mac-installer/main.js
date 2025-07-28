@@ -18,9 +18,6 @@ function createWindow() {
   const indexPath = path.join(__dirname, 'dist', 'index.html');
   win.loadURL(`file://${indexPath}`);
   
-  // פתח את DevTools לניפוי שגיאות
-  win.webContents.openDevTools();
-  
   win.once('ready-to-show', () => {
     win.show();
   });
