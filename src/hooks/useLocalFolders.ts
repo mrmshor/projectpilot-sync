@@ -134,9 +134,14 @@ export const useLocalFolders = () => {
   // פונקציה לבחירת תיקייה
   const selectFolder = useCallback(async (): Promise<string | null> => {
     try {
+      console.log('selectFolder called, isElectron:', isElectron);
+      console.log('electronAPI available:', !!(window as any).electronAPI);
+      
       if (isElectron) {
         // באפליקציית Electron - השתמש בדיאלוג המובנה של המערכת
+        console.log('Calling electronAPI.selectFolder...');
         const result = await (window as any).electronAPI.selectFolder();
+        console.log('selectFolder result:', result);
         if (result && result.success && result.path) {
           localStorage.setItem('selectedFolder', result.path);
           toast.success(`✅ נבחרה תיקיה: ${result.path}`);
@@ -233,9 +238,15 @@ export const useLocalFolders = () => {
   // פונקציה לפתיחת תיקייה
   const openFolder = useCallback(async (folderPath: string) => {
     try {
+      console.log('openFolder called with path:', folderPath);
+      console.log('isElectron:', isElectron);
+      console.log('electronAPI available:', !!(window as any).electronAPI);
+      
       if (isElectron) {
         // באפליקציית Electron - פתיחה ישירה של התיקיה בסייר הקבצים
+        console.log('Calling electronAPI.openFolder...');
         await (window as any).electronAPI.openFolder(folderPath);
+        console.log('openFolder completed successfully');
         return;
       } else if (isNative) {
         // באפליקציה נטיבית - ניתן לפתוח בחלקם

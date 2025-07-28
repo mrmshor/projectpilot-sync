@@ -25,11 +25,14 @@ export const useQuickTasksExport = () => {
 
   const exportQuickTasksToNotes = (tasks: QuickTask[]) => {
     try {
+      console.log('exportQuickTasksToNotes called with tasks:', tasks);
       const notesContent = formatQuickTasksForNotes(tasks);
+      console.log('formatted content:', notesContent);
       
       // בדיקה אם זה אפליקציית Electron או Mac
       const isElectron = !!(window as any).electronAPI;
       const isMac = navigator.platform.toLowerCase().includes('mac');
+      console.log('isElectron:', isElectron, 'isMac:', isMac);
       
       if (isElectron && isMac) {
         // באפליקציית Electron על Mac - פתיחה ישירה של Notes עם הטקסט
