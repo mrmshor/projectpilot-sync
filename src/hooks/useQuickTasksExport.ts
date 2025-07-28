@@ -29,10 +29,19 @@ export const useQuickTasksExport = () => {
       const notesContent = formatQuickTasksForNotes(tasks);
       console.log('formatted content:', notesContent);
       
+      // בדיקה שelectronAPI קיים
+      if (!(window as any).electronAPI) {
+        console.error('electronAPI not available');
+        toast.error('❌ האפליקציה לא זמינה במצב שולחני');
+        await fallbackToClipboard(notesContent);
+        return;
+      }
+      
       // אפליקציית שולחן - יצירה ישירה של פתק
       console.log('Attempting to create note via electronAPI...');
       try {
         const success = await (window as any).electronAPI.createNote(notesContent);
+        console.log('createNote result:', success);
         if (success) {
           console.log('Note created successfully');
           toast.success('📝 נוצר פתק חדש באפליקציית הפתקים');

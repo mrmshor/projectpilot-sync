@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, FolderOpen } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface CreateTaskDialogProps {
   onCreateTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => void;
@@ -95,58 +96,27 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
 
   const handleFolderSelect = async () => {
     try {
-      // Use native file picker for folder selection
-      if ((window as any).electronAPI) {
-        // In Electron app - use native folder dialog
-        const result = await (window as any).electronAPI.selectFolder();
-        if (result.success && result.path) {
-          updateField('folderPath', result.path);
-          // הודעה שהתיקיה נקשרה בהצלחה
-          console.log('Folder selected successfully:', result.path);
-        } else if (result.canceled) {
-          console.log('Folder selection was canceled');
-        } else {
-          console.error('Folder selection failed:', result.error);
-        }
+      // בדיקה שelectronAPI קיים
+      if (!(window as any).electronAPI) {
+        console.error('electronAPI not available');
+        toast.error('❌ בחירת תיקייה זמינה רק באפליקציית השולחן');
+        return;
+      }
+      
+      // אפליקציית שולחן - השתמש בדיאלוג המובנה של המערכת
+      console.log('handleFolderSelect: calling electronAPI.selectFolder...');
+      const result = await (window as any).electronAPI.selectFolder();
+      console.log('handleFolderSelect result:', result);
+      
+      if (result && result.success && result.path) {
+        updateField('folderPath', result.path);
+        toast.success(`✅ נבחרה תיקיה: ${result.path}`);
+        console.log('Folder selected successfully:', result.path);
+      } else if (result && result.canceled) {
+        console.log('Folder selection was canceled');
       } else {
-        // In browser - prefer manual path entry for better folder opening
-        const manualPath = prompt(`📁 הזן נתיב מלא לתיקיה:
-
-🖥️ דוגמאות:
-• Windows: C:\\Users\\YourName\\Documents\\Projects
-• Mac: /Users/YourName/Documents/Projects
-• iCloud: ~/Library/Mobile Documents/com~apple~CloudDocs/Projects
-
-הזן נתיב מלא:`);
-
-        if (manualPath && manualPath.trim()) {
-          updateField('folderPath', manualPath.trim());
-          console.log('Manual folder path entered:', manualPath.trim());
-        } else {
-          // Fallback to directory picker
-          if ('showDirectoryPicker' in window) {
-            const dirHandle = await (window as any).showDirectoryPicker();
-            updateField('folderPath', dirHandle.name);
-          } else {
-            // Fallback for older browsers
-            const input = document.createElement('input');
-            input.type = 'file';
-            (input as any).webkitdirectory = true;
-            input.multiple = false;
-            
-            input.addEventListener('change', (event: any) => {
-              const files = event.target.files;
-              if (files && files.length > 0) {
-                const firstFile = files[0];
-                const webkitPath = firstFile.webkitRelativePath;
-                const folderName = webkitPath.split('/')[0];
-                updateField('folderPath', folderName);
-              }
-            });
-            
-            input.click();
-          }
-        }
+        console.error('Folder selection failed:', result);
+        toast.error('❌ שגיאה בבחירת התיקייה');
       }
     } catch (error) {
       console.error('Error selecting folder:', error);

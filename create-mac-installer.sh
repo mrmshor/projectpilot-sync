@@ -25,10 +25,14 @@ echo "📋 מעתיק קבצים..."
 # העתק את תוכן dist המובנה
 cp -r dist/* mac-installer/dist/
 
-# העתק הקבצים העדכניים מהשורש ומ-ready-package
+# העתק הקבצים העדכניים מהשורש
 cp electron-main.js mac-installer/main.js
-cp preload.js mac-installer/
+cp preload.js mac-installer/preload.js
 cp electron-package.json mac-installer/package.json
+
+# בדוק שהקבצים הועתקו
+echo "בדיקת קבצים שהועתקו:"
+ls -la mac-installer/main.js mac-installer/preload.js mac-installer/package.json
 
 # העתק assets מ-ready-package
 cp -r ready-package/assets mac-installer/ 2>/dev/null || echo "אין תיקיית assets - ממשיך"

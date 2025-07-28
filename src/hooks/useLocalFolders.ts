@@ -139,6 +139,13 @@ export const useLocalFolders = () => {
     try {
       console.log('selectFolder called - desktop app');
       
+      // בדיקה שelectronAPI קיים
+      if (!(window as any).electronAPI) {
+        console.error('electronAPI not available');
+        toast.error('❌ האפליקציה לא זמינה במצב שולחני');
+        return null;
+      }
+      
       // אפליקציית שולחן - השתמש בדיאלוג המובנה של המערכת
       console.log('Calling electronAPI.selectFolder...');
       const result = await (window as any).electronAPI.selectFolder();
@@ -151,6 +158,7 @@ export const useLocalFolders = () => {
       } else if (result && result.canceled) {
         return null; // משתמש ביטל
       } else {
+        console.error('selectFolder failed:', result);
         toast.error('❌ שגיאה בבחירת התיקייה');
         return null;
       }
@@ -166,11 +174,24 @@ export const useLocalFolders = () => {
     try {
       console.log('openFolder called with path:', folderPath);
       
+      // בדיקה שelectronAPI קיים
+      if (!(window as any).electronAPI) {
+        console.error('electronAPI not available');
+        toast.error('❌ האפליקציה לא זמינה במצב שולחני');
+        return;
+      }
+      
       // אפליקציית שולחן - פתיחה ישירה של התיקיה בסייר הקבצים
       console.log('Calling electronAPI.openFolder...');
-      await (window as any).electronAPI.openFolder(folderPath);
-      console.log('openFolder completed successfully');
-      toast.success(`✅ תיקיה נפתחה: ${folderPath}`);
+      const result = await (window as any).electronAPI.openFolder(folderPath);
+      console.log('openFolder result:', result);
+      
+      if (result && result.success) {
+        toast.success(`✅ תיקיה נפתחה: ${folderPath}`);
+      } else {
+        console.error('openFolder failed:', result);
+        toast.error('❌ שגיאה בפתיחת התיקייה');
+      }
     } catch (error) {
       console.error('Error opening folder:', error);
       toast.error('❌ שגיאה בפתיחת התיקייה');
