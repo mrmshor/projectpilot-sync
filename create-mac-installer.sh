@@ -25,12 +25,19 @@ echo "📋 מעתיק קבצים..."
 # העתק את תוכן dist המובנה
 cp -r dist/* mac-installer/dist/
 
-# העתק main.js ו-package.json מ-ready-package
-cp ready-package/main.js mac-installer/
-cp ready-package/package.json mac-installer/
+# העתק הקבצים העדכניים מהשורש ומ-ready-package
+cp electron-main.js mac-installer/main.js
+cp preload.js mac-installer/
+cp electron-package.json mac-installer/package.json
 
-# צור אייקון מקום מציין
-touch mac-installer/assets/icon.png
+# העתק assets מ-ready-package
+cp -r ready-package/assets mac-installer/ 2>/dev/null || echo "אין תיקיית assets - ממשיך"
+
+# צור אייקון מקום מציין אם אין
+if [ ! -f "mac-installer/assets/icon.png" ]; then
+    mkdir -p mac-installer/assets
+    touch mac-installer/assets/icon.png
+fi
 
 # שלב 4: התקן תלויות Electron
 echo "⚡ מתקין תלויות Electron..."

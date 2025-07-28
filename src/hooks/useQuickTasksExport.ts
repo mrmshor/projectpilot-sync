@@ -29,16 +29,7 @@ export const useQuickTasksExport = () => {
       const notesContent = formatQuickTasksForNotes(tasks);
       console.log('formatted content:', notesContent);
       
-      // בדיקה אם זה אפליקציית Electron
-      const isElectron = !!(window as any).electronAPI;
-      console.log('isElectron:', isElectron);
-      
-      if (!isElectron) {
-        toast.error('❌ פונקציה זו זמינה רק באפליקציית השולחן');
-        return;
-      }
-      
-      // באפליקציית Electron - יצירה ישירה של פתק
+      // אפליקציית שולחן - יצירה ישירה של פתק
       console.log('Attempting to create note via electronAPI...');
       try {
         const success = await (window as any).electronAPI.createNote(notesContent);

@@ -134,18 +134,12 @@ export const useLocalFolders = () => {
     return false;
   };
 
-  // פונקציה לבחירת תיקייה - רק עבור Electron
+  // פונקציה לבחירת תיקייה - אפליקציית שולחן
   const selectFolder = useCallback(async (): Promise<string | null> => {
     try {
-      console.log('selectFolder called, isElectron:', isElectron);
-      console.log('electronAPI available:', !!(window as any).electronAPI);
+      console.log('selectFolder called - desktop app');
       
-      if (!isElectron) {
-        toast.error('❌ פונקציה זו זמינה רק באפליקציית השולחן');
-        return null;
-      }
-      
-      // באפליקציית Electron - השתמש בדיאלוג המובנה של המערכת
+      // אפליקציית שולחן - השתמש בדיאלוג המובנה של המערכת
       console.log('Calling electronAPI.selectFolder...');
       const result = await (window as any).electronAPI.selectFolder();
       console.log('selectFolder result:', result);
@@ -165,21 +159,14 @@ export const useLocalFolders = () => {
       toast.error('❌ שגיאה בבחירת התיקייה');
       return null;
     }
-  }, [isElectron]);
+  }, []);
 
-  // פונקציה לפתיחת תיקייה - רק עבור Electron
+  // פונקציה לפתיחת תיקייה - אפליקציית שולחן
   const openFolder = useCallback(async (folderPath: string) => {
     try {
       console.log('openFolder called with path:', folderPath);
-      console.log('isElectron:', isElectron);
-      console.log('electronAPI available:', !!(window as any).electronAPI);
       
-      if (!isElectron) {
-        toast.error('❌ פונקציה זו זמינה רק באפליקציית השולחן');
-        return;
-      }
-      
-      // באפליקציית Electron - פתיחה ישירה של התיקיה בסייר הקבצים
+      // אפליקציית שולחן - פתיחה ישירה של התיקיה בסייר הקבצים
       console.log('Calling electronAPI.openFolder...');
       await (window as any).electronAPI.openFolder(folderPath);
       console.log('openFolder completed successfully');
@@ -188,7 +175,7 @@ export const useLocalFolders = () => {
       console.error('Error opening folder:', error);
       toast.error('❌ שגיאה בפתיחת התיקייה');
     }
-  }, [isElectron]);
+  }, []);
 
   // פונקציה לקריאת תוכן תיקייה
   const readFolderContents = useCallback(async (path: string): Promise<FolderInfo[]> => {
