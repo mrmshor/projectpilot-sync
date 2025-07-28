@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuickTasks } from '@/hooks/useQuickTasks';
+import { useQuickTasksExport } from '@/hooks/useQuickTasksExport';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +9,8 @@ import {
   Plus, 
   Trash2, 
   CheckSquare,
-  Square
+  Square,
+  FileText
 } from 'lucide-react';
 
 export const QuickTaskSidebar = () => {
@@ -19,6 +21,7 @@ export const QuickTaskSidebar = () => {
     deleteQuickTask
   } = useQuickTasks();
 
+  const { exportQuickTasksToNotes } = useQuickTasksExport();
   const [newTaskTitle, setNewTaskTitle] = useState('');
 
   const handleAddTask = () => {
@@ -35,7 +38,20 @@ export const QuickTaskSidebar = () => {
     <div className="w-80 h-[calc(100vh-2rem)] bg-background border-l border-border flex flex-col sticky top-4 rounded-lg shadow-lg overflow-hidden">
       {/* Header */}
       <div className="p-4 border-b border-border sticky top-0 bg-background/95 backdrop-blur-sm z-10">
-        <h2 className="text-lg font-semibold mb-4">משימות מהירות</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">משימות מהירות</h2>
+          {pendingTasks.length > 0 && (
+            <Button 
+              onClick={() => exportQuickTasksToNotes(quickTasks)}
+              size="sm"
+              variant="outline"
+              className="gap-1 text-xs"
+            >
+              <FileText className="h-3 w-3" />
+              שלח לפתקים
+            </Button>
+          )}
+        </div>
         
         {/* Add Task */}
         <div className="flex gap-2">
