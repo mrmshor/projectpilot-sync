@@ -178,25 +178,25 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
   };
 
   return (
-    <div className="space-y-4">
-      {/* Search and Filter Bar */}
-      <div className="flex gap-4 items-center">
+    <div className="compact-spacing">
+      {/* Compact Search and Filter Bar */}
+      <div className="flex gap-2 items-center">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary h-5 w-5" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
-            placeholder="חפש פרויקטים, לקוחות או תיאורים..."
+            placeholder="חפש פרויקטים..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-12 pr-4 h-12 border-2 border-primary/20 focus:border-primary/40 bg-accent/5 shadow-soft"
+            className="pl-10 pr-3 h-9 text-sm mac-input"
             dir="rtl"
           />
         </div>
-        <div className="w-48">
+        <div className="w-36">
           <Select value={priorityFilter} onValueChange={(value: Priority | 'all') => setPriorityFilter(value)}>
-            <SelectTrigger className="h-12">
-              <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4" />
-                <SelectValue placeholder="סנן לפי דחיפות" />
+            <SelectTrigger className="h-9 text-sm">
+              <div className="flex items-center gap-1.5">
+                <Filter className="h-3.5 w-3.5" />
+                <SelectValue placeholder="דחיפות" />
               </div>
             </SelectTrigger>
             <SelectContent>
@@ -209,103 +209,91 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
         </div>
       </div>
 
-      {/* Project Cards View */}
-      <div className="space-y-6" dir="rtl">
+      {/* Compact Project Cards */}
+      <div className="compact-spacing" dir="rtl">
         {filteredTasks.map((task) => (
           <Card key={task.id} data-project-id={task.id} className="mac-card hover-lift overflow-hidden">
             <CardContent className="p-0">
-              {/* Project Header */}
-              <div className="bg-gradient-to-r from-primary/10 via-primary/15 to-primary/10 p-6 border-b border-border/30">
-                <div className="flex justify-between items-start gap-4">
-                  <div className="flex-1 space-y-3">
+              {/* Compact Header */}
+              <div className="bg-primary/5 compact-padding border-b clean-border">
+                <div className="flex justify-between items-start gap-3">
+                  <div className="flex-1 compact-spacing">
                     {/* Project Name */}
                     <div>
                       {editingId === task.id ? (
                         <Input
                           value={task.projectName}
                           onChange={(e) => handleFieldUpdate(task.id, 'projectName', e.target.value)}
-                          className="text-2xl font-bold h-14 text-right"
+                          className="text-lg font-bold h-10 text-right mac-input"
                           dir="rtl"
                         />
                        ) : (
-                         <h2 className="text-3xl font-bold bg-gradient-to-r from-primary via-primary/90 to-primary/80 bg-clip-text text-transparent drop-shadow-sm break-words text-right tracking-tight">{task.projectName}</h2>
+                         <h2 className="text-xl font-bold gradient-text break-words text-right">{task.projectName}</h2>
                        )}
                     </div>
 
-                    {/* Project Description */}
+                    {/* Compact Description */}
                     <div>
                       {editingId === task.id ? (
                         <Textarea
                           value={task.projectDescription}
                           onChange={(e) => handleFieldUpdate(task.id, 'projectDescription', e.target.value)}
-                          rows={4}
-                          className="w-full resize-none text-base min-h-[100px] text-right"
-                          placeholder="תיאור הפרויקט..."
+                          rows={2}
+                          className="w-full resize-none text-sm text-right mac-input"
+                          placeholder="תיאור קצר..."
                           dir="rtl"
                         />
                       ) : (
-                        <p className="text-base text-muted-foreground break-words whitespace-pre-wrap text-right leading-relaxed">
-                          {task.projectDescription || 'אין תיאור'}
+                        <p className="text-sm text-muted-foreground break-words text-right line-clamp-2">
+                          {task.projectDescription || 'ללא תיאור'}
                         </p>
                       )}
                     </div>
 
-                    {/* Folder Path */}
-                    {(editingId === task.id || task.folderPath) && (
-                      <div>
-                        {editingId === task.id ? (
-                          <Input
-                            placeholder="נתיב תיקייה"
-                            value={task.folderPath || ''}
-                            onChange={(e) => handleFieldUpdate(task.id, 'folderPath', e.target.value)}
-                            className="text-sm"
-                            dir="rtl"
-                          />
-                        ) : task.folderPath ? (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => openFolder(task.folderPath)}
-                            className="text-sm text-primary hover:text-primary/80 flex items-center gap-2 p-2"
-                          >
-                            <FolderOpen className="h-4 w-4" />
-                            פתח תיקייה
-                          </Button>
-                        ) : null}
-                      </div>
+                    {/* Compact Folder Access */}
+                    {task.folderPath && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => openFolder(task.folderPath)}
+                        className="text-xs text-primary hover:text-primary/80 flex items-center gap-1 p-1 h-auto"
+                      >
+                        <FolderOpen className="h-3 w-3" />
+                        תיקיה
+                      </Button>
                     )}
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex gap-2">
+                  {/* Compact Action Buttons */}
+                  <div className="flex gap-1">
                     {editingId === task.id ? (
                       <>
-                        <Button size="sm" onClick={handleSave} className="gap-1">
-                          <Save className="h-4 w-4" />
+                        <Button size="sm" onClick={handleSave} className="gap-1 h-8 px-2 text-xs">
+                          <Save className="h-3 w-3" />
                           שמור
                         </Button>
-                        <Button size="sm" variant="outline" onClick={handleCancel} className="gap-1">
-                          <X className="h-4 w-4" />
+                        <Button size="sm" variant="outline" onClick={handleCancel} className="gap-1 h-8 px-2 text-xs">
+                          <X className="h-3 w-3" />
                           ביטול
                         </Button>
                       </>
                     ) : (
                       <>
-                        <Button size="sm" variant="outline" onClick={() => handleEdit(task)} className="gap-1">
-                          <Edit3 className="h-4 w-4" />
+                        <Button size="sm" variant="outline" onClick={() => handleEdit(task)} className="gap-1 h-8 px-2 text-xs hover-lift">
+                          <Edit3 className="h-3 w-3" />
                           ערוך
                         </Button>
                         <Button 
                           size="sm" 
                           variant="destructive" 
                           onClick={() => {
-                            if (confirm('האם אתה בטוח שברצונך למחוק את הפרויקט?')) {
+                            if (confirm('למחוק את הפרויקט?')) {
                               onDeleteTask(task.id);
                             }
                           }}
-                          className="gap-1"
+                          className="gap-1 h-8 px-2 text-xs hover-lift"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3 w-3" />
                           מחק
                         </Button>
                       </>
@@ -314,9 +302,9 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
                 </div>
               </div>
 
-              {/* Project Details Grid */}
-              <div className="bg-muted/20 p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Compact Details Grid */}
+              <div className="bg-muted/10 compact-padding">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                   
                   {/* Tasks Section */}
                   <div className="bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-lg p-4 border border-blue-300/30">

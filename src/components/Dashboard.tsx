@@ -41,193 +41,145 @@ export const Dashboard = ({ tasks, stats }: DashboardProps) => {
   );
 
   return (
-    <div className="space-y-6" dir="rtl">
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="mac-card hover-lift p-6">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-display font-medium text-muted-foreground">סך הכל פרויקטים</h3>
-            <BarChart3 className="h-5 w-5 text-primary" />
+    <div className="compact-spacing" dir="rtl">
+      {/* Compact Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="mac-card hover-lift compact-padding">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-xs font-medium text-muted-foreground">פרויקטים</h3>
+            <BarChart3 className="h-4 w-4 text-primary" />
           </div>
-          <div className="space-y-1">
-            <div className="text-3xl font-display font-semibold text-foreground">{stats.total}</div>
-            <p className="text-sm text-muted-foreground">
+          <div>
+            <div className="text-2xl font-semibold text-foreground">{stats.total}</div>
+            <p className="text-xs text-muted-foreground">
               {stats.completed} הושלמו
             </p>
           </div>
         </div>
 
-        <div className="mac-card hover-lift p-6">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-display font-medium text-muted-foreground">אחוז השלמה</h3>
-            <CheckCircle className="h-5 w-5 text-success" />
+        <div className="mac-card hover-lift compact-padding">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-xs font-medium text-muted-foreground">השלמה</h3>
+            <CheckCircle className="h-4 w-4 text-success" />
           </div>
-          <div className="space-y-1">
-            <div className="text-3xl font-display font-semibold text-foreground">{stats.completionRate}%</div>
-            <p className="text-sm text-muted-foreground">
+          <div>
+            <div className="text-2xl font-semibold text-foreground">{stats.completionRate}%</div>
+            <p className="text-xs text-muted-foreground">
               {stats.inProgress} בתהליך
             </p>
           </div>
         </div>
 
-        <div className="mac-card hover-lift p-6">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-display font-medium text-muted-foreground">סך הכנסות</h3>
-            <DollarSign className="h-5 w-5 text-primary" />
+        <div className="mac-card hover-lift compact-padding">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-xs font-medium text-muted-foreground">הכנסות</h3>
+            <DollarSign className="h-4 w-4 text-primary" />
           </div>
-          <div className="space-y-1">
-            <div className="text-3xl font-display font-semibold text-foreground">
-              ₪{stats.totalRevenue.toLocaleString()}
+          <div>
+            <div className="text-2xl font-semibold text-foreground">
+              ₪{(stats.totalRevenue / 1000).toFixed(0)}K
             </div>
-            <p className="text-sm text-muted-foreground">
-              {stats.paymentRate}% אחוז תשלום
+            <p className="text-xs text-muted-foreground">
+              {stats.paymentRate}% שולם
             </p>
           </div>
         </div>
 
-        <div className="mac-card hover-lift p-6">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-display font-medium text-muted-foreground">הכנסות ממתינות</h3>
-            <Clock className="h-5 w-5 text-warning" />
+        <div className="mac-card hover-lift compact-padding">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-xs font-medium text-muted-foreground">ממתין</h3>
+            <Clock className="h-4 w-4 text-warning" />
           </div>
-          <div className="space-y-1">
-            <div className="text-3xl font-display font-semibold text-foreground">
-              ₪{stats.pendingRevenue.toLocaleString()}
+          <div>
+            <div className="text-2xl font-semibold text-foreground">
+              ₪{(stats.pendingRevenue / 1000).toFixed(0)}K
             </div>
-            <p className="text-sm text-muted-foreground">
-              {stats.unpaid} פרויקטים לא שולמו
+            <p className="text-xs text-muted-foreground">
+              {stats.unpaid} לא שולמו
             </p>
           </div>
         </div>
       </div>
 
-      {/* Quick Insights */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Activity */}
-        <div className="lg:col-span-2 mac-card p-6">
-          <div className="mb-6">
-            <h2 className="font-display text-lg font-semibold flex items-center gap-3">
-              <Calendar className="h-5 w-5 text-primary" />
+      {/* Compact Insights */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        {/* Compact Recent Activity */}
+        <div className="mac-card compact-padding">
+          <div className="mb-3">
+            <h2 className="text-sm font-semibold flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-primary" />
               פעילות אחרונה
             </h2>
           </div>
-          <div>
-            <div className="space-y-3">
-              {recentTasks.length > 0 ? (
-                recentTasks.map((task) => (
-                  <div key={task.id} className="flex items-center justify-between p-4 bg-gradient-muted rounded-xl border border-border/30 hover-lift">
-                    <div>
-                      <p className="font-display font-medium text-foreground">{task.projectName}</p>
-                      <p className="text-sm text-muted-foreground font-body">{task.clientName}</p>
-                    </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <Badge variant={task.isCompleted ? 'default' : 'secondary'} className="shadow-soft">
-                        {task.isCompleted ? 'הושלם' : 'בתהליך'}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground font-mono">
-                        {new Date(task.updatedAt).toLocaleDateString('he-IL')}
-                      </span>
-                    </div>
+          <div className="compact-spacing">
+            {recentTasks.length > 0 ? (
+              recentTasks.slice(0, 3).map((task) => (
+                <div key={task.id} className="flex items-center justify-between p-2 bg-muted/50 rounded-lg hover-lift">
+                  <div>
+                    <p className="font-medium text-sm">{task.projectName}</p>
+                    <p className="text-xs text-muted-foreground">{task.clientName}</p>
                   </div>
-                ))
-              ) : (
-                <p className="text-muted-foreground text-center py-4">
-                  אין פעילות אחרונה
-                </p>
-              )}
-            </div>
+                  <Badge variant={task.isCompleted ? 'default' : 'secondary'} className="text-xs">
+                    {task.isCompleted ? 'הושלם' : 'בתהליך'}
+                  </Badge>
+                </div>
+              ))
+            ) : (
+              <p className="text-muted-foreground text-sm text-center py-2">
+                אין פעילות
+              </p>
+            )}
           </div>
         </div>
 
-        {/* Alerts & Notifications */}
-        <div className="space-y-4">
-          {/* Urgent Tasks */}
-          <div className="mac-card p-6">
-            <div className="mb-4">
-              <h3 className="font-display text-base font-semibold flex items-center gap-2 text-destructive">
-                <AlertCircle className="h-5 w-5" />
-                משימות דחופות
+        {/* Compact Alerts & Stats */}
+        <div className="compact-spacing">
+          {/* Compact Urgent Tasks */}
+          <div className="mac-card compact-padding">
+            <div className="mb-2">
+              <h3 className="text-sm font-semibold flex items-center gap-2 text-destructive">
+                <AlertCircle className="h-4 w-4" />
+                דחוף ({urgentTasks.length})
               </h3>
             </div>
             <div>
-              <div className="space-y-2">
-                {urgentTasks.length > 0 ? (
-                  urgentTasks.slice(0, 3).map((task) => (
-                    <div key={task.id} className="p-2 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                      <p className="font-medium text-sm">{task.projectName}</p>
-                      <p className="text-xs text-muted-foreground">{task.clientName}</p>
+              {urgentTasks.length > 0 ? (
+                <div className="compact-spacing">
+                  {urgentTasks.slice(0, 2).map((task) => (
+                    <div key={task.id} className="p-2 bg-destructive/10 rounded text-xs">
+                      <p className="font-medium">{task.projectName}</p>
                     </div>
-                  ))
-                ) : (
-                  <p className="text-muted-foreground text-sm">אין משימות דחופות</p>
-                )}
-                {urgentTasks.length > 3 && (
-                  <p className="text-xs text-muted-foreground">
-                    +{urgentTasks.length - 3} משימות דחופות נוספות
-                  </p>
-                )}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground text-xs">ללא משימות דחופות</p>
+              )}
             </div>
           </div>
 
-          {/* Payment Pending */}
-          <div className="mac-card p-6">
-            <div className="mb-4">
-              <h3 className="font-display text-base font-semibold flex items-center gap-2 text-warning">
-                <DollarSign className="h-5 w-5" />
-                תשלומים ממתינים
+          {/* Compact Payment Status */}
+          <div className="mac-card compact-padding">
+            <div className="mb-2">
+              <h3 className="text-sm font-semibold flex items-center gap-2 text-warning">
+                <DollarSign className="h-4 w-4" />
+                תשלומים ({overdueTasks.length})
               </h3>
             </div>
             <div>
-              <div className="space-y-2">
-                {overdueTasks.length > 0 ? (
-                  overdueTasks.slice(0, 3).map((task) => (
-                    <div key={task.id} className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                      <p className="font-medium text-sm">{task.projectName}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {task.currency} {task.price.toLocaleString()}
+              {overdueTasks.length > 0 ? (
+                <div className="compact-spacing">
+                  {overdueTasks.slice(0, 2).map((task) => (
+                    <div key={task.id} className="p-2 bg-warning/10 rounded text-xs">
+                      <p className="font-medium">{task.projectName}</p>
+                      <p className="text-muted-foreground">
+                        {task.currency} {(task.price / 1000).toFixed(0)}K
                       </p>
                     </div>
-                  ))
-                ) : (
-                  <p className="text-muted-foreground text-sm">כל התשלומים מעודכנים</p>
-                )}
-                {overdueTasks.length > 3 && (
-                  <p className="text-xs text-muted-foreground">
-                    +{overdueTasks.length - 3} תשלומים ממתינים נוספים
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Stats */}
-          <div className="mac-card p-6">
-            <div className="mb-4">
-              <h3 className="font-display text-base font-semibold flex items-center gap-2 text-primary">
-                <TrendingUp className="h-5 w-5" />
-                סטטיסטיקות מהירות
-              </h3>
-            </div>
-            <div>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span>פרויקטים פעילים:</span>
-                  <span className="font-medium">{stats.inProgress}</span>
+                  ))}
                 </div>
-                <div className="flex justify-between">
-                  <span>לקוחות:</span>
-                  <span className="font-medium">
-                    {new Set(tasks.map(t => t.clientName)).size}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span>ערך ממוצע לפרויקט:</span>
-                  <span className="font-medium">
-                    ₪{stats.total > 0 ? Math.round(stats.totalRevenue / stats.total).toLocaleString() : '0'}
-                  </span>
-                </div>
-              </div>
+              ) : (
+                <p className="text-muted-foreground text-xs">הכל מעודכן</p>
+              )}
             </div>
           </div>
         </div>

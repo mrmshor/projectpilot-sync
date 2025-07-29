@@ -17,80 +17,73 @@
 
 @layer base {
   :root {
-    /* macOS Surface Colors */
-    --background: 0 0% 99%;
-    --foreground: 0 0% 13%;
+    /* Apple-style Compact Surface Colors */
+    --background: 0 0% 98%;
+    --foreground: 0 0% 9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 13%;
+    --card-foreground: 0 0% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 13%;
+    --popover-foreground: 0 0% 9%;
 
-    /* macOS Blue Accent */
-    --primary: 211 100% 50%;
+    /* Apple Blue - מותאם לפרודקטיביות */
+    --primary: 211 96% 48%;
     --primary-foreground: 0 0% 100%;
 
-    /* Subtle Gray Backgrounds */
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 13%;
+    /* Compact Gray Backgrounds */
+    --secondary: 0 0% 95%;
+    --secondary-foreground: 0 0% 9%;
 
     --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+    --muted-foreground: 0 0% 46%;
 
-    --accent: 0 0% 96%;
-    --accent-foreground: 0 0% 13%;
+    --accent: 0 0% 94%;
+    --accent-foreground: 0 0% 9%;
 
-    /* macOS System Colors */
-    --destructive: 0 100% 58%;
+    /* System Colors - מקומפקטים */
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Refined Borders */
-    --border: 0 0% 89%;
-    --input: 0 0% 89%;
-    --ring: 211 100% 50%;
+    /* Clean Borders */
+    --border: 0 0% 90%;
+    --input: 0 0% 92%;
+    --ring: 211 96% 48%;
 
-    /* Status Colors */
-    --success: 120 100% 40%;
+    /* Subtle Status Colors */
+    --success: 122 39% 49%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 100% 50%;
+    --warning: 43 96% 56%;
     --warning-foreground: 0 0% 100%;
-    --info: 211 100% 50%;
+    --info: 211 96% 48%;
     --info-foreground: 0 0% 100%;
 
-    /* Priority Colors */
-    --priority-high: 0 100% 58%;
-    --priority-medium: 38 100% 50%;
-    --priority-low: 120 100% 40%;
+    /* Priority Colors - ברורים אך עדינים */
+    --priority-high: 0 84% 60%;
+    --priority-medium: 43 96% 56%;
+    --priority-low: 122 39% 49%;
 
-    /* macOS Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(211 100% 50%), hsl(226 100% 60%));
-    --gradient-surface: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 98%));
-    --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.8), hsl(0 0% 98% / 0.6));
+    /* Clean Gradients */
+    --gradient-primary: linear-gradient(180deg, hsl(211 96% 48%), hsl(211 96% 44%));
+    --gradient-surface: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 99%));
+    --gradient-glass: linear-gradient(180deg, hsl(0 0% 100% / 0.95), hsl(0 0% 99% / 0.8));
     
-    /* macOS-style Shadows */
-    --shadow-soft: 0 1px 3px 0 hsl(0 0% 0% / 0.05), 0 1px 2px -1px hsl(0 0% 0% / 0.05);
-    --shadow-medium: 0 4px 16px -4px hsl(0 0% 0% / 0.08), 0 2px 8px -2px hsl(0 0% 0% / 0.04);
-    --shadow-large: 0 16px 32px -8px hsl(0 0% 0% / 0.12), 0 8px 16px -4px hsl(0 0% 0% / 0.06);
-    --shadow-glass: 0 8px 32px hsl(0 0% 0% / 0.12), 0 0 0 1px hsl(0 0% 100% / 0.05);
+    /* Minimal Shadows */
+    --shadow-soft: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
+    --shadow-medium: 0 2px 8px -2px hsl(0 0% 0% / 0.08);
+    --shadow-large: 0 8px 24px -4px hsl(0 0% 0% / 0.12);
+    --shadow-glass: 0 4px 16px hsl(0 0% 0% / 0.08), 0 0 0 1px hsl(0 0% 100% / 0.1);
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
-
+    --sidebar-background: 0 0% 97%;
     --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
+    --sidebar-primary: 211 96% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 94%;
     --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 211 96% 48%;
   }
 
   .dark {
@@ -173,103 +166,82 @@
 }
 
 @layer components {
-  /* macOS Glass Effect */
+  /* Compact Apple Glass Effect */
   .glass {
-    @apply bg-white/80 dark:bg-black/30 backdrop-blur-xl border border-white/20 dark:border-white/10;
-    backdrop-filter: blur(20px) saturate(180%);
+    @apply bg-white/90 dark:bg-black/40 backdrop-blur-md border border-white/30 dark:border-white/10;
+    backdrop-filter: blur(12px) saturate(120%);
   }
   
-  /* Enhanced macOS Card Style */
+  /* Compact Apple Card Style */
   .mac-card {
-    @apply bg-card border border-border/50 rounded-2xl shadow-medium backdrop-blur-sm relative overflow-hidden;
-    background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--card) / 0.95) 100%);
+    @apply bg-card border border-border/40 rounded-lg shadow-soft relative;
+    background: hsl(var(--card));
   }
   
-  .mac-card::before {
-    @apply absolute inset-0 rounded-2xl opacity-50;
-    content: '';
-    background: linear-gradient(135deg, transparent 0%, hsl(var(--primary) / 0.05) 50%, transparent 100%);
-    pointer-events: none;
-  }
-  
-  /* Enhanced macOS Button Styles */
+  /* Compact Button Styles */
   .mac-button {
-    @apply rounded-xl font-medium transition-all duration-300 ease-out relative overflow-hidden;
-  }
-  
-  .mac-button::before {
-    @apply absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300;
-    content: '';
-    background: linear-gradient(135deg, hsl(var(--primary) / 0.1) 0%, transparent 50%, hsl(var(--primary) / 0.1) 100%);
-  }
-  
-  .mac-button:hover::before {
-    @apply opacity-100;
+    @apply rounded-lg font-medium transition-all duration-200 ease-out;
   }
   
   .mac-button-primary {
-    @apply bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground shadow-soft;
+    @apply bg-primary text-primary-foreground shadow-soft hover:shadow-medium;
   }
   
   .mac-button-primary:hover {
-    @apply shadow-medium scale-[1.02] brightness-110;
+    @apply brightness-105;
   }
   
   .mac-button-primary:active {
     @apply scale-[0.98] brightness-95;
   }
   
-  /* Enhanced macOS Input Style */
+  /* Compact Input Style */
   .mac-input {
-    @apply bg-white/60 dark:bg-black/25 border border-border/60 rounded-xl backdrop-blur-sm transition-all duration-300 relative overflow-hidden;
-  }
-  
-  .mac-input::before {
-    @apply absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300 pointer-events-none;
-    content: '';
-    background: linear-gradient(135deg, hsl(var(--primary) / 0.05) 0%, transparent 100%);
-  }
-  
-  .mac-input:focus::before {
-    @apply opacity-100;
+    @apply bg-white dark:bg-black/30 border border-border/60 rounded-lg transition-all duration-200;
   }
   
   .mac-input:focus {
-    @apply bg-white dark:bg-black/40 border-primary/60 shadow-soft ring-4 ring-primary/20;
-  }
-  
-  /* Floating Animation */
-  .float {
-    @apply animate-float;
-  }
-  
-  /* Glow Effect */
-  .glow {
-    @apply animate-glow;
+    @apply border-primary/60 shadow-soft ring-2 ring-primary/20;
   }
   
   /* Gradient Text */
   .gradient-text {
-    @apply bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent;
   }
   
-  /* Status Indicators */
+  /* Compact Status Indicators */
   .status-dot {
-    @apply w-2 h-2 rounded-full relative;
+    @apply w-1.5 h-1.5 rounded-full;
   }
   
-  .status-dot::before {
-    @apply absolute inset-0 rounded-full animate-ping;
-    content: '';
-    background: inherit;
-  }
-  
-  /* Micro Interactions */
+  /* Micro Interactions - פשוטות ויעילות */
   .hover-lift {
-    @apply transition-transform duration-200 hover:scale-[1.02] hover:shadow-medium;
+    @apply transition-transform duration-150 hover:scale-[1.01];
   }
   
   .press-scale {
-    @apply transition-transform duration-100 active:scale-[0.98];
+    @apply transition-transform duration-75 active:scale-[0.99];
+  }
+  
+  /* Compact Layout Classes */
+  .compact-spacing {
+    @apply space-y-2;
+  }
+  
+  .compact-padding {
+    @apply p-3;
+  }
+  
+  .compact-margin {
+    @apply m-2;
+  }
+  
+  /* Productivity Focus */
+  .focus-ring {
+    @apply ring-2 ring-primary/30 ring-offset-1;
+  }
+  
+  .clean-border {
+    @apply border border-border/30;
   }
 }

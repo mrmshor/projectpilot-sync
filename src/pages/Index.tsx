@@ -98,13 +98,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-surface flex" dir="rtl">
-      {/* Animated Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-info/5 rounded-full blur-3xl animate-float" style={{animationDelay: '2s'}}></div>
-      </div>
-
+    <div className="min-h-screen bg-background flex" dir="rtl">
       {/* Left Sidebar - Projects Navigation */}
       <div className="relative">
         <ProjectNavigationSidebar 
@@ -115,41 +109,39 @@ const Index = () => {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <header className="glass border-b border-border/30 sticky top-0 z-40 relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/2 to-transparent"></div>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-            <div className="flex justify-between items-center h-16">
-              <div className="flex items-center gap-4 group">
+        {/* Compact Header */}
+        <header className="glass clean-border border-b sticky top-0 z-40">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-12">
+              <div className="flex items-center gap-3">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className="p-2"
+                  className="p-1.5 hover-lift"
                 >
                   {sidebarOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
                 </Button>
-                <div className="flex items-center justify-center w-12 h-12 bg-gradient-primary rounded-2xl shadow-soft group-hover:shadow-medium transition-all duration-300 hover-lift">
-                  <Briefcase className="h-6 w-6 text-primary-foreground" />
+                <div className="flex items-center justify-center w-8 h-8 bg-primary rounded-lg shadow-soft">
+                  <Briefcase className="h-4 w-4 text-primary-foreground" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold font-display gradient-text">מנהל המשימות המקצועי</h1>
-                  <p className="text-sm text-muted-foreground font-body">ניהול פרויקטים מקצועי ומתקדם</p>
+                  <h1 className="text-lg font-bold gradient-text">מנהל משימות</h1>
                 </div>
               </div>
               
-              <div className="flex items-center gap-3">
-                <Button variant="outline" onClick={handleExport} className="gap-2 mac-button hover-lift press-scale">
-                  <Download className="h-4 w-4" />
-                  ייצא CSV
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={handleExport} className="gap-1.5 mac-button text-xs hover-lift">
+                  <Download className="h-3.5 w-3.5" />
+                  CSV
                 </Button>
-                <Button variant="outline" onClick={handleExportToNotes} className="gap-2 mac-button hover-lift press-scale">
-                  <FileText className="h-4 w-4" />
-                  שלח לפתקים
+                <Button variant="outline" size="sm" onClick={handleExportToNotes} className="gap-1.5 mac-button text-xs hover-lift">
+                  <FileText className="h-3.5 w-3.5" />
+                  פתקים
                 </Button>
-                <Button variant="outline" onClick={() => window.open('/mobile', '_blank')} className="gap-2 mac-button hover-lift press-scale">
-                  <Users className="h-4 w-4" />
-                  גרסת מובייל
+                <Button variant="outline" size="sm" onClick={() => window.open('/mobile', '_blank')} className="gap-1.5 mac-button text-xs hover-lift">
+                  <Users className="h-3.5 w-3.5" />
+                  מובייל
                 </Button>
                 <CreateTaskDialog onCreateTask={handleCreateTask} />
                 <ThemeToggle />
@@ -158,34 +150,34 @@ const Index = () => {
           </div>
         </header>
 
-        {/* Main Content */}
-        <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10 w-full">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="animate-slide-up">
-            <TabsList className="grid w-full grid-cols-2 mac-card bg-muted/20 backdrop-blur-sm p-1.5 rounded-2xl shadow-soft">
+        {/* Compact Main Content */}
+        <main className="flex-1 max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4 w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-2 mac-card bg-muted/30 p-1 rounded-lg clean-border">
               <TabsTrigger 
                 value="dashboard" 
-                className="gap-2 rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-soft dark:data-[state=active]:bg-white/10 transition-all duration-300 hover-lift press-scale font-medium"
+                className="gap-1.5 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-soft dark:data-[state=active]:bg-white/10 transition-all duration-200 hover-lift text-sm font-medium"
               >
-                <LayoutDashboard className="h-4 w-4" />
+                <LayoutDashboard className="h-3.5 w-3.5" />
                 לוח בקרה
               </TabsTrigger>
               <TabsTrigger 
                 value="projects" 
-                className="gap-2 rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-soft dark:data-[state=active]:bg-white/10 transition-all duration-300 hover-lift press-scale font-medium"
+                className="gap-1.5 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-soft dark:data-[state=active]:bg-white/10 transition-all duration-200 hover-lift text-sm font-medium"
               >
-                <Table className="h-4 w-4" />
+                <Table className="h-3.5 w-3.5" />
                 פרויקטים
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="dashboard" className="mt-8 animate-slide-up">
-              <div className="space-y-6">
+            <TabsContent value="dashboard" className="mt-4">
+              <div className="compact-spacing">
                 <Dashboard tasks={tasks} stats={stats} />
               </div>
             </TabsContent>
 
-            <TabsContent value="projects" className="mt-8 animate-slide-up">
-              <div className="mac-card p-6">
+            <TabsContent value="projects" className="mt-4">
+              <div className="mac-card compact-padding">
                 <TaskTable 
                   tasks={tasks} 
                   onUpdateTask={updateTask} 
@@ -197,7 +189,7 @@ const Index = () => {
         </main>
       </div>
 
-      {/* Right Sidebar - Quick Tasks */}
+      {/* Compact Right Sidebar - Quick Tasks */}
       {sidebarOpen && (
         <div className="relative">
           <QuickTaskSidebar />
