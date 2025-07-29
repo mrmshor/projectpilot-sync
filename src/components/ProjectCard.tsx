@@ -37,17 +37,17 @@ interface ProjectCardProps {
 }
 
 const priorityColors = {
-  low: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-  medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-  high: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+  low: 'bg-success/10 text-success border-success/20',
+  medium: 'bg-warning/10 text-warning border-warning/20',
+  high: 'bg-destructive/10 text-destructive border-destructive/20'
 };
 
 const statusColors = {
-  not_started: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-  in_progress: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-  review: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-  completed: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-  on_hold: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+  not_started: 'bg-muted/50 text-muted-foreground border-muted',
+  in_progress: 'bg-info/10 text-info border-info/20',
+  review: 'bg-primary/10 text-primary border-primary/20',
+  completed: 'bg-success/10 text-success border-success/20',
+  on_hold: 'bg-warning/10 text-warning border-warning/20'
 };
 
 export const ProjectCard = memo(({ 
