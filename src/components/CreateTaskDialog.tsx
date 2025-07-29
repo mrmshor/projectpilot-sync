@@ -10,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, FolderOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import { ClientSelector } from './ClientSelector';
+import { useClients } from '@/hooks/useClients';
 
 interface CreateTaskDialogProps {
   onCreateTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => void;
@@ -17,6 +18,7 @@ interface CreateTaskDialogProps {
 
 export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
   const [open, setOpen] = useState(false);
+  const { getClientByName, getClientSuggestions, saveClient } = useClients();
   const [formData, setFormData] = useState({
     projectName: '',
     projectDescription: '',
@@ -95,9 +97,19 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
   };
 
   const handleClientChange = (clientName: string, clientData?: any) => {
+    // Auto-fill from database if client exists
+    const existingClient = getClientByName(clientName);
+    
     setFormData(prev => ({
       ...prev,
       clientName,
+      ...(existingClient && {
+        clientPhone: existingClient.phone || prev.clientPhone,
+        clientPhone2: existingClient.phone2 || prev.clientPhone2,
+        clientWhatsapp: existingClient.whatsapp || prev.clientWhatsapp,
+        clientWhatsapp2: existingClient.whatsapp2 || prev.clientWhatsapp2,
+        clientEmail: existingClient.email || prev.clientEmail
+      }),
       ...(clientData && {
         clientPhone: clientData.phone || prev.clientPhone,
         clientPhone2: clientData.phone2 || prev.clientPhone2,
@@ -106,6 +118,18 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
         clientEmail: clientData.email || prev.clientEmail
       })
     }));
+    
+    // Save client data for future use
+    if (clientName.trim()) {
+      saveClient({
+        name: clientName,
+        phone: formData.clientPhone || clientData?.phone,
+        phone2: formData.clientPhone2 || clientData?.phone2,
+        whatsapp: formData.clientWhatsapp || clientData?.whatsapp,
+        whatsapp2: formData.clientWhatsapp2 || clientData?.whatsapp2,
+        email: formData.clientEmail || clientData?.email
+      });
+    }
   };
 
   const handleClientDataChange = (clientData: any) => {

@@ -27,15 +27,19 @@ export const useMemoryManager = () => {
     return intervalId;
   };
 
-  // Safe event listener
+  // Safe event listener with cleanup tracking
   const safeAddEventListener = (
     element: EventTarget,
     event: string,
     handler: EventListener,
     options?: boolean | AddEventListenerOptions
   ) => {
-    element.addEventListener(event, handler, options);
-    eventListenersRef.current.push({ element, event, handler });
+    try {
+      element.addEventListener(event, handler, options);
+      eventListenersRef.current.push({ element, event, handler });
+    } catch (error) {
+      console.warn('Failed to add event listener:', error);
+    }
   };
 
   // Cleanup function
@@ -48,9 +52,13 @@ export const useMemoryManager = () => {
     intervalsRef.current.forEach(clearInterval);
     intervalsRef.current.clear();
 
-    // Remove event listeners
+    // Remove event listeners safely
     eventListenersRef.current.forEach(({ element, event, handler }) => {
-      element.removeEventListener(event, handler);
+      try {
+        element.removeEventListener(event, handler);
+      } catch (error) {
+        console.warn('Failed to remove event listener:', error);
+      }
     });
     eventListenersRef.current = [];
   };

@@ -3,6 +3,7 @@ import { Task, Priority } from '@/types/task';
 import ProjectCard from './ProjectCard';
 import TaskFilters from './TaskFilters';
 import { debounce } from '@/lib/optimizations';
+import { useMemoryManager } from '@/hooks/useMemoryManager';
 
 interface TaskTableProps {
   tasks: Task[];
@@ -19,6 +20,9 @@ export const TaskTable = memo(({ tasks, onUpdateTask, onDeleteTask }: TaskTableP
   const [sortField, setSortField] = useState<SortField>('updatedAt');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [priorityFilter, setPriorityFilter] = useState<Priority | 'all'>('all');
+  
+  // Memory management
+  const { safeSetTimeout } = useMemoryManager();
 
   const handleSort = useCallback((field: SortField) => {
     if (sortField === field) {
@@ -31,12 +35,25 @@ export const TaskTable = memo(({ tasks, onUpdateTask, onDeleteTask }: TaskTableP
 
   // Debounced search function for better performance
   const debouncedSetSearchTerm = useCallback(
-    debounce((value: string) => setSearchTerm(value), 300),
+    debounce((value: string) => setSearchTerm(value), 150), // Faster response
     []
   );
 
   const filteredTasks = useMemo(() => {
     if (tasks.length === 0) return [];
+    
+    // Optimize search with early return for empty search
+    if (!searchTerm && priorityFilter === 'all') {
+      // Just sort when no filters applied
+      return [...tasks].sort((a, b) => {
+        const aValue = a[sortField];
+        const bValue = b[sortField];
+        
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
     
     const filtered = tasks.filter(task => {
       const matchesSearch = !searchTerm || (
