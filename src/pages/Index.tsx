@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo, lazy, Suspense } from 'react';
 import { useTasks } from '@/hooks/useTasksOptimized';
+import { useMemoryManager, useMemoryMonitor } from '@/hooks/useMemoryManager';
 const TaskTable = lazy(() => import('@/components/TaskTable').then(module => ({ default: module.TaskTable })));
 const CreateTaskDialog = lazy(() => import('@/components/CreateTaskDialog').then(module => ({ default: module.CreateTaskDialog })));
 const Dashboard = lazy(() => import('@/components/Dashboard').then(module => ({ default: module.Dashboard })));
@@ -27,6 +28,10 @@ const Index = () => {
   const { tasks, loading, createTask, updateTask, deleteTask, getTaskStats, exportToCSV } = useTasks();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  
+  // Memory management
+  const { safeSetTimeout } = useMemoryManager();
+  useMemoryMonitor('Index');
   
   const { toast } = useToast();
   const { exportQuickTasksToNotes } = useQuickTasksExport();
