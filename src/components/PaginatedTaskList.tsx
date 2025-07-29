@@ -3,7 +3,7 @@ import { Task, Priority } from '@/types/task';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
-import ProjectCard from './ProjectCard';
+import { ProjectCard } from './ProjectCard';
 
 interface PaginatedTaskListProps {
   tasks: Task[];

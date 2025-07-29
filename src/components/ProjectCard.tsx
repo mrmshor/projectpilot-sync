@@ -1,5 +1,5 @@
 import React, { useState, useCallback, memo } from 'react';
-import { Task, WorkStatus, Priority } from '@/types/task';
+import { Task, WorkStatus, Priority, WORK_STATUS_LABELS, PRIORITY_LABELS } from '@/types/task';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -83,22 +83,34 @@ export const ProjectCard = memo(({
 
   const handleFolderOpen = useCallback(() => {
     if (task.folderPath) {
-      // Try to open folder using protocol
       window.open(`folder://${task.folderPath}`, '_blank');
     }
   }, [task.folderPath]);
+
+  const handleWhatsAppClick = useCallback((phone: string) => {
+    const cleanPhone = phone.replace(/[^\d+]/g, '');
+    window.open(`https://wa.me/${cleanPhone}`, '_blank');
+  }, []);
+
+  const handlePhoneClick = useCallback((phone: string) => {
+    window.open(`tel:${phone}`, '_blank');
+  }, []);
+
+  const handleEmailClick = useCallback((email: string) => {
+    window.open(`mailto:${email}`, '_blank');
+  }, []);
 
   const completedTasks = task.tasks.filter(t => t.isCompleted).length;
   const taskProgress = task.tasks.length > 0 ? (completedTasks / task.tasks.length) * 100 : 0;
 
   if (isEditing) {
     return (
-      <Card className="border-primary/50 shadow-md" data-project-id={task.id}>
+      <Card className="border-primary/50 shadow-md mac-card" data-project-id={task.id}>
         <CardHeader className="pb-4">
           <div className="flex justify-between items-start">
-            <CardTitle className="text-lg">עריכת פרויקט</CardTitle>
+            <CardTitle className="text-lg font-display">עריכת פרויקט</CardTitle>
             <div className="flex gap-2">
-              <Button size="sm" onClick={handleSave} className="h-8">
+              <Button size="sm" onClick={handleSave} className="h-8 mac-button">
                 <Save className="h-3 w-3 mr-1" />
                 שמור
               </Button>
@@ -118,6 +130,7 @@ export const ProjectCard = memo(({
                 value={editData.projectName || ''}
                 onChange={(e) => handleInputChange('projectName', e.target.value)}
                 placeholder="שם הפרויקט"
+                className="mac-input"
               />
             </div>
             <div className="space-y-2">
@@ -127,6 +140,7 @@ export const ProjectCard = memo(({
                 value={editData.clientName || ''}
                 onChange={(e) => handleInputChange('clientName', e.target.value)}
                 placeholder="שם הלקוח"
+                className="mac-input"
               />
             </div>
           </div>
@@ -139,6 +153,7 @@ export const ProjectCard = memo(({
               onChange={(e) => handleInputChange('projectDescription', e.target.value)}
               placeholder="תיאור הפרויקט"
               rows={3}
+              className="mac-input"
             />
           </div>
 
@@ -151,35 +166,57 @@ export const ProjectCard = memo(({
                 value={editData.price || 0}
                 onChange={(e) => handleInputChange('price', Number(e.target.value))}
                 placeholder="מחיר"
+                className="mac-input"
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="workStatus">סטטוס עבודה</Label>
               <Select value={editData.workStatus} onValueChange={(value) => handleInputChange('workStatus', value)}>
-                <SelectTrigger>
+                <SelectTrigger className="mac-input">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="not_started">לא התחיל</SelectItem>
-                  <SelectItem value="in_progress">בתהליך</SelectItem>
-                  <SelectItem value="review">בסקירה</SelectItem>
-                  <SelectItem value="completed">הושלם</SelectItem>
-                  <SelectItem value="on_hold">ממתין</SelectItem>
+                  {Object.entries(WORK_STATUS_LABELS).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>{label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="priority">עדיפות</Label>
               <Select value={editData.priority} onValueChange={(value) => handleInputChange('priority', value)}>
-                <SelectTrigger>
+                <SelectTrigger className="mac-input">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="low">נמוכה</SelectItem>
-                  <SelectItem value="medium">בינונית</SelectItem>
-                  <SelectItem value="high">גבוהה</SelectItem>
+                  {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>{label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="clientPhone">טלפון</Label>
+              <Input
+                id="clientPhone"
+                value={editData.clientPhone || ''}
+                onChange={(e) => handleInputChange('clientPhone', e.target.value)}
+                placeholder="מספר טלפון"
+                className="mac-input"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="clientEmail">אימייל</Label>
+              <Input
+                id="clientEmail"
+                value={editData.clientEmail || ''}
+                onChange={(e) => handleInputChange('clientEmail', e.target.value)}
+                placeholder="כתובת אימייל"
+                className="mac-input"
+              />
             </div>
           </div>
 
@@ -207,17 +244,17 @@ export const ProjectCard = memo(({
   }
 
   return (
-    <Card className="hover:shadow-lg transition-all duration-200 group" data-project-id={task.id}>
+    <Card className="mac-card hover-lift press-scale transition-all duration-200 group" data-project-id={task.id}>
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <div className="space-y-1 flex-1">
-            <CardTitle className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+            <CardTitle className="text-xl font-bold font-display gradient-text group-hover:text-primary transition-colors">
               {task.projectName}
             </CardTitle>
-            <p className="text-sm text-muted-foreground">{task.clientName}</p>
+            <p className="text-sm text-muted-foreground font-body">{task.clientName}</p>
           </div>
           <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button size="sm" variant="outline" onClick={onEdit} className="h-8 w-8 p-0">
+            <Button size="sm" variant="outline" onClick={onEdit} className="h-8 w-8 p-0 mac-button hover-lift">
               <Edit className="h-3 w-3" />
             </Button>
             <Button size="sm" variant="outline" onClick={handleDelete} className="h-8 w-8 p-0 text-destructive hover:text-destructive">
@@ -230,26 +267,20 @@ export const ProjectCard = memo(({
       <CardContent className="space-y-4">
         {/* Project Description */}
         {task.projectDescription && (
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="text-sm text-muted-foreground leading-relaxed font-body">
             {task.projectDescription}
           </p>
         )}
 
         {/* Status Badges */}
         <div className="flex flex-wrap gap-2">
-          <Badge className={statusColors[task.workStatus as keyof typeof statusColors]}>
-            {task.workStatus === 'not_started' ? 'לא התחיל' :
-             task.workStatus === 'in_progress' ? 'בתהליך' :
-             task.workStatus === 'review' ? 'בסקירה' :
-             task.workStatus === 'completed' ? 'הושלם' :
-             task.workStatus === 'on_hold' ? 'ממתין' : task.workStatus}
+          <Badge className={statusColors[task.workStatus]} variant="outline">
+            {WORK_STATUS_LABELS[task.workStatus]}
           </Badge>
           
-          <Badge className={priorityColors[task.priority as keyof typeof priorityColors]}>
+          <Badge className={priorityColors[task.priority]} variant="outline">
             <Flag className="h-3 w-3 mr-1" />
-            {task.priority === 'low' ? 'נמוכה' :
-             task.priority === 'medium' ? 'בינונית' :
-             task.priority === 'high' ? 'גבוהה' : task.priority}
+            {PRIORITY_LABELS[task.priority]}
           </Badge>
 
           <Badge variant={task.isCompleted ? "default" : "secondary"}>
@@ -272,9 +303,51 @@ export const ProjectCard = memo(({
             </div>
             <div className="w-full bg-muted rounded-full h-2">
               <div 
-                className="bg-primary h-2 rounded-full transition-all duration-300" 
+                className="bg-gradient-primary h-2 rounded-full transition-all duration-300" 
                 style={{ width: `${taskProgress}%` }}
               />
+            </div>
+          </div>
+        )}
+
+        {/* Client Contact Information */}
+        {(task.clientPhone || task.clientWhatsapp || task.clientEmail) && (
+          <div className="space-y-2 p-3 bg-gradient-muted rounded-lg border border-border/30">
+            <h4 className="text-sm font-medium text-muted-foreground mb-2">פרטי קשר</h4>
+            <div className="flex flex-wrap gap-2">
+              {task.clientPhone && (
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  onClick={() => handlePhoneClick(task.clientPhone!)}
+                  className="h-7 px-2 text-xs gap-1 hover-lift"
+                >
+                  <Phone className="h-3 w-3" />
+                  {task.clientPhone}
+                </Button>
+              )}
+              {task.clientWhatsapp && (
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  onClick={() => handleWhatsAppClick(task.clientWhatsapp!)}
+                  className="h-7 px-2 text-xs gap-1 hover-lift text-green-600"
+                >
+                  <MessageSquare className="h-3 w-3" />
+                  WhatsApp
+                </Button>
+              )}
+              {task.clientEmail && (
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  onClick={() => handleEmailClick(task.clientEmail!)}
+                  className="h-7 px-2 text-xs gap-1 hover-lift"
+                >
+                  <Mail className="h-3 w-3" />
+                  {task.clientEmail}
+                </Button>
+              )}
             </div>
           </div>
         )}
@@ -291,16 +364,27 @@ export const ProjectCard = memo(({
                 size="sm" 
                 variant="ghost" 
                 onClick={handleFolderOpen}
-                className="h-6 px-2 text-xs"
+                className="h-6 px-2 text-xs hover-lift"
               >
                 <FolderOpen className="h-3 w-3 mr-1" />
                 פתח תיקייה
               </Button>
             )}
+            {task.folderLink && (
+              <Button 
+                size="sm" 
+                variant="ghost" 
+                onClick={() => window.open(task.folderLink, '_blank')}
+                className="h-6 px-2 text-xs hover-lift"
+              >
+                <ExternalLink className="h-3 w-3 mr-1" />
+                קישור
+              </Button>
+            )}
           </div>
           
           <div className="text-right">
-            <span className="text-lg font-bold text-primary">
+            <span className="text-lg font-bold gradient-text">
               {task.price.toFixed(0)} {task.currency}
             </span>
           </div>
@@ -311,4 +395,5 @@ export const ProjectCard = memo(({
 });
 
 ProjectCard.displayName = 'ProjectCard';
+
 export default ProjectCard;
