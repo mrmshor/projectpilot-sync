@@ -1,0 +1,233 @@
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Task, WorkStatus, Priority } from '@/types/task';
+
+const STORAGE_KEY = 'task_management_data';
+const MAX_STORAGE_SIZE = 5 * 1024 * 1024; // 5MB limit
+const SAVE_DEBOUNCE_MS = 500; // Debounce saves
+
+// Performance optimizations
+const useTasksOptimized = () => {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
+
+  // Load tasks from localStorage on mount with error handling
+  useEffect(() => {
+    const loadTasks = async () => {
+      try {
+        const savedTasks = localStorage.getItem(STORAGE_KEY);
+        if (savedTasks) {
+          // Check data size before parsing
+          if (savedTasks.length > MAX_STORAGE_SIZE) {
+            console.warn('Tasks data exceeds size limit, removing old data');
+            localStorage.removeItem(STORAGE_KEY);
+            setTasks([]);
+          } else {
+            const parsed = JSON.parse(savedTasks);
+            // Validate data structure
+            if (Array.isArray(parsed)) {
+              const tasksWithDates = parsed.map((task: any) => ({
+                ...task,
+                createdAt: new Date(task.createdAt),
+                updatedAt: new Date(task.updatedAt)
+              }));
+              setTasks(tasksWithDates);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error loading tasks:', error);
+        // Clear corrupted data
+        localStorage.removeItem(STORAGE_KEY);
+        setTasks([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTasks();
+  }, []);
+
+  // Debounced save function to prevent excessive localStorage writes
+  const debouncedSave = useCallback((tasksToSave: Task[]) => {
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+    }
+
+    const timeout = setTimeout(() => {
+      try {
+        const dataToSave = JSON.stringify(tasksToSave);
+        
+        // Check storage size limit
+        if (dataToSave.length > MAX_STORAGE_SIZE) {
+          console.warn('Data too large, removing old tasks');
+          // Keep only recent tasks if data is too large
+          const recentTasks = tasksToSave
+            .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+            .slice(0, Math.floor(tasksToSave.length * 0.7)); // Keep 70% most recent
+          
+          const reducedData = JSON.stringify(recentTasks);
+          localStorage.setItem(STORAGE_KEY, reducedData);
+          setTasks(recentTasks);
+        } else {
+          localStorage.setItem(STORAGE_KEY, dataToSave);
+        }
+      } catch (error) {
+        console.error('Error saving tasks:', error);
+        if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+          // Handle storage quota exceeded
+          const recentTasks = tasksToSave.slice(0, Math.floor(tasksToSave.length * 0.5));
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(recentTasks));
+            setTasks(recentTasks);
+          } catch (e) {
+            console.error('Unable to save even reduced data:', e);
+          }
+        }
+      }
+    }, SAVE_DEBOUNCE_MS);
+
+    setSaveTimeout(timeout);
+  }, [saveTimeout]);
+
+  // Save tasks with debouncing
+  useEffect(() => {
+    if (!loading && tasks.length >= 0) {
+      debouncedSave(tasks);
+    }
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (saveTimeout) {
+        clearTimeout(saveTimeout);
+      }
+    };
+  }, [tasks, loading, debouncedSave]);
+
+  // Optimized create task function
+  const createTask = useCallback((taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
+    try {
+      const newTask: Task = {
+        ...taskData,
+        id: crypto.randomUUID(),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      
+      setTasks(prev => [newTask, ...prev]);
+      return newTask;
+    } catch (error) {
+      console.error('Error in createTask:', error);
+      throw error;
+    }
+  }, []);
+
+  // Optimized update task function
+  const updateTask = useCallback((id: string, updates: Partial<Task>) => {
+    setTasks(prev => prev.map(task => 
+      task.id === id 
+        ? { ...task, ...updates, updatedAt: new Date() }
+        : task
+    ));
+  }, []);
+
+  // Optimized delete task function
+  const deleteTask = useCallback((id: string) => {
+    setTasks(prev => prev.filter(task => task.id !== id));
+  }, []);
+
+  // Memoized stats calculation
+  const getTaskStats = useMemo(() => {
+    const total = tasks.length;
+    const completed = tasks.filter(task => task.isCompleted).length;
+    const inProgress = tasks.filter(task => task.workStatus === 'in_progress').length;
+    const paid = tasks.filter(task => task.isPaid).length;
+    const unpaid = tasks.filter(task => !task.isPaid).length;
+    const totalRevenue = tasks.filter(task => task.isPaid).reduce((sum, task) => sum + task.price, 0);
+    const pendingRevenue = tasks.filter(task => !task.isPaid).reduce((sum, task) => sum + task.price, 0);
+
+    return {
+      total,
+      completed,
+      inProgress,
+      paid,
+      unpaid,
+      totalRevenue,
+      pendingRevenue,
+      completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
+      paymentRate: total > 0 ? Math.round((paid / total) * 100) : 0
+    };
+  }, [tasks]);
+
+  // Optimized CSV export
+  const exportToCSV = useCallback(() => {
+    try {
+      const headers = [
+        'Project Name',
+        'Description', 
+        'Client Name',
+        'Client Phone',
+        'Client Email',
+        'Work Status',
+        'Priority',
+        'Price',
+        'Currency',
+        'Payment Status',
+        'Completion Status',
+        'Created Date',
+        'Updated Date'
+      ];
+
+      const rows = tasks.map(task => [
+        task.projectName,
+        task.projectDescription,
+        task.clientName,
+        task.clientPhone || '',
+        task.clientEmail || '',
+        task.workStatus,
+        task.priority,
+        task.price,
+        task.currency,
+        task.isPaid ? 'Paid' : 'Unpaid',
+        task.isCompleted ? 'Done' : 'Not Done',
+        task.createdAt.toLocaleDateString(),
+        task.updatedAt.toLocaleDateString()
+      ]);
+
+      const csvContent = [headers, ...rows]
+        .map(row => row.map(cell => `"${cell}"`).join(','))
+        .join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `tasks_export_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+    }
+  }, [tasks]);
+
+  // Memory cleanup
+  useEffect(() => {
+    return () => {
+      if (saveTimeout) {
+        clearTimeout(saveTimeout);
+      }
+    };
+  }, [saveTimeout]);
+
+  return {
+    tasks,
+    loading,
+    createTask,
+    updateTask,
+    deleteTask,
+    getTaskStats,
+    exportToCSV
+  };
+};
+
+export { useTasksOptimized as useTasks };

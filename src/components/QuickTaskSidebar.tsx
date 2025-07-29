@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuickTasks } from '@/hooks/useQuickTasks';
+import { useQuickTasks } from '@/hooks/useQuickTasksOptimized';
 import { useQuickTasksExport } from '@/hooks/useQuickTasksExport';
 import { GoogleTasksSettings } from './GoogleTasksSettings';
 import { Button } from '@/components/ui/button';

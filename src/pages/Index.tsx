@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useTasks } from '@/hooks/useTasks';
+import { useTasks } from '@/hooks/useTasksOptimized';
 import { TaskTable } from '@/components/TaskTable';
 import { CreateTaskDialog } from '@/components/CreateTaskDialog';
 import { Dashboard } from '@/components/Dashboard';
@@ -30,7 +30,7 @@ const Index = () => {
   
   const { toast } = useToast();
   const { exportQuickTasksToNotes } = useQuickTasksExport();
-  const stats = getTaskStats();
+  const stats = getTaskStats;
 
   const handleCreateTask = (taskData: Parameters<typeof createTask>[0]) => {
     createTask(taskData);
