@@ -1,146 +1,97 @@
-# ProjectPilot Sync - אפליקציית ניהול פרויקטים
+# Welcome to your Lovable project
 
-## תיאור
-ProjectPilot Sync היא אפליקציית שולחן עבודה מתקדמת לניהול פרויקטים ומשימות, המותאמת לעברית ומיועדת למעצבים, מפתחים ועצמאיים.
-
-## תכונות עיקריות
-
-### 🎯 ניהול פרויקטים
-- יצירה ועריכה של פרויקטים מפורטים
-- מעקב אחרי סטטוס עבודה ורמת עדיפות
-- ניהול פרטי לקוחות מלאים
-- מעקב אחרי מחירים ותשלומים
-
-### 📝 משימות מהירות
-- רשימת משימות צדדית לניהול יומיומי
-- יצירה מהירה של משימות קצרות
-- ייצוא ישיר לאפליקציית הפתקים של Mac
-
-### 📁 ניהול תיקיות
-- בחירת תיקיות ישירות ממערכת ההפעלה
-- פתיחה מהירה של תיקיות פרויקטים
-- קישור לתיקיות iCloud Drive ושירותי אחסון אחרים
-
-### 🎨 עיצוב מותאם
-- ממשק משתמש מותאם לעברית (RTL)
-- תמיכה במצב כהה ובהיר
-- עיצוב מודרני ונקי
-
-## התקנה
-
-### דרישות מערכת
-- macOS 10.14 ומעלה
-- 4GB זיכרון RAM
-- 100MB שטח פנוי בדיסק
-
-### הורדה והתקנה
-1. עבור לעמוד [Releases](https://github.com/yourusername/projectpilot-sync/releases)
-2. הורד את קובץ ה-DMG העדכני ביותר
-3. פתח את קובץ ה-DMG
-4. גרור את האפליקציה לתיקיית Applications
-5. פתח את האפליקציה מתיקיית Applications
-
-### הרצה ראשונה
-בהפעלה הראשונה, macOS עלול להציג אזהרת אבטחה. לפתרון:
-1. לחץ ימני על האפליקציה ובחר "פתח"
-2. או עבור ל: System Preferences > Security & Privacy > ולחץ "Open Anyway"
-
-## פיתוח
-
-### טכנולוגיות
-- **Frontend**: React 18 + TypeScript + Vite
-- **UI**: Tailwind CSS + Radix UI + shadcn/ui
-- **Desktop**: Electron 28
-- **State Management**: React Hooks + Local Storage
-- **Icons**: Lucide React
-
-### התקנה למפתחים
-
-```bash
-# שכפול הפרויקט
-git clone https://github.com/yourusername/projectpilot-sync.git
-cd projectpilot-sync
-
-# התקנת תלויות
-npm install
-
-# הפעלה במצב פיתוח (דפדפן)
-npm run dev
-
-# הפעלה במצב פיתוח (Electron)
-npm run dev  # בטרמינל ראשון
-./start-electron-dev.sh  # בטרמינל שני
-
-# בניית אפליקציה סופית
-./create-mac-installer.sh
-cd mac-installer
-npx electron .
-```
-
-### מבנה הפרויקט
-```
-src/
-├── components/          # קומפוננטים של React
-│   ├── ui/             # קומפוננטים בסיסיים (shadcn/ui)
-│   ├── Dashboard.tsx   # דשבורד ראשי
-│   ├── TaskTable.tsx   # טבלת פרויקטים
-│   └── QuickTaskSidebar.tsx  # בר משימות מהירות
-├── hooks/              # React Hooks מותאמים
-├── types/              # הגדרות TypeScript
-├── lib/                # פונקציות עזר
-└── pages/              # עמודים ראשיים
-
-electron-main.js        # תהליך ראשי של Electron
-preload.js             # סקריפט preload עבור Electron
-ready-package/         # קבצים מוכנים לחבילה
-mac-installer/         # תיקיית בנייה למק
-```
-
-## GitHub Actions
-
-הפרויקט כולל workflow אוטומטי ל-GitHub Actions שבונה אוטומטית קובצי DMG:
-
-### Workflow בנייה אוטומטית
-- רץ על כל push למאסטר
-- בונה את האפליקציה ויוצר DMG
-- שומר את הקובץ כ-Artifact
-
-### Workflow שחרור
-- רץ רק על tags (למשל `v1.0.0`)
-- יוצר Release חדש ב-GitHub
-- מעלה את קובץ ה-DMG לשחרור
-
-### יצירת שחרור חדש
-```bash
-# יצירת tag חדש
-git tag v1.0.0
-git push origin v1.0.0
-
-# GitHub Actions יבנה ויפרסם אוטומטית
-```
-
-## תרומה לפרויקט
-
-נשמח לתרומות! אנא:
-1. צור Fork של הפרויקט
-2. צור branch חדש לפיצ'ר שלך
-3. בצע commit עם הודעה ברורה
-4. צור Pull Request
-
-## רישיון
-MIT License - ראה קובץ LICENSE לפרטים מלאים.
-
-## תמיכה
-לתמיכה ושאלות, פתח Issue ב-GitHub או צור קשר בוואטסאפ.
-
----
-
-**מפותח באהבה ל-Mac ולקהילת היוצרים הישראלית** 🇮🇱
-
-## How can I edit this code via Lovable?
+## Project info
 
 **URL**: https://lovable.dev/projects/b1cb2869-cf2d-4731-a631-2297f36707cb
+
+## How can I edit this code?
+
+There are several ways of editing your application.
+
+**Use Lovable**
 
 Simply visit the [Lovable Project](https://lovable.dev/projects/b1cb2869-cf2d-4731-a631-2297f36707cb) and start prompting.
 
 Changes made via Lovable will be committed automatically to this repo.
+
+**Use your preferred IDE**
+
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+
+Follow these steps:
+
+```sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
+
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
+
+# Step 3: Install the necessary dependencies.
+npm i
+
+# Step 4: Start the development server with auto-reloading and an instant preview.
+npm run dev
+```
+
+**Edit a file directly in GitHub**
+
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
+
+**Use GitHub Codespaces**
+
+- Navigate to the main page of your repository.
+- Click on the "Code" button (green button) near the top right.
+- Select the "Codespaces" tab.
+- Click on "New codespace" to launch a new Codespace environment.
+- Edit files directly within the Codespace and commit and push your changes once you're done.
+
+## What technologies are used for this project?
+
+This project is built with:
+
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
+
+## 📱 אפליקציות מותקנות
+
+הפרויקט בונה אוטומטית אפליקציות מותקנות עבור כל הפלטפורמות!
+
+### הורדת אפליקציות
+1. עבור ל-[GitHub Actions](https://github.com/YOUR_USERNAME/YOUR_REPO/actions)
+2. בחר את הרצה האחרונה של "Build Desktop Apps"
+3. הורד את הקובץ המתאים:
+   - **Mac**: `ProjectPilot-Sync-Mac.dmg`
+   - **Windows**: `ProjectPilot-Sync-Windows.exe` 
+   - **Linux**: `ProjectPilot-Sync-Linux.AppImage`
+
+### התקנה
+- **Mac**: פתח את קובץ ה-DMG וגרור את האפליקציה לתיקיית Applications
+- **Windows**: הפעל את קובץ ה-EXE ועקוב אחר הוראות ההתקנה
+- **Linux**: הפעל את קובץ ה-AppImage (או הוסף הרשאות הפעלה)
+
+### יתרונות האפליקציה המותקנת
+✅ פתיחה ישירה של תיקיות מקומיות  
+✅ בחירת תיקיות דרך דיאלוג מערכת  
+✅ גישה מלאה לכל התיקיות במחשב  
+✅ עבודה ללא אינטרנט  
+✅ ביצועים מהירים יותר  
+
+## How can I deploy this project?
+
+Simply open [Lovable](https://lovable.dev/projects/b1cb2869-cf2d-4731-a631-2297f36707cb) and click on Share -> Publish.
+
+## Can I connect a custom domain to my Lovable project?
+
+Yes, you can!
+
+To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+
+Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)

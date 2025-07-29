@@ -6,6 +6,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   openFolder: (folderPath) => ipcRenderer.invoke('open-folder', folderPath),
   showItemInFolder: (itemPath) => ipcRenderer.invoke('show-item-in-folder', itemPath),
   selectFolder: () => ipcRenderer.invoke('select-folder'),
-  createNote: (content) => ipcRenderer.invoke('create-note', content),
   isElectron: true
 });

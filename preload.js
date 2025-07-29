@@ -1,23 +1,31 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer, shell } = require('electron');
 
 // Expose protected methods that allow the renderer process to use
 // the ipcRenderer without exposing the entire object
 contextBridge.exposeInMainWorld('electronAPI', {
   openFolder: (folderPath) => {
     console.log('electronAPI.openFolder called with:', folderPath);
-    return ipcRenderer.invoke('open-folder', folderPath);
+    return shell.openPath(folderPath);
   },
   showItemInFolder: (itemPath) => {
     console.log('electronAPI.showItemInFolder called with:', itemPath);
-    return ipcRenderer.invoke('show-item-in-folder', itemPath);
+    return shell.showItemInFolder(itemPath);
   },
-  selectFolder: () => {
+  selectFolder: async () => {
     console.log('electronAPI.selectFolder called');
-    return ipcRenderer.invoke('select-folder');
-  },
-  createNote: (content) => {
-    console.log('electronAPI.createNote called with content length:', content.length);
-    return ipcRenderer.invoke('create-note', content);
+    const { dialog } = require('@electron/remote') || require('electron').remote;
+    if (!dialog) {
+      // Fallback to ipcRenderer if remote is not available
+      return ipcRenderer.invoke('select-folder');
+    }
+    const result = await dialog.showOpenDialog({
+      properties: ['openDirectory']
+    });
+    console.log('selectFolder result:', result);
+    if (result.canceled) {
+      return { canceled: true };
+    }
+    return { success: true, path: result.filePaths[0] };
   },
   isElectron: true
 });

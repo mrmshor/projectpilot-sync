@@ -1,68 +1,32 @@
 {
   "name": "projectpilot-sync",
   "version": "1.0.0",
-  "description": "ProjectPilot Sync - אפליקציית ניהול פרויקטים למק",
+  "description": "ProjectPilot Sync Desktop App",
   "main": "main.js",
   "homepage": "./",
   "build": {
-    "appId": "app.projectpilot.sync",
+    "appId": "app.lovable.projectpilot.sync",
     "productName": "ProjectPilot Sync",
     "directories": {
-      "output": "dist"
+      "output": "dist-electron"
     },
     "files": [
       "main.js",
-      "preload.js",
       "package.json", 
       "dist/**/*",
       "assets/**/*"
     ],
     "mac": {
-      "target": [
-        {
-          "target": "dmg",
-          "arch": ["x64", "arm64"]
-        }
-      ],
+      "target": {
+        "target": "dmg",
+        "arch": ["x64", "arm64"]
+      },
       "category": "public.app-category.productivity",
       "identity": null,
       "gatekeeperAssess": false,
       "hardenedRuntime": false,
       "entitlements": null,
-      "entitlementsInherit": null,
-      "icon": "assets/icon.png",
-      "artifactName": "ProjectPilot-Sync-${version}-Mac-${arch}.${ext}",
-      "extendInfo": {
-        "CFBundleURLTypes": [
-          {
-            "CFBundleURLName": "folder protocol",
-            "CFBundleURLSchemes": ["folder"]
-          }
-        ]
-      }
-    },
-    "dmg": {
-      "title": "ProjectPilot Sync",
-      "icon": "assets/icon.png",
-      "iconSize": 100,
-      "window": {
-        "width": 660,
-        "height": 400
-      },
-      "contents": [
-        {
-          "x": 180,
-          "y": 170,
-          "type": "file"
-        },
-        {
-          "x": 480,
-          "y": 170,
-          "type": "link",
-          "path": "/Applications"
-        }
-      ],
-      "backgroundColor": "#f0f0f0"
+      "entitlementsInherit": null
     }
   },
   "devDependencies": {

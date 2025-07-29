@@ -1,80 +1,86 @@
 import { QuickTask } from '@/types/quickTask';
 import { toast } from 'sonner';
-import { useGoogleTasks } from './useGoogleTasks';
 
 export const useQuickTasksExport = () => {
-  const { createTaskListFromQuickTasks, isAuthenticated } = useGoogleTasks();
   const formatQuickTasksForNotes = (tasks: QuickTask[]): string => {
-    if (tasks.length === 0) {
+    const pendingTasks = tasks.filter(task => !task.completed);
+    
+    if (pendingTasks.length === 0) {
       return `📝 רשימת משימות - ${new Date().toLocaleDateString('he-IL')}
 
 🎉 כל המשימות הושלמו!`;
     }
 
-    // יצירת כותרת הפתק
     let notesContent = `📝 רשימת משימות - ${new Date().toLocaleDateString('he-IL')}\n\n`;
     
-    // הוספת המשימות כרשימת checklist
-    tasks.forEach((task) => {
-      notesContent += `${task.title}\n`;
+    pendingTasks.forEach((task, index) => {
+      notesContent += `${index + 1}. ☐ ${task.title}\n`;
     });
     
-    notesContent += `\n📊 סה"כ משימות: ${tasks.length}\n`;
-    notesContent += `📅 נוצר: ${new Date().toLocaleDateString('he-IL')}`;
+    notesContent += `\n📊 סיכום:\n`;
+    notesContent += `• סה"כ משימות פתוחות: ${pendingTasks.length}\n`;
     
     return notesContent;
   };
 
-  const exportQuickTasksToGoogleTasks = async (tasks: QuickTask[]) => {
-    try {
-      console.log('exportQuickTasksToGoogleTasks called with tasks:', tasks);
-      
-      if (!isAuthenticated) {
-        toast.error('❌ יש להתחבר ל-Google Tasks תחילה');
-        return;
-      }
-
-      const success = await createTaskListFromQuickTasks(tasks);
-      if (success) {
-        console.log('Task list created successfully');
-      }
-    } catch (error) {
-      console.error('Error exporting quick tasks to Google Tasks:', error);
-      toast.error('❌ שגיאה בייצוא הרשימה ל-Google Tasks');
-    }
-  };
-
-  const exportQuickTasksToNotes = async (tasks: QuickTask[]) => {
+  const exportQuickTasksToNotes = (tasks: QuickTask[]) => {
     try {
       console.log('exportQuickTasksToNotes called with tasks:', tasks);
       const notesContent = formatQuickTasksForNotes(tasks);
       console.log('formatted content:', notesContent);
       
-      // בדיקה שelectronAPI קיים
-      if (!(window as any).electronAPI) {
-        console.error('electronAPI not available');
-        toast.error('❌ האפליקציה לא זמינה במצב שולחני');
-        await fallbackToClipboard(notesContent);
-        return;
-      }
+      // בדיקה אם זה אפליקציית Electron או Mac
+      const isElectron = !!(window as any).electronAPI;
+      const isMac = navigator.platform.toLowerCase().includes('mac');
+      console.log('isElectron:', isElectron, 'isMac:', isMac);
       
-      // אפליקציית שולחן - יצירה ישירה של פתק אחד
-      console.log('Attempting to create note via electronAPI...');
-      try {
-        const success = await (window as any).electronAPI.createNote(notesContent);
-        console.log('createNote result:', success);
-        if (success) {
-          console.log('Note created successfully');
-          toast.success('📝 נוצר פתק חדש באפליקציית הפתקים');
-        } else {
-          console.log('Failed to create note, fallback to clipboard');
-          await fallbackToClipboard(notesContent);
+      if (isElectron && isMac) {
+        // באפליקציית Electron על Mac - פתיחה ישירה של Notes עם הטקסט
+        console.log('Attempting to create note via AppleScript...');
+        try {
+          // יצירת AppleScript לפתיחת Notes עם התוכן
+          const { exec } = require('child_process');
+          
+          // פקודת AppleScript ליצירת פתק חדש עם התוכן
+          const appleScript = `osascript -e 'tell application "Notes"
+            activate
+            tell account "iCloud"
+              make new note with properties {body:"${notesContent.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"}
+            end tell
+          end tell'`;
+          
+          exec(appleScript, (error, stdout, stderr) => {
+            if (error) {
+              console.error('AppleScript error:', error);
+              fallbackToClipboard(notesContent);
+              toast.success('📝 הועתק ללוח - הדבק באפליקציית הפתקים');
+            } else {
+              console.log('AppleScript success:', stdout);
+              toast.success('📝 נוצר פתק חדש באפליקציית הפתקים');
+            }
+          });
+          
+        } catch (error) {
+          console.error('Failed to execute AppleScript:', error);
+          // אם נכשל, נעתיק ללוח
+          fallbackToClipboard(notesContent);
           toast.success('📝 הועתק ללוח - הדבק באפליקציית הפתקים');
         }
-      } catch (error) {
-        console.error('Failed to create note:', error);
-        await fallbackToClipboard(notesContent);
-        toast.success('📝 הועתק ללוח - הדבק באפליקציית הפתקים');
+      } else if (isMac && 'navigator' in window && 'share' in navigator) {
+        // שימוש ב-Web Share API על מכשירי Apple
+        (navigator as any).share({
+          title: 'רשימת משימות',
+          text: notesContent
+        }).then(() => {
+          toast.success('📝 הרשימה נשלחה לשיתוף - בחר באפליקציית הפתקים');
+        }).catch((error: any) => {
+          console.log('Share failed:', error);
+          // אם השיתוף נכשל, נעבור להעתקה ללוח
+          fallbackToClipboard(notesContent);
+        });
+      } else {
+        // Fallback להעתקה ללוח
+        fallbackToClipboard(notesContent);
       }
     } catch (error) {
       console.error('Error exporting quick tasks to notes:', error);
@@ -108,8 +114,6 @@ export const useQuickTasksExport = () => {
 
   return {
     exportQuickTasksToNotes,
-    exportQuickTasksToGoogleTasks,
-    formatQuickTasksForNotes,
-    isGoogleTasksAuthenticated: isAuthenticated
+    formatQuickTasksForNotes
   };
 };

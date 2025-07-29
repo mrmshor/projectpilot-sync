@@ -1,12 +1,11 @@
-import { useState, useCallback, useMemo, lazy, Suspense } from 'react';
-import { useTasks } from '@/hooks/useTasksOptimized';
-import { useMemoryManager, useMemoryMonitor } from '@/hooks/useMemoryManager';
-const TaskTable = lazy(() => import('@/components/TaskTable').then(module => ({ default: module.TaskTable })));
-const CreateTaskDialog = lazy(() => import('@/components/CreateTaskDialog').then(module => ({ default: module.CreateTaskDialog })));
-const Dashboard = lazy(() => import('@/components/Dashboard').then(module => ({ default: module.Dashboard })));
-const ThemeToggle = lazy(() => import('@/components/ThemeToggle').then(module => ({ default: module.ThemeToggle })));
-const QuickTaskSidebar = lazy(() => import('@/components/QuickTaskSidebar').then(module => ({ default: module.QuickTaskSidebar })));
-const ProjectNavigationSidebar = lazy(() => import('@/components/ProjectNavigationSidebar').then(module => ({ default: module.ProjectNavigationSidebar })));
+import { useState } from 'react';
+import { useTasks } from '@/hooks/useTasks';
+import { TaskTable } from '@/components/TaskTable';
+import { CreateTaskDialog } from '@/components/CreateTaskDialog';
+import { Dashboard } from '@/components/Dashboard';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { QuickTaskSidebar } from '@/components/QuickTaskSidebar';
+import { ProjectNavigationSidebar } from '@/components/ProjectNavigationSidebar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -22,30 +21,26 @@ import {
   FileText
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useQuickTasksExport } from '@/hooks/useQuickTasksExport';
+import { useNotesExport } from '@/hooks/useNotesExport';
 
 const Index = () => {
   const { tasks, loading, createTask, updateTask, deleteTask, getTaskStats, exportToCSV } = useTasks();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   
-  // Memory management
-  const { safeSetTimeout } = useMemoryManager();
-  useMemoryMonitor('Index');
-  
   const { toast } = useToast();
-  const { exportQuickTasksToNotes } = useQuickTasksExport();
-  const stats = useMemo(() => getTaskStats, [getTaskStats]);
+  const { exportToNotes, downloadAsFile } = useNotesExport();
+  const stats = getTaskStats();
 
-  const handleCreateTask = useCallback((taskData: Parameters<typeof createTask>[0]) => {
+  const handleCreateTask = (taskData: Parameters<typeof createTask>[0]) => {
     createTask(taskData);
     toast({
       title: 'פרויקט נוצר',
       description: 'הפרויקט החדש נוצר בהצלחה.',
     });
-  }, [createTask, toast]);
+  };
 
-  const handleDeleteTask = useCallback((id: string) => {
+  const handleDeleteTask = (id: string) => {
     const task = tasks.find(t => t.id === id);
     deleteTask(id);
     toast({
@@ -53,31 +48,28 @@ const Index = () => {
       description: `"${task?.projectName}" נמחק.`,
       variant: 'destructive',
     });
-  }, [tasks, deleteTask, toast]);
+  };
 
-  const handleExport = useCallback(() => {
+  const handleExport = () => {
     exportToCSV();
     toast({
       title: 'ייצוא הושלם',
       description: 'המשימות יוצאו לקובץ CSV.',
     });
-  }, [exportToCSV, toast]);
+  };
 
-  const handleExportToNotes = useCallback(() => {
-    // ממיר את המשימות הרגילות לפורמט QuickTask ושולח לפתקים
-    const quickTasksFormat = tasks.map(task => ({
-      id: task.id,
-      title: `${task.projectName} - ${task.clientName}`,
-      completed: task.isCompleted,
-      createdAt: new Date()
-    }));
-    exportQuickTasksToNotes(quickTasksFormat);
-  }, [tasks, exportQuickTasksToNotes]);
+  const handleExportToNotes = () => {
+    exportToNotes(tasks);
+  };
 
-  const handleProjectSelect = useCallback((projectId: string) => {
+  const handleDownloadFile = () => {
+    downloadAsFile(tasks);
+  };
+
+  const handleProjectSelect = (projectId: string) => {
     setActiveTab('projects');
-    // Use requestAnimationFrame for better performance
-    requestAnimationFrame(() => {
+    // Scroll to the specific project in the table
+    setTimeout(() => {
       const projectElement = document.querySelector(`[data-project-id="${projectId}"]`);
       if (projectElement) {
         projectElement.scrollIntoView({ 
@@ -91,15 +83,15 @@ const Index = () => {
           projectElement.classList.remove('ring-2', 'ring-primary', 'ring-opacity-50');
         }, 2000);
       }
-    });
-  }, []);
+    }, 150);
+  };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background gpu-acceleration" dir="rtl">
+      <div className="min-h-screen flex items-center justify-center bg-background" dir="rtl">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent mx-auto mb-3"></div>
-          <p className="text-sm text-muted-foreground animate-pulse">טוען את הפרויקטים שלך...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">טוען את הפרויקטים שלך...</p>
         </div>
       </div>
     );
@@ -115,20 +107,10 @@ const Index = () => {
 
       {/* Left Sidebar - Projects Navigation */}
       <div className="relative">
-        <Suspense fallback={
-          <div className="w-80 h-full bg-muted/10 animate-pulse border-r border-border/50">
-            <div className="p-4 space-y-3">
-              <div className="h-4 bg-muted-foreground/10 rounded animate-pulse"></div>
-              <div className="h-4 bg-muted-foreground/10 rounded animate-pulse w-3/4"></div>
-              <div className="h-4 bg-muted-foreground/10 rounded animate-pulse w-1/2"></div>
-            </div>
-          </div>
-        }>
-          <ProjectNavigationSidebar 
-            tasks={tasks} 
-            onProjectSelect={handleProjectSelect}
-          />
-        </Suspense>
+        <ProjectNavigationSidebar 
+          tasks={tasks} 
+          onProjectSelect={handleProjectSelect}
+        />
       </div>
 
       {/* Main Content Area */}
@@ -169,12 +151,8 @@ const Index = () => {
                   <Users className="h-4 w-4" />
                   גרסת מובייל
                 </Button>
-                <Suspense fallback={<div className="w-8 h-8 bg-muted/20 animate-pulse rounded" />}>
-                  <CreateTaskDialog onCreateTask={handleCreateTask} />
-                </Suspense>
-                <Suspense fallback={<div className="w-8 h-8 bg-muted/20 animate-pulse rounded" />}>
-                  <ThemeToggle />
-                </Suspense>
+                <CreateTaskDialog onCreateTask={handleCreateTask} />
+                <ThemeToggle />
               </div>
             </div>
           </div>
@@ -202,41 +180,17 @@ const Index = () => {
 
             <TabsContent value="dashboard" className="mt-8 animate-slide-up">
               <div className="space-y-6">
-                <Suspense fallback={
-                  <div className="h-96 bg-muted/5 animate-pulse rounded-xl border border-border/30">
-                    <div className="p-6 space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="h-20 bg-muted-foreground/5 rounded animate-pulse"></div>
-                        <div className="h-20 bg-muted-foreground/5 rounded animate-pulse"></div>
-                        <div className="h-20 bg-muted-foreground/5 rounded animate-pulse"></div>
-                      </div>
-                      <div className="h-48 bg-muted-foreground/5 rounded animate-pulse"></div>
-                    </div>
-                  </div>
-                }>
-                  <Dashboard tasks={tasks} stats={stats} />
-                </Suspense>
+                <Dashboard tasks={tasks} stats={stats} />
               </div>
             </TabsContent>
 
             <TabsContent value="projects" className="mt-8 animate-slide-up">
               <div className="mac-card p-6">
-                <Suspense fallback={
-                  <div className="h-96 bg-muted/5 animate-pulse rounded-xl">
-                    <div className="p-4 space-y-3">
-                      <div className="h-8 bg-muted-foreground/10 rounded animate-pulse"></div>
-                      <div className="h-12 bg-muted-foreground/5 rounded animate-pulse"></div>
-                      <div className="h-12 bg-muted-foreground/5 rounded animate-pulse"></div>
-                      <div className="h-12 bg-muted-foreground/5 rounded animate-pulse"></div>
-                    </div>
-                  </div>
-                }>
-                  <TaskTable 
-                    tasks={tasks} 
-                    onUpdateTask={updateTask} 
-                    onDeleteTask={handleDeleteTask}
-                  />
-                </Suspense>
+                <TaskTable 
+                  tasks={tasks} 
+                  onUpdateTask={updateTask} 
+                  onDeleteTask={handleDeleteTask}
+                />
               </div>
             </TabsContent>
           </Tabs>
@@ -246,9 +200,7 @@ const Index = () => {
       {/* Right Sidebar - Quick Tasks */}
       {sidebarOpen && (
         <div className="relative">
-          <Suspense fallback={<div className="w-80 h-full bg-muted/20 animate-pulse" />}>
-            <QuickTaskSidebar />
-          </Suspense>
+          <QuickTaskSidebar />
         </div>
       )}
     </div>

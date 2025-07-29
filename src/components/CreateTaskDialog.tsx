@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocalFolders } from '../hooks/useLocalFolders';
 import { Task, WorkStatus, Priority, WORK_STATUS_LABELS, PRIORITY_LABELS, CURRENCIES } from '@/types/task';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,8 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, FolderOpen } from 'lucide-react';
-import { toast } from 'sonner';
-import { ClientSelector } from './ClientSelector';
 
 interface CreateTaskDialogProps {
   onCreateTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => void;
@@ -94,54 +93,60 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleClientChange = (clientName: string, clientData?: any) => {
-    setFormData(prev => ({
-      ...prev,
-      clientName,
-      ...(clientData && {
-        clientPhone: clientData.phone || prev.clientPhone,
-        clientPhone2: clientData.phone2 || prev.clientPhone2,
-        clientWhatsapp: clientData.whatsapp || prev.clientWhatsapp,
-        clientWhatsapp2: clientData.whatsapp2 || prev.clientWhatsapp2,
-        clientEmail: clientData.email || prev.clientEmail
-      })
-    }));
-  };
-
-  const handleClientDataChange = (clientData: any) => {
-    setFormData(prev => ({
-      ...prev,
-      clientPhone: clientData.phone || prev.clientPhone,
-      clientPhone2: clientData.phone2 || prev.clientPhone2,
-      clientWhatsapp: clientData.whatsapp || prev.clientWhatsapp,
-      clientWhatsapp2: clientData.whatsapp2 || prev.clientWhatsapp2,
-      clientEmail: clientData.email || prev.clientEmail
-    }));
-  };
-
   const handleFolderSelect = async () => {
     try {
-      // בדיקה שelectronAPI קיים
-      if (!(window as any).electronAPI) {
-        console.error('electronAPI not available');
-        toast.error('❌ בחירת תיקייה זמינה רק באפליקציית השולחן');
-        return;
-      }
-      
-      // אפליקציית שולחן - השתמש בדיאלוג המובנה של המערכת
-      console.log('handleFolderSelect: calling electronAPI.selectFolder...');
-      const result = await (window as any).electronAPI.selectFolder();
-      console.log('handleFolderSelect result:', result);
-      
-      if (result && result.success && result.path) {
-        updateField('folderPath', result.path);
-        toast.success(`✅ נבחרה תיקיה: ${result.path}`);
-        console.log('Folder selected successfully:', result.path);
-      } else if (result && result.canceled) {
-        console.log('Folder selection was canceled');
+      // Use native file picker for folder selection
+      if ((window as any).electronAPI) {
+        // In Electron app - use native folder dialog
+        const result = await (window as any).electronAPI.selectFolder();
+        if (result.success && result.path) {
+          updateField('folderPath', result.path);
+          // הודעה שהתיקיה נקשרה בהצלחה
+          console.log('Folder selected successfully:', result.path);
+        } else if (result.canceled) {
+          console.log('Folder selection was canceled');
+        } else {
+          console.error('Folder selection failed:', result.error);
+        }
       } else {
-        console.error('Folder selection failed:', result);
-        toast.error('❌ שגיאה בבחירת התיקייה');
+        // In browser - prefer manual path entry for better folder opening
+        const manualPath = prompt(`📁 הזן נתיב מלא לתיקיה:
+
+🖥️ דוגמאות:
+• Windows: C:\\Users\\YourName\\Documents\\Projects
+• Mac: /Users/YourName/Documents/Projects
+• iCloud: ~/Library/Mobile Documents/com~apple~CloudDocs/Projects
+
+הזן נתיב מלא:`);
+
+        if (manualPath && manualPath.trim()) {
+          updateField('folderPath', manualPath.trim());
+          console.log('Manual folder path entered:', manualPath.trim());
+        } else {
+          // Fallback to directory picker
+          if ('showDirectoryPicker' in window) {
+            const dirHandle = await (window as any).showDirectoryPicker();
+            updateField('folderPath', dirHandle.name);
+          } else {
+            // Fallback for older browsers
+            const input = document.createElement('input');
+            input.type = 'file';
+            (input as any).webkitdirectory = true;
+            input.multiple = false;
+            
+            input.addEventListener('change', (event: any) => {
+              const files = event.target.files;
+              if (files && files.length > 0) {
+                const firstFile = files[0];
+                const webkitPath = firstFile.webkitRelativePath;
+                const folderName = webkitPath.split('/')[0];
+                updateField('folderPath', folderName);
+              }
+            });
+            
+            input.click();
+          }
+        }
       }
     } catch (error) {
       console.error('Error selecting folder:', error);
@@ -243,16 +248,18 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
             </h3>
             
             <div className="grid grid-cols-1 gap-4">
-              <ClientSelector
-                value={formData.clientName}
-                onChange={handleClientChange}
-                onClientDataChange={handleClientDataChange}
-                clientPhone={formData.clientPhone}
-                clientPhone2={formData.clientPhone2}
-                clientWhatsapp={formData.clientWhatsapp}
-                clientWhatsapp2={formData.clientWhatsapp2}
-                clientEmail={formData.clientEmail}
-              />
+              <div>
+                <Label htmlFor="clientName" className="text-base font-semibold mb-2 block">שם הלקוח *</Label>
+                <Input
+                  id="clientName"
+                  value={formData.clientName}
+                  onChange={(e) => updateField('clientName', e.target.value)}
+                  placeholder="הכנס שם לקוח מלא"
+                  required
+                  dir="rtl"
+                  className="text-base h-12 border-2 border-blue-200/50 focus:border-blue-400/60"
+                />
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>

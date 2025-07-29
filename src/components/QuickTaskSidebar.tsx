@@ -1,5 +1,6 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { useQuickTasks } from '@/hooks/useQuickTasksOptimized';
+import { useState } from 'react';
+import { useQuickTasks } from '@/hooks/useQuickTasks';
+import { useQuickTasksExport } from '@/hooks/useQuickTasksExport';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,10 +10,10 @@ import {
   Trash2, 
   CheckSquare,
   Square,
-  Copy
+  FileText
 } from 'lucide-react';
 
-export const QuickTaskSidebar = React.memo(() => {
+export const QuickTaskSidebar = () => {
   const {
     quickTasks,
     addQuickTask,
@@ -20,30 +21,18 @@ export const QuickTaskSidebar = React.memo(() => {
     deleteQuickTask
   } = useQuickTasks();
 
+  const { exportQuickTasksToNotes } = useQuickTasksExport();
   const [newTaskTitle, setNewTaskTitle] = useState('');
 
-  const copyPendingTasks = async () => {
-    const formattedTasks = pendingTasks.map(task => `☐ ${task.title}`).join('\n');
-    
-    try {
-      await navigator.clipboard.writeText(formattedTasks);
-      console.log('Tasks copied to clipboard');
-    } catch (err) {
-      console.error('Failed to copy tasks:', err);
-    }
-  };
-
-  const handleAddTask = useCallback(() => {
+  const handleAddTask = () => {
     if (newTaskTitle.trim()) {
       addQuickTask(newTaskTitle.trim());
       setNewTaskTitle('');
     }
-  }, [newTaskTitle, addQuickTask]);
+  };
 
-  const { completedTasks, pendingTasks } = useMemo(() => ({
-    completedTasks: quickTasks.filter(task => task.completed),
-    pendingTasks: quickTasks.filter(task => !task.completed)
-  }), [quickTasks]);
+  const completedTasks = quickTasks.filter(task => task.completed);
+  const pendingTasks = quickTasks.filter(task => !task.completed);
 
   return (
     <div className="w-80 h-[calc(100vh-2rem)] bg-background border-l border-border flex flex-col sticky top-4 rounded-lg shadow-lg overflow-hidden">
@@ -51,21 +40,18 @@ export const QuickTaskSidebar = React.memo(() => {
       <div className="p-4 border-b border-border sticky top-0 bg-background/95 backdrop-blur-sm z-10">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold">משימות מהירות</h2>
-        </div>
-        
-        {pendingTasks.length > 0 && (
-          <div className="mb-4">
-            <Button
-              onClick={copyPendingTasks}
+          {pendingTasks.length > 0 && (
+            <Button 
+              onClick={() => exportQuickTasksToNotes(quickTasks)}
               size="sm"
-              variant="default"
-              className="w-full"
+              variant="outline"
+              className="gap-1 text-xs"
             >
-              <Copy className="h-4 w-4 mr-2" />
-              העתק משימות
+              <FileText className="h-3 w-3" />
+              שלח לפתקים
             </Button>
-          </div>
-        )}
+          )}
+        </div>
         
         {/* Add Task */}
         <div className="flex gap-2">
@@ -155,4 +141,4 @@ export const QuickTaskSidebar = React.memo(() => {
       </div>
     </div>
   );
-});
+};

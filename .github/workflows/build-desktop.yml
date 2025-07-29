@@ -1,101 +1,218 @@
-name: Build Desktop App
+name: Build Desktop Apps
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
-  build-mac:
-    runs-on: macos-latest
+  build-desktop:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
+    - uses: actions/checkout@v4
+    
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm install
-      
-    - name: Build React app
-      run: npm run build
-      
-    - name: Create Mac installer directory
+    
+    - name: Install dependencies and build
       run: |
-        echo "🍎 הכנת תיקיית Mac installer..."
-        rm -rf mac-installer
-        mkdir -p mac-installer/dist
-        mkdir -p mac-installer/assets
-        
-    - name: Copy built files
+        npm ci
+        npm run build
+    
+    - name: Create Electron app files
       run: |
-        echo "📋 העתקת קבצים..."
-        # Copy React build
-        cp -r dist/* mac-installer/dist/
+        mkdir -p electron-app
         
-        # Copy Electron files
-        cp electron-main.js mac-installer/main.js
-        cp preload.js mac-installer/preload.js
-        cp electron-package.json mac-installer/package.json
+        # Create main.js
+        cat > electron-app/main.js << 'EOF'
+        const { app, BrowserWindow, shell } = require('electron');
+        const path = require('path');
+        const { readFileSync } = require('fs');
         
-        # Create default icon if doesn't exist
-        if [ ! -f "ready-package/assets/icon.png" ]; then
-          mkdir -p ready-package/assets
-          # Create a simple default icon (base64 encoded 1x1 PNG)
-          echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" | base64 -d > ready-package/assets/icon.png
-        fi
+        function createWindow() {
+          const win = new BrowserWindow({
+            width: 1200,
+            height: 800,
+            webPreferences: {
+              nodeIntegration: false,
+              contextIsolation: true,
+              webSecurity: false
+            },
+            icon: path.join(__dirname, 'assets/icon.png')
+          });
+          
+          // בדיקה שהקובץ קיים
+          const indexPath = path.join(__dirname, 'dist', 'index.html');
+          try {
+            readFileSync(indexPath);
+            win.loadFile(indexPath);
+          } catch (error) {
+            console.error('Cannot find index.html:', error);
+            // fallback - load from URL if file not found
+            win.loadURL('data:text/html,<h1>Error: Cannot load app</h1>');
+          }
+          
+          // פתח קישורים חיצוניים בדפדפן
+          win.webContents.setWindowOpenHandler(({ url }) => {
+            shell.openExternal(url);
+            return { action: 'deny' };
+          });
+        }
         
-        # Copy assets
-        cp -r ready-package/assets mac-installer/ 2>/dev/null || echo "יצירת תיקיית assets ריקה"
+        app.whenReady().then(createWindow);
         
-    - name: Verify files
+        app.on('window-all-closed', () => {
+          if (process.platform !== 'darwin') {
+            app.quit();
+          }
+        });
+        
+        app.on('activate', () => {
+          if (BrowserWindow.getAllWindows().length === 0) {
+            createWindow();
+          }
+        });
+        EOF
+        
+        # Create package.json
+        cat > electron-app/package.json << 'EOF'
+        {
+          "name": "projectpilot-sync",
+          "version": "1.0.0",
+          "description": "ProjectPilot Sync Desktop App",
+          "main": "main.js",
+          "homepage": "./",
+          "scripts": {
+            "electron": "electron .",
+            "build-mac": "electron-builder --mac --publish=never",
+            "build-win": "electron-builder --win --publish=never", 
+            "build-linux": "electron-builder --linux --publish=never"
+          },
+          "build": {
+            "appId": "app.lovable.projectpilot.sync",
+            "productName": "ProjectPilot Sync",
+            "directories": {
+              "output": "dist-electron",
+              "buildResources": "build"
+            },
+            "files": [
+              "main.js",
+              "package.json",
+              "dist/**/*"
+            ],
+            "mac": {
+              "target": {
+                "target": "dmg",
+                "arch": ["x64", "arm64"]
+              },
+              "category": "public.app-category.productivity",
+              "artifactName": "${productName}-${version}-mac-${arch}.${ext}",
+              "identity": null,
+              "gatekeeperAssess": false,
+              "hardenedRuntime": false,
+              "entitlements": null,
+              "entitlementsInherit": null,
+              "type": "distribution"
+            },
+            "win": {
+              "target": {
+                "target": "nsis",
+                "arch": ["x64"]
+              },
+              "artifactName": "${productName}-${version}-win-${arch}.${ext}"
+            },
+            "linux": {
+              "target": {
+                "target": "AppImage",
+                "arch": ["x64"]
+              },
+              "artifactName": "${productName}-${version}-linux-${arch}.${ext}",
+              "category": "Office"
+            },
+            "nsis": {
+              "oneClick": false,
+              "allowToChangeInstallationDirectory": true,
+              "createDesktopShortcut": true,
+              "createStartMenuShortcut": true,
+              "artifactName": "${productName}-${version}-setup.${ext}",
+              "runAfterFinish": false,
+              "createStartMenuShortcut": true,
+              "perMachine": false
+            }
+          },
+          "devDependencies": {
+            "electron": "^28.0.0",
+            "electron-builder": "^24.13.3"
+          }
+        }
+        EOF
+      shell: bash
+    
+    - name: Copy built files and create assets
       run: |
-        echo "✅ בדיקת קבצים שהועתקו:"
-        ls -la mac-installer/
-        ls -la mac-installer/main.js mac-installer/preload.js mac-installer/package.json
-        ls -la mac-installer/assets/ || echo "אין תיקיית assets"
-        
+        cp -r dist electron-app/
+        mkdir -p electron-app/assets
+        # יצירת איקון זמני אם לא קיים
+        touch electron-app/assets/icon.png
+      shell: bash
+    
     - name: Install Electron dependencies
       run: |
-        echo "⚡ התקנת תלויות Electron..."
-        cd mac-installer
-        npm install electron@^28.0.0 electron-builder@^24.13.3
-        
-    - name: Build Electron DMG
+        cd electron-app
+        npm install
+    
+    - name: Build Mac App
+      if: matrix.os == 'macos-latest'
       run: |
-        echo "🔨 בניית DMG..."
-        cd mac-installer
-        # Build for both Intel and Apple Silicon with better settings
-        npx electron-builder --mac dmg --x64 --arm64 --publish never
-        
-        # Verify DMG files were created
-        echo "📦 קבצי DMG שנוצרו:"
-        find dist -name "*.dmg" -type f -exec ls -lh {} \;
-        
-    - name: List build output
+        cd electron-app
+        npm run build-mac
+    
+    - name: Build Windows App  
+      if: matrix.os == 'windows-latest'
       run: |
-        echo "📦 קובצי Build שנוצרו:"
-        find mac-installer/dist -name "*.dmg" -type f | head -10
-        
-    - name: Upload DMG artifacts
+        cd electron-app
+        npm run build-win
+    
+    - name: Build Linux App
+      if: matrix.os == 'ubuntu-latest' 
+      run: |
+        cd electron-app
+        npm run build-linux
+    
+    - name: Upload Mac App
+      if: matrix.os == 'macos-latest'
       uses: actions/upload-artifact@v4
       with:
-        name: ProjectPilot-Sync-Mac-DMG
-        path: mac-installer/dist/*.dmg
-        retention-days: 30
+        name: ProjectPilot-Sync-Mac
+        path: electron-app/dist-electron/*.dmg
         
-    - name: Upload build info
+    - name: Upload Windows App
+      if: matrix.os == 'windows-latest'
       uses: actions/upload-artifact@v4
       with:
-        name: build-info
-        path: |
-          mac-installer/package.json
-          mac-installer/dist/*.json
-        retention-days: 7
+        name: ProjectPilot-Sync-Windows
+        path: electron-app/dist-electron/*.exe
+        
+    - name: Upload Linux App
+      if: matrix.os == 'ubuntu-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ProjectPilot-Sync-Linux
+        path: electron-app/dist-electron/*.AppImage
+        
+    # העלה את תיקיית dist הגולמית עבור Packages
+    - name: Upload dist folder for Packages
+      if: matrix.os == 'ubuntu-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist-folder-for-packages
+        path: dist/

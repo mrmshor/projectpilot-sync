@@ -13,8 +13,6 @@ if [ ! -d "dist" ]; then
     exit 1
 fi
 
-echo "✅ הבנייה הושלמה בהצלחה"
-
 # שלב 2: נקה ויצור תיקיית mac-installer
 echo "🧹 מנקה ויוצר תיקיית mac-installer..."
 rm -rf mac-installer
@@ -27,23 +25,12 @@ echo "📋 מעתיק קבצים..."
 # העתק את תוכן dist המובנה
 cp -r dist/* mac-installer/dist/
 
-# העתק הקבצים העדכניים מהשורש
-cp electron-main.js mac-installer/main.js
-cp preload.js mac-installer/preload.js
-cp electron-package.json mac-installer/package.json
+# העתק main.js ו-package.json מ-ready-package
+cp ready-package/main.js mac-installer/
+cp ready-package/package.json mac-installer/
 
-# בדוק שהקבצים הועתקו
-echo "בדיקת קבצים שהועתקו:"
-ls -la mac-installer/main.js mac-installer/preload.js mac-installer/package.json
-
-# העתק assets מ-ready-package
-cp -r ready-package/assets mac-installer/ 2>/dev/null || echo "אין תיקיית assets - ממשיך"
-
-# צור אייקון מקום מציין אם אין
-if [ ! -f "mac-installer/assets/icon.png" ]; then
-    mkdir -p mac-installer/assets
-    touch mac-installer/assets/icon.png
-fi
+# צור אייקון מקום מציין
+touch mac-installer/assets/icon.png
 
 # שלב 4: התקן תלויות Electron
 echo "⚡ מתקין תלויות Electron..."
