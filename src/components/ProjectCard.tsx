@@ -2,7 +2,6 @@ import React, { useState, useCallback, memo } from 'react';
 import { toast } from 'sonner';
 import { Task, TaskItem, WorkStatus, Priority, WORK_STATUS_LABELS, PRIORITY_LABELS, CURRENCIES } from '@/types/task';
 import { TaskListDialog } from '@/components/TaskListDialog';
-import ProjectDetailModal from '@/components/ProjectDetailModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -17,8 +16,7 @@ import {
   Trash2, 
   Edit3,
   Save,
-  X,
-  Eye
+  X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -41,7 +39,6 @@ const ProjectCard = memo(({
   onSave,
   onCancel 
 }: ProjectCardProps) => {
-  const [showDetailModal, setShowDetailModal] = useState(false);
   const handleFieldUpdate = useCallback((field: string, value: any) => {
     onUpdateTask(task.id, { [field]: value });
   }, [task.id, onUpdateTask]);
@@ -129,10 +126,7 @@ const ProjectCard = memo(({
   }, []);
 
   return (
-    <Card 
-      className="mac-card hover-lift overflow-hidden will-change-transform"
-      data-project-id={task.id}
-    >
+    <Card className="mac-card hover-lift overflow-hidden will-change-transform">
       <CardContent className="p-0">
         {/* Project Header */}
         <div className="bg-gradient-to-r from-primary/10 via-primary/15 to-primary/10 p-6 border-b border-border/30">
@@ -224,10 +218,6 @@ const ProjectCard = memo(({
                 </>
               ) : (
                 <>
-                  <Button size="sm" variant="outline" onClick={() => setShowDetailModal(true)} className="gap-1">
-                    <Eye className="h-4 w-4" />
-                    צפה
-                  </Button>
                   <Button size="sm" variant="outline" onClick={onEdit} className="gap-1">
                     <Edit3 className="h-4 w-4" />
                     ערוך
@@ -431,13 +421,6 @@ const ProjectCard = memo(({
           </div>
         </div>
       </CardContent>
-      
-      {/* Project Detail Modal */}
-      <ProjectDetailModal
-        task={task}
-        open={showDetailModal}
-        onOpenChange={setShowDetailModal}
-      />
     </Card>
   );
 });

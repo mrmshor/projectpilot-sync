@@ -87,12 +87,12 @@ const Index = () => {
         });
         // Add a brief highlight effect
         projectElement.classList.add('ring-2', 'ring-primary', 'ring-opacity-50');
-        safeSetTimeout(() => {
+        setTimeout(() => {
           projectElement.classList.remove('ring-2', 'ring-primary', 'ring-opacity-50');
         }, 2000);
       }
     });
-  }, [safeSetTimeout]);
+  }, []);
 
   if (loading) {
     return (

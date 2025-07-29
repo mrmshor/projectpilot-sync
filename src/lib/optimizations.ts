@@ -9,13 +9,7 @@ export const debounce = <T extends (...args: any[]) => any>(
   let timeoutId: NodeJS.Timeout;
   return (...args: Parameters<T>) => {
     clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => {
-      try {
-        func(...args);
-      } catch (error) {
-        console.warn('Debounced function error:', error);
-      }
-    }, delay);
+    timeoutId = setTimeout(() => func(...args), delay);
   };
 };
 
