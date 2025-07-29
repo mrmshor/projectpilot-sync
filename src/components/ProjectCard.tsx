@@ -39,12 +39,11 @@ interface ProjectCardProps {
 const priorityColors = {
   low: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
   medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-  high: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-  urgent: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+  high: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
 };
 
 const statusColors = {
-  pending: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+  not_started: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
   in_progress: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
   review: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
   completed: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
@@ -161,11 +160,11 @@ export const ProjectCard = memo(({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pending">ממתין</SelectItem>
+                  <SelectItem value="not_started">לא התחיל</SelectItem>
                   <SelectItem value="in_progress">בתהליך</SelectItem>
-                  <SelectItem value="review">בבדיקה</SelectItem>
+                  <SelectItem value="review">בסקירה</SelectItem>
                   <SelectItem value="completed">הושלם</SelectItem>
-                  <SelectItem value="on_hold">מושהה</SelectItem>
+                  <SelectItem value="on_hold">ממתין</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -179,7 +178,6 @@ export const ProjectCard = memo(({
                   <SelectItem value="low">נמוכה</SelectItem>
                   <SelectItem value="medium">בינונית</SelectItem>
                   <SelectItem value="high">גבוהה</SelectItem>
-                  <SelectItem value="urgent">דחוף</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -240,19 +238,18 @@ export const ProjectCard = memo(({
         {/* Status Badges */}
         <div className="flex flex-wrap gap-2">
           <Badge className={statusColors[task.workStatus as keyof typeof statusColors]}>
-            {task.workStatus === 'pending' ? 'ממתין' :
+            {task.workStatus === 'not_started' ? 'לא התחיל' :
              task.workStatus === 'in_progress' ? 'בתהליך' :
-             task.workStatus === 'review' ? 'בבדיקה' :
+             task.workStatus === 'review' ? 'בסקירה' :
              task.workStatus === 'completed' ? 'הושלם' :
-             task.workStatus === 'on_hold' ? 'מושהה' : task.workStatus}
+             task.workStatus === 'on_hold' ? 'ממתין' : task.workStatus}
           </Badge>
           
           <Badge className={priorityColors[task.priority as keyof typeof priorityColors]}>
             <Flag className="h-3 w-3 mr-1" />
             {task.priority === 'low' ? 'נמוכה' :
              task.priority === 'medium' ? 'בינונית' :
-             task.priority === 'high' ? 'גבוהה' :
-             task.priority === 'urgent' ? 'דחוף' : task.priority}
+             task.priority === 'high' ? 'גבוהה' : task.priority}
           </Badge>
 
           <Badge variant={task.isCompleted ? "default" : "secondary"}>
