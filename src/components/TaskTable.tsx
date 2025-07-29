@@ -22,7 +22,7 @@ import {
   ArrowUpDown,
   Search,
   Filter
-} from 'lucide-react';
+} from '@/lib/icons';
 import { cn } from '@/lib/utils';
 import { Capacitor } from '@capacitor/core';
 

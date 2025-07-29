@@ -24,5 +24,42 @@ export default defineConfig(({ mode }) => ({
     outDir: 'dist',
     minify: 'esbuild',
     sourcemap: mode === 'development',
+    // Advanced optimizations
+    target: 'es2020',
+    cssCodeSplit: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor chunks for better caching
+          'react-vendor': ['react', 'react-dom'],
+          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-select', '@radix-ui/react-tabs'],
+          'utils-vendor': ['date-fns', 'clsx', 'tailwind-merge'],
+          'icons': ['lucide-react'],
+          'router': ['react-router-dom'],
+          'query': ['@tanstack/react-query']
+        },
+        chunkFileNames: (chunkInfo) => {
+          const facadeModuleId = chunkInfo.facadeModuleId
+            ? chunkInfo.facadeModuleId.split('/').pop().replace(/\.[^/.]+$/, '')
+            : 'chunk';
+          return `assets/${facadeModuleId}-[hash].js`;
+        }
+      }
+    },
+    // Optimize chunk size
+    chunkSizeWarningLimit: 600,
+  },
+  // Optimize dependencies
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      '@tanstack/react-query',
+      'date-fns',
+      'clsx',
+      'tailwind-merge'
+    ],
+    exclude: ['lucide-react']
   },
 }));
