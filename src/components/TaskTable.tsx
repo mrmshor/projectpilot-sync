@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo, memo } from 'react';
 import { Task, Priority } from '@/types/task';
-import ProjectCard from './ProjectCard';
 import TaskFilters from './TaskFilters';
+import { PaginatedTaskList } from './PaginatedTaskList';
 import { debounce } from '@/lib/optimizations';
 
 interface TaskTableProps {
@@ -14,7 +14,6 @@ type SortField = keyof Task;
 type SortDirection = 'asc' | 'desc';
 
 export const TaskTable = memo(({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps) => {
-  const [editingId, setEditingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState<SortField>('updatedAt');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
@@ -31,25 +30,31 @@ export const TaskTable = memo(({ tasks, onUpdateTask, onDeleteTask }: TaskTableP
 
   // Debounced search function for better performance
   const debouncedSetSearchTerm = useCallback(
-    debounce((value: string) => setSearchTerm(value), 300),
+    debounce((value: string) => setSearchTerm(value), 200),
     []
   );
 
   const filteredTasks = useMemo(() => {
     if (tasks.length === 0) return [];
     
-    const filtered = tasks.filter(task => {
-      const matchesSearch = !searchTerm || (
-        task.projectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        task.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        task.projectDescription.toLowerCase().includes(searchTerm.toLowerCase())
+    let filtered = tasks;
+    
+    // Apply search filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(task => 
+        task.projectName.toLowerCase().includes(searchLower) ||
+        task.clientName.toLowerCase().includes(searchLower) ||
+        task.projectDescription.toLowerCase().includes(searchLower)
       );
-      
-      const matchesPriority = priorityFilter === 'all' || task.priority === priorityFilter;
-      
-      return matchesSearch && matchesPriority;
-    });
+    }
+    
+    // Apply priority filter
+    if (priorityFilter !== 'all') {
+      filtered = filtered.filter(task => task.priority === priorityFilter);
+    }
 
+    // Apply sorting
     return filtered.sort((a, b) => {
       const aValue = a[sortField];
       const bValue = b[sortField];
@@ -59,18 +64,6 @@ export const TaskTable = memo(({ tasks, onUpdateTask, onDeleteTask }: TaskTableP
       return 0;
     });
   }, [tasks, searchTerm, priorityFilter, sortField, sortDirection]);
-
-  const handleEdit = useCallback((taskId: string) => {
-    setEditingId(taskId);
-  }, []);
-
-  const handleSave = useCallback(() => {
-    setEditingId(null);
-  }, []);
-
-  const handleCancel = useCallback(() => {
-    setEditingId(null);
-  }, []);
 
   if (tasks.length === 0) {
     return (
@@ -92,29 +85,14 @@ export const TaskTable = memo(({ tasks, onUpdateTask, onDeleteTask }: TaskTableP
         onPriorityChange={setPriorityFilter}
       />
 
-      {/* Project Cards View */}
-      <div className="space-y-6" dir="rtl">
-        {filteredTasks.map((task) => (
-          <ProjectCard
-            key={task.id}
-            task={task}
-            onUpdateTask={onUpdateTask}
-            onDeleteTask={onDeleteTask}
-            isEditing={editingId === task.id}
-            onEdit={() => handleEdit(task.id)}
-            onSave={handleSave}
-            onCancel={handleCancel}
-          />
-        ))}
-        
-        {filteredTasks.length === 0 && searchTerm && (
-          <div className="text-center py-12 animate-fade-in">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-xl font-semibold text-foreground mb-2">אין תוצאות</h3>
-            <p className="text-muted-foreground">לא נמצאו פרויקטים התואמים לחיפוש "{searchTerm}"</p>
-          </div>
-        )}
-      </div>
+      {/* Paginated Task List */}
+      <PaginatedTaskList
+        tasks={tasks}
+        filteredTasks={filteredTasks}
+        onUpdateTask={onUpdateTask}
+        onDeleteTask={onDeleteTask}
+        searchTerm={searchTerm}
+      />
     </div>
   );
 });

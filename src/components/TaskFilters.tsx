@@ -1,7 +1,7 @@
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
+import { Priority } from '@/types/task';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Priority } from '@/types/task';
 import { Search, Filter } from 'lucide-react';
 
 interface TaskFiltersProps {
@@ -11,37 +11,40 @@ interface TaskFiltersProps {
   onPriorityChange: (value: Priority | 'all') => void;
 }
 
-const TaskFilters = memo(({ 
+export const TaskFilters = memo(({ 
   searchTerm, 
   onSearchChange, 
   priorityFilter, 
   onPriorityChange 
 }: TaskFiltersProps) => {
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    onSearchChange(e.target.value);
+  }, [onSearchChange]);
+
   return (
-    <div className="flex gap-4 items-center">
+    <div className="flex flex-col sm:flex-row gap-4 p-4 bg-card/50 rounded-lg border border-border/50 backdrop-blur-sm">
       <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary h-5 w-5" />
+        <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder="חפש פרויקטים, לקוחות או תיאורים..."
           value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-12 pr-4 h-12 border-2 border-primary/20 focus:border-primary/40 bg-accent/5 shadow-soft"
-          dir="rtl"
+          onChange={handleSearchChange}
+          className="pr-10"
         />
       </div>
-      <div className="w-48">
+      
+      <div className="flex items-center gap-2 min-w-fit">
+        <Filter className="h-4 w-4 text-muted-foreground" />
         <Select value={priorityFilter} onValueChange={onPriorityChange}>
-          <SelectTrigger className="h-12">
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4" />
-              <SelectValue placeholder="סנן לפי דחיפות" />
-            </div>
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="סנן לפי עדיפות" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">כל הדחיפויות</SelectItem>
-            <SelectItem value="high">גבוהה</SelectItem>
-            <SelectItem value="medium">בינונית</SelectItem>
-            <SelectItem value="low">נמוכה</SelectItem>
+            <SelectItem value="all">כל הרמות</SelectItem>
+            <SelectItem value="low">עדיפות נמוכה</SelectItem>
+            <SelectItem value="medium">עדיפות בינונית</SelectItem>
+            <SelectItem value="high">עדיפות גבוהה</SelectItem>
+            <SelectItem value="urgent">דחוף</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -50,5 +53,4 @@ const TaskFilters = memo(({
 });
 
 TaskFilters.displayName = 'TaskFilters';
-
 export default TaskFilters;

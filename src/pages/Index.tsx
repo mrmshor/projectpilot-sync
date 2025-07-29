@@ -1,6 +1,10 @@
 import { useState, useCallback, useMemo, lazy, Suspense } from 'react';
 import { useTasks } from '@/hooks/useTasksOptimized';
 import { useMemoryManager, useMemoryMonitor } from '@/hooks/useMemoryManager';
+import { useAutoSave } from '@/hooks/useAutoSave';
+import { useAppKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { PerformanceMonitor } from '@/components/PerformanceMonitor';
 const TaskTable = lazy(() => import('@/components/TaskTable').then(module => ({ default: module.TaskTable })));
 const CreateTaskDialog = lazy(() => import('@/components/CreateTaskDialog').then(module => ({ default: module.CreateTaskDialog })));
 const Dashboard = lazy(() => import('@/components/Dashboard').then(module => ({ default: module.Dashboard })));
@@ -37,6 +41,39 @@ const Index = () => {
   const { exportQuickTasksToNotes } = useQuickTasksExport();
   const stats = useMemo(() => getTaskStats, [getTaskStats]);
 
+  // Define handlers first
+  const handleExport = useCallback(() => {
+    exportToCSV();
+    toast({
+      title: 'ייצוא הושלם',
+      description: 'המשימות יוצאו לקובץ CSV.',
+    });
+  }, [exportToCSV, toast]);
+
+  // Auto-save functionality
+  const { saveNow } = useAutoSave({
+    enabled: true,
+    interval: 30000, // 30 seconds
+    onSave: () => {
+      // Trigger manual save if needed
+      console.log('Auto-save triggered');
+    },
+    data: tasks
+  });
+
+  // Keyboard shortcuts
+  useAppKeyboardShortcuts({
+    onSave: saveNow,
+    onExport: handleExport,
+    onSearch: () => {
+      // Focus search input if available
+      const searchInput = document.querySelector('input[placeholder*="חפש"]') as HTMLInputElement;
+      if (searchInput) {
+        searchInput.focus();
+      }
+    }
+  });
+  
   const handleCreateTask = useCallback((taskData: Parameters<typeof createTask>[0]) => {
     createTask(taskData);
     toast({
@@ -54,14 +91,6 @@ const Index = () => {
       variant: 'destructive',
     });
   }, [tasks, deleteTask, toast]);
-
-  const handleExport = useCallback(() => {
-    exportToCSV();
-    toast({
-      title: 'ייצוא הושלם',
-      description: 'המשימות יוצאו לקובץ CSV.',
-    });
-  }, [exportToCSV, toast]);
 
   const handleExportToNotes = useCallback(() => {
     // ממיר את המשימות הרגילות לפורמט QuickTask ושולח לפתקים
@@ -106,7 +135,8 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-surface flex" dir="rtl">
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gradient-surface flex" dir="rtl">
       {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-float"></div>
@@ -251,7 +281,9 @@ const Index = () => {
           </Suspense>
         </div>
       )}
-    </div>
+      </div>
+      <PerformanceMonitor />
+    </ErrorBoundary>
   );
 };
 
