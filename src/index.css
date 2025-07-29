@@ -145,7 +145,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-body font-medium;
+    @apply bg-background text-foreground font-medium;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     text-rendering: optimizeLegibility;
@@ -154,7 +154,7 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display;
+    @apply font-semibold;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
 }
@@ -237,8 +237,7 @@
   
   /* Apple Sidebar */
   .apple-sidebar {
-    @apply bg-sidebar border-r border-sidebar-border;
-    background: linear-gradient(180deg, hsl(var(--sidebar-background)) 0%, hsl(var(--sidebar-accent)) 100%);
+    @apply bg-muted/50 border-r border-border;
   }
   
   /* Apple Header */

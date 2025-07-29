@@ -1,149 +1,239 @@
 import type { Config } from "tailwindcss";
 
-export default {
-	darkMode: ["class"],
-	content: [
-		"./pages/**/*.{ts,tsx}",
-		"./components/**/*.{ts,tsx}",
-		"./app/**/*.{ts,tsx}",
-		"./src/**/*.{ts,tsx}",
-	],
-	prefix: "",
-	theme: {
-		container: {
-			center: true,
-			padding: '2rem',
-			screens: {
-				'2xl': '1400px'
-			}
-		},
-		extend: {
-			fontFamily: {
-				'display': ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Segoe UI', 'Roboto', 'sans-serif'],
-				'body': ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Segoe UI', 'Roboto', 'sans-serif'],
-				'mono': ['SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', 'monospace'],
-			},
-			colors: {
-				border: 'hsl(var(--border))',
-				input: 'hsl(var(--input))',
-				ring: 'hsl(var(--ring))',
-				background: 'hsl(var(--background))',
-				foreground: 'hsl(var(--foreground))',
-				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
-				},
-				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
-				},
-				destructive: {
-					DEFAULT: 'hsl(var(--destructive))',
-					foreground: 'hsl(var(--destructive-foreground))'
-				},
-				muted: {
-					DEFAULT: 'hsl(var(--muted))',
-					foreground: 'hsl(var(--muted-foreground))'
-				},
-				accent: {
-					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
-				},
-				popover: {
-					DEFAULT: 'hsl(var(--popover))',
-					foreground: 'hsl(var(--popover-foreground))'
-				},
-				card: {
-					DEFAULT: 'hsl(var(--card))',
-					foreground: 'hsl(var(--card-foreground))'
-				},
-				success: {
-					DEFAULT: 'hsl(var(--success))',
-					foreground: 'hsl(var(--success-foreground))'
-				},
-				warning: {
-					DEFAULT: 'hsl(var(--warning))',
-					foreground: 'hsl(var(--warning-foreground))'
-				},
-				info: {
-					DEFAULT: 'hsl(var(--info))',
-					foreground: 'hsl(var(--info-foreground))'
-				},
-				priority: {
-					high: 'hsl(var(--priority-high))',
-					medium: 'hsl(var(--priority-medium))',
-					low: 'hsl(var(--priority-low))'
-				},
-				sidebar: {
-					DEFAULT: 'hsl(var(--sidebar-background))',
-					foreground: 'hsl(var(--sidebar-foreground))',
-					primary: 'hsl(var(--sidebar-primary))',
-					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-					accent: 'hsl(var(--sidebar-accent))',
-					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-					border: 'hsl(var(--sidebar-border))',
-					ring: 'hsl(var(--sidebar-ring))'
-				}
-			},
-			borderRadius: {
-				lg: 'var(--radius)',
-				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
-			},
-			boxShadow: {
-				'soft': 'var(--shadow-soft)',
-				'medium': 'var(--shadow-medium)',
-				'large': 'var(--shadow-large)',
-				'glass': 'var(--shadow-glass)',
-			},
-			backgroundImage: {
-				'gradient-primary': 'var(--gradient-primary)',
-				'gradient-surface': 'var(--gradient-surface)',
-				'gradient-glass': 'var(--gradient-glass)',
-			},
-			keyframes: {
-				'accordion-down': {
-					from: {
-						height: '0'
-					},
-					to: {
-						height: 'var(--radix-accordion-content-height)'
-					}
-				},
-				'accordion-up': {
-					from: {
-						height: 'var(--radix-accordion-content-height)'
-					},
-					to: {
-						height: '0'
-					}
-				},
-				'float': {
-					'0%, 100%': { transform: 'translateY(0px)' },
-					'50%': { transform: 'translateY(-10px)' },
-				},
-				'glow': {
-					'0%, 100%': { opacity: '1' },
-					'50%': { opacity: '0.5' },
-				},
-				'slide-up': {
-					'0%': { transform: 'translateY(100%)', opacity: '0' },
-					'100%': { transform: 'translateY(0)', opacity: '1' },
-				},
-				'slide-down': {
-					'0%': { transform: 'translateY(-100%)', opacity: '0' },
-					'100%': { transform: 'translateY(0)', opacity: '1' },
-				}
-			},
-			animation: {
-				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out',
-				'float': 'float 6s ease-in-out infinite',
-				'glow': 'glow 2s ease-in-out infinite alternate',
-				'slide-up': 'slide-up 0.5s ease-out',
-				'slide-down': 'slide-down 0.5s ease-out',
-			}
-		}
-	},
-	plugins: [require("tailwindcss-animate")],
-} satisfies Config;
+const config: Config = {
+  // Enable JIT mode and optimize for production
+  mode: 'jit',
+  darkMode: ["class"],
+  content: [
+    './pages/**/*.{ts,tsx}',
+    './components/**/*.{ts,tsx}',
+    './app/**/*.{ts,tsx}',
+    './src/**/*.{ts,tsx}',
+    // Include only the files that actually use Tailwind classes
+    './src/pages/**/*.{js,ts,jsx,tsx}',
+    './src/components/**/*.{js,ts,jsx,tsx}',
+    './src/hooks/**/*.{js,ts,jsx,tsx}',
+    './src/lib/**/*.{js,ts,jsx,tsx}',
+    './index.html'
+  ],
+  prefix: "",
+  theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
+    extend: {
+      colors: {
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+      keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+      },
+      // Apple-inspired design system
+      boxShadow: {
+        'soft': '0 2px 8px 0 rgba(0, 0, 0, 0.08)',
+        'medium': '0 4px 16px 0 rgba(0, 0, 0, 0.12)',
+        'strong': '0 8px 32px 0 rgba(0, 0, 0, 0.16)',
+      },
+      backdropBlur: {
+        'apple': '20px',
+      },
+    },
+  },
+  plugins: [
+    require("tailwindcss-animate"),
+    require("@tailwindcss/typography"),
+    // Add custom plugin for Apple-style utilities
+    function({ addUtilities }: any) {
+      const newUtilities = {
+        '.apple-blur': {
+          'backdrop-filter': 'blur(20px)',
+          '-webkit-backdrop-filter': 'blur(20px)',
+          'background-color': 'rgba(255, 255, 255, 0.8)',
+        },
+        '.apple-dark-blur': {
+          'backdrop-filter': 'blur(20px)',
+          '-webkit-backdrop-filter': 'blur(20px)',
+          'background-color': 'rgba(0, 0, 0, 0.8)',
+        },
+      }
+      addUtilities(newUtilities)
+    }
+  ],
+  // Optimize for production
+  corePlugins: {
+    // Disable unused core plugins to reduce bundle size
+    preflight: true,
+    container: true,
+    accessibility: false,
+    appearance: false,
+    backgroundAttachment: false,
+    backgroundClip: true,
+    backgroundColor: true,
+    backgroundImage: true,
+    backgroundOpacity: true,
+    backgroundPosition: true,
+    backgroundRepeat: true,
+    backgroundSize: true,
+    borderCollapse: true,
+    borderColor: true,
+    borderOpacity: true,
+    borderRadius: true,
+    borderStyle: true,
+    borderWidth: true,
+    boxSizing: true,
+    cursor: true,
+    display: true,
+    divideColor: true,
+    divideOpacity: true,
+    divideStyle: true,
+    divideWidth: true,
+    fill: true,
+    flex: true,
+    flexDirection: true,
+    flexGrow: true,
+    flexShrink: true,
+    flexWrap: true,
+    float: false,
+    clear: false,
+    fontFamily: true,
+    fontSize: true,
+    fontSmoothing: true,
+    fontStyle: true,
+    fontVariantNumeric: false,
+    fontWeight: true,
+    gap: true,
+    gradientColorStops: true,
+    gridAutoColumns: false,
+    gridAutoFlow: false,
+    gridAutoRows: false,
+    gridColumn: false,
+    gridColumnEnd: false,
+    gridColumnStart: false,
+    gridRow: false,
+    gridRowEnd: false,
+    gridRowStart: false,
+    gridTemplateColumns: true,
+    gridTemplateRows: false,
+    height: true,
+    inset: true,
+    justifyContent: true,
+    justifyItems: false,
+    justifySelf: false,
+    letterSpacing: true,
+    lineHeight: true,
+    listStylePosition: false,
+    listStyleType: false,
+    margin: true,
+    maxHeight: true,
+    maxWidth: true,
+    minHeight: true,
+    minWidth: true,
+    objectFit: false,
+    objectPosition: false,
+    opacity: true,
+    order: false,
+    outline: true,
+    overflow: true,
+    overscrollBehavior: false,
+    padding: true,
+    placeContent: false,
+    placeItems: false,
+    placeSelf: false,
+    placeholderColor: true,
+    placeholderOpacity: true,
+    pointerEvents: true,
+    position: true,
+    resize: false,
+    ringColor: true,
+    ringOffsetColor: true,
+    ringOffsetWidth: true,
+    ringOpacity: true,
+    ringWidth: true,
+    rotate: true,
+    scale: true,
+    skew: false,
+    space: true,
+    stroke: true,
+    strokeWidth: true,
+    tableLayout: false,
+    textAlign: true,
+    textColor: true,
+    textDecoration: true,
+    textDecorationColor: true,
+    textDecorationStyle: true,
+    textDecorationThickness: true,
+    textIndent: false,
+    textOpacity: true,
+    textOverflow: true,
+    textTransform: false,
+    textUnderlineOffset: false,
+    transform: true,
+    transformOrigin: true,
+    transitionDelay: true,
+    transitionDuration: true,
+    transitionProperty: true,
+    transitionTimingFunction: true,
+    translate: true,
+    userSelect: true,
+    verticalAlign: false,
+    visibility: true,
+    whitespace: true,
+    width: true,
+    wordBreak: false,
+    zIndex: true,
+  },
+};
+
+export default config;
