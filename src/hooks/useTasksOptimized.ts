@@ -5,7 +5,7 @@ import { useMemoryManager, useMemoryMonitor } from './useMemoryManager';
 
 const STORAGE_KEY = 'task_management_data';
 const MAX_STORAGE_SIZE = 5 * 1024 * 1024; // 5MB limit
-const SAVE_DEBOUNCE_MS = 300; // Faster debounce for better UX
+const SAVE_DEBOUNCE_MS = 500; // Debounce saves
 
 // Performance optimizations
 const useTasksOptimized = () => {
@@ -96,12 +96,12 @@ const useTasksOptimized = () => {
     setSaveTimeout(timeout);
   }, []); // Remove saveTimeout dependency to prevent infinite loop
 
-  // Save tasks with debouncing - optimized to prevent loops
+  // Save tasks with debouncing - simplified to prevent infinite loops
   useEffect(() => {
     if (!loading && tasks.length >= 0) {
       debouncedSave(tasks);
     }
-  }, [tasks, loading, debouncedSave]);
+  }, [tasks, loading]); // Remove debouncedSave from dependencies
 
   // Optimized create task function
   const createTask = useCallback((taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {

@@ -1,16 +1,12 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, lazy, Suspense } from 'react';
 import { useTasks } from '@/hooks/useTasksOptimized';
 import { useMemoryManager, useMemoryMonitor } from '@/hooks/useMemoryManager';
-import { useAutoSave } from '@/hooks/useAutoSave';
-import { useAppKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { PerformanceMonitor } from '@/components/PerformanceMonitor';
-import { TaskTable } from '@/components/TaskTable';
-import { CreateTaskDialog } from '@/components/CreateTaskDialog';
-import { Dashboard } from '@/components/Dashboard';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { QuickTaskSidebar } from '@/components/QuickTaskSidebar';
-import { ProjectNavigationSidebar } from '@/components/ProjectNavigationSidebar';
+const TaskTable = lazy(() => import('@/components/TaskTable').then(module => ({ default: module.TaskTable })));
+const CreateTaskDialog = lazy(() => import('@/components/CreateTaskDialog').then(module => ({ default: module.CreateTaskDialog })));
+const Dashboard = lazy(() => import('@/components/Dashboard').then(module => ({ default: module.Dashboard })));
+const ThemeToggle = lazy(() => import('@/components/ThemeToggle').then(module => ({ default: module.ThemeToggle })));
+const QuickTaskSidebar = lazy(() => import('@/components/QuickTaskSidebar').then(module => ({ default: module.QuickTaskSidebar })));
+const ProjectNavigationSidebar = lazy(() => import('@/components/ProjectNavigationSidebar').then(module => ({ default: module.ProjectNavigationSidebar })));
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -41,39 +37,6 @@ const Index = () => {
   const { exportQuickTasksToNotes } = useQuickTasksExport();
   const stats = useMemo(() => getTaskStats, [getTaskStats]);
 
-  // Define handlers first
-  const handleExport = useCallback(() => {
-    exportToCSV();
-    toast({
-      title: 'ייצוא הושלם',
-      description: 'המשימות יוצאו לקובץ CSV.',
-    });
-  }, [exportToCSV, toast]);
-
-  // Auto-save functionality
-  const { saveNow } = useAutoSave({
-    enabled: true,
-    interval: 30000, // 30 seconds
-    onSave: () => {
-      // Trigger manual save if needed
-      console.log('Auto-save triggered');
-    },
-    data: tasks
-  });
-
-  // Keyboard shortcuts
-  useAppKeyboardShortcuts({
-    onSave: saveNow,
-    onExport: handleExport,
-    onSearch: () => {
-      // Focus search input if available
-      const searchInput = document.querySelector('input[placeholder*="חפש"]') as HTMLInputElement;
-      if (searchInput) {
-        searchInput.focus();
-      }
-    }
-  });
-  
   const handleCreateTask = useCallback((taskData: Parameters<typeof createTask>[0]) => {
     createTask(taskData);
     toast({
@@ -91,6 +54,14 @@ const Index = () => {
       variant: 'destructive',
     });
   }, [tasks, deleteTask, toast]);
+
+  const handleExport = useCallback(() => {
+    exportToCSV();
+    toast({
+      title: 'ייצוא הושלם',
+      description: 'המשימות יוצאו לקובץ CSV.',
+    });
+  }, [exportToCSV, toast]);
 
   const handleExportToNotes = useCallback(() => {
     // ממיר את המשימות הרגילות לפורמט QuickTask ושולח לפתקים
@@ -135,8 +106,7 @@ const Index = () => {
   }
 
   return (
-    <ErrorBoundary>
-      <div className="min-h-screen bg-gradient-surface flex" dir="rtl">
+    <div className="min-h-screen bg-gradient-surface flex" dir="rtl">
       {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-float"></div>
@@ -145,10 +115,20 @@ const Index = () => {
 
       {/* Left Sidebar - Projects Navigation */}
       <div className="relative">
-        <ProjectNavigationSidebar 
-          tasks={tasks} 
-          onProjectSelect={handleProjectSelect}
-        />
+        <Suspense fallback={
+          <div className="w-80 h-full bg-muted/10 animate-pulse border-r border-border/50">
+            <div className="p-4 space-y-3">
+              <div className="h-4 bg-muted-foreground/10 rounded animate-pulse"></div>
+              <div className="h-4 bg-muted-foreground/10 rounded animate-pulse w-3/4"></div>
+              <div className="h-4 bg-muted-foreground/10 rounded animate-pulse w-1/2"></div>
+            </div>
+          </div>
+        }>
+          <ProjectNavigationSidebar 
+            tasks={tasks} 
+            onProjectSelect={handleProjectSelect}
+          />
+        </Suspense>
       </div>
 
       {/* Main Content Area */}
@@ -189,8 +169,12 @@ const Index = () => {
                   <Users className="h-4 w-4" />
                   גרסת מובייל
                 </Button>
-                <CreateTaskDialog onCreateTask={handleCreateTask} />
-                <ThemeToggle />
+                <Suspense fallback={<div className="w-8 h-8 bg-muted/20 animate-pulse rounded" />}>
+                  <CreateTaskDialog onCreateTask={handleCreateTask} />
+                </Suspense>
+                <Suspense fallback={<div className="w-8 h-8 bg-muted/20 animate-pulse rounded" />}>
+                  <ThemeToggle />
+                </Suspense>
               </div>
             </div>
           </div>
@@ -218,17 +202,41 @@ const Index = () => {
 
             <TabsContent value="dashboard" className="mt-8 animate-slide-up">
               <div className="space-y-6">
-                <Dashboard tasks={tasks} stats={stats} />
+                <Suspense fallback={
+                  <div className="h-96 bg-muted/5 animate-pulse rounded-xl border border-border/30">
+                    <div className="p-6 space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="h-20 bg-muted-foreground/5 rounded animate-pulse"></div>
+                        <div className="h-20 bg-muted-foreground/5 rounded animate-pulse"></div>
+                        <div className="h-20 bg-muted-foreground/5 rounded animate-pulse"></div>
+                      </div>
+                      <div className="h-48 bg-muted-foreground/5 rounded animate-pulse"></div>
+                    </div>
+                  </div>
+                }>
+                  <Dashboard tasks={tasks} stats={stats} />
+                </Suspense>
               </div>
             </TabsContent>
 
             <TabsContent value="projects" className="mt-8 animate-slide-up">
               <div className="mac-card p-6">
-                <TaskTable 
-                  tasks={tasks} 
-                  onUpdateTask={updateTask} 
-                  onDeleteTask={handleDeleteTask}
-                />
+                <Suspense fallback={
+                  <div className="h-96 bg-muted/5 animate-pulse rounded-xl">
+                    <div className="p-4 space-y-3">
+                      <div className="h-8 bg-muted-foreground/10 rounded animate-pulse"></div>
+                      <div className="h-12 bg-muted-foreground/5 rounded animate-pulse"></div>
+                      <div className="h-12 bg-muted-foreground/5 rounded animate-pulse"></div>
+                      <div className="h-12 bg-muted-foreground/5 rounded animate-pulse"></div>
+                    </div>
+                  </div>
+                }>
+                  <TaskTable 
+                    tasks={tasks} 
+                    onUpdateTask={updateTask} 
+                    onDeleteTask={handleDeleteTask}
+                  />
+                </Suspense>
               </div>
             </TabsContent>
           </Tabs>
@@ -238,12 +246,12 @@ const Index = () => {
       {/* Right Sidebar - Quick Tasks */}
       {sidebarOpen && (
         <div className="relative">
-          <QuickTaskSidebar />
+          <Suspense fallback={<div className="w-80 h-full bg-muted/20 animate-pulse" />}>
+            <QuickTaskSidebar />
+          </Suspense>
         </div>
       )}
-      </div>
-      <PerformanceMonitor />
-    </ErrorBoundary>
+    </div>
   );
 };
 
