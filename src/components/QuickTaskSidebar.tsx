@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { useQuickTasks } from '@/hooks/useQuickTasksOptimized';
-import { useQuickTasksExport } from '@/hooks/useQuickTasksExport';
-import { GoogleTasksSettings } from './GoogleTasksSettings';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,9 +9,6 @@ import {
   Trash2, 
   CheckSquare,
   Square,
-  FileText,
-  Settings,
-  Download,
   Copy
 } from 'lucide-react';
 
@@ -25,16 +20,13 @@ export const QuickTaskSidebar = () => {
     deleteQuickTask
   } = useQuickTasks();
 
-  const { exportQuickTasksToNotes, exportQuickTasksToGoogleTasks, isGoogleTasksAuthenticated } = useQuickTasksExport();
   const [newTaskTitle, setNewTaskTitle] = useState('');
-  const [showSettings, setShowSettings] = useState(false);
 
   const copyPendingTasks = async () => {
-    const formattedTasks = pendingTasks.map(task => `☐\t${task.title}`).join('\n');
+    const formattedTasks = pendingTasks.map(task => `☐ ${task.title}`).join('\n');
     
     try {
       await navigator.clipboard.writeText(formattedTasks);
-      // Simple success feedback without toast to keep it minimal
       console.log('Tasks copied to clipboard');
     } catch (err) {
       console.error('Failed to copy tasks:', err);
@@ -57,23 +49,10 @@ export const QuickTaskSidebar = () => {
       <div className="p-4 border-b border-border sticky top-0 bg-background/95 backdrop-blur-sm z-10">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold">משימות מהירות</h2>
-          <Button
-            onClick={() => setShowSettings(!showSettings)}
-            size="sm"
-            variant="ghost"
-          >
-            <Settings className="h-4 w-4" />
-          </Button>
         </div>
         
-        {showSettings && (
-          <div className="mb-4">
-            <GoogleTasksSettings />
-          </div>
-        )}
-        
         {pendingTasks.length > 0 && (
-          <div className="space-y-2 mb-4">
+          <div className="mb-4">
             <Button
               onClick={copyPendingTasks}
               size="sm"
@@ -83,26 +62,6 @@ export const QuickTaskSidebar = () => {
               <Copy className="h-4 w-4 mr-2" />
               העתק משימות
             </Button>
-            <div className="flex gap-2">
-              <Button
-                onClick={() => exportQuickTasksToGoogleTasks(pendingTasks)}
-                size="sm"
-                variant={isGoogleTasksAuthenticated ? "secondary" : "outline"}
-                className="flex-1"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                {isGoogleTasksAuthenticated ? 'Google Tasks' : 'התחבר ל-Google'}
-              </Button>
-              <Button 
-                onClick={() => exportQuickTasksToNotes(pendingTasks)}
-                size="sm"
-                variant="outline"
-                className="flex-1"
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                פתקים Mac
-              </Button>
-            </div>
           </div>
         )}
         
