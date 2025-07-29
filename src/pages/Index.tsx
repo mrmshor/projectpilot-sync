@@ -110,9 +110,9 @@ const Index = () => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
         {/* Compact Header */}
-        <header className="glass clean-border border-b sticky top-0 z-40">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-12">
+        <header className="bg-white/90 dark:bg-black/40 backdrop-blur-md border-b border-border/40 sticky top-0 z-40">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
+            <div className="flex justify-between items-center h-10">
               <div className="flex items-center gap-3">
                 <Button
                   variant="ghost"
