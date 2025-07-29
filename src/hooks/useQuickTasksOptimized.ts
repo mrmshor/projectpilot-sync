@@ -71,7 +71,7 @@ export const useQuickTasksOptimized = () => {
     if (quickTasks.length >= 0) {
       debouncedSave(quickTasks);
     }
-  }, [quickTasks, debouncedSave]);
+  }, [quickTasks]); // Remove debouncedSave from dependencies
 
   const addQuickTask = useCallback((title: string) => {
     if (!title.trim()) return;
@@ -103,7 +103,7 @@ export const useQuickTasksOptimized = () => {
         clearTimeout(saveTimeout);
       }
     };
-  }, [saveTimeout]);
+  }, []);
 
   return {
     quickTasks,

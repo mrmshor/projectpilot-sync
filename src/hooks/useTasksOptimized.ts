@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Task, WorkStatus, Priority } from '@/types/task';
 import { handleStorageError, safeJSONParse, generateId } from '@/lib/errorHandling';
+import { useMemoryManager, useMemoryMonitor } from './useMemoryManager';
 
 const STORAGE_KEY = 'task_management_data';
 const MAX_STORAGE_SIZE = 5 * 1024 * 1024; // 5MB limit
@@ -11,6 +12,10 @@ const useTasksOptimized = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
+  
+  // Memory management
+  const { safeSetTimeout, cleanup } = useMemoryManager();
+  useMemoryMonitor('useTasksOptimized');
 
   // Load tasks from localStorage on mount with error handling
   useEffect(() => {
@@ -55,7 +60,7 @@ const useTasksOptimized = () => {
       clearTimeout(saveTimeout);
     }
 
-    const timeout = setTimeout(() => {
+    const timeout = safeSetTimeout(() => {
       try {
         const dataToSave = JSON.stringify(tasksToSave);
         
@@ -69,18 +74,18 @@ const useTasksOptimized = () => {
           
           const reducedData = JSON.stringify(recentTasks);
           localStorage.setItem(STORAGE_KEY, reducedData);
-          setTasks(recentTasks);
+          // DO NOT call setTasks here to avoid infinite loop
         } else {
           localStorage.setItem(STORAGE_KEY, dataToSave);
         }
       } catch (error) {
-        console.error('Error saving tasks:', error);
+        handleStorageError(error, 'save tasks');
         if (error instanceof DOMException && error.name === 'QuotaExceededError') {
           // Handle storage quota exceeded
           const recentTasks = tasksToSave.slice(0, Math.floor(tasksToSave.length * 0.5));
           try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(recentTasks));
-            setTasks(recentTasks);
+            // DO NOT call setTasks here to avoid infinite loop
           } catch (e) {
             console.error('Unable to save even reduced data:', e);
           }
@@ -89,21 +94,14 @@ const useTasksOptimized = () => {
     }, SAVE_DEBOUNCE_MS);
 
     setSaveTimeout(timeout);
-  }, [saveTimeout]);
+  }, []); // Remove saveTimeout dependency to prevent infinite loop
 
-  // Save tasks with debouncing
+  // Save tasks with debouncing - simplified to prevent infinite loops
   useEffect(() => {
     if (!loading && tasks.length >= 0) {
       debouncedSave(tasks);
     }
-
-    // Cleanup timeout on unmount
-    return () => {
-      if (saveTimeout) {
-        clearTimeout(saveTimeout);
-      }
-    };
-  }, [tasks, loading, debouncedSave]);
+  }, [tasks, loading]); // Remove debouncedSave from dependencies
 
   // Optimized create task function
   const createTask = useCallback((taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
@@ -247,7 +245,7 @@ const useTasksOptimized = () => {
         clearTimeout(saveTimeout);
       }
     };
-  }, [saveTimeout]);
+  }, []);
 
   return {
     tasks,

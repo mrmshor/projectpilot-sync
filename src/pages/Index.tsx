@@ -91,10 +91,10 @@ const Index = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background" dir="rtl">
+      <div className="min-h-screen flex items-center justify-center bg-background gpu-acceleration" dir="rtl">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">טוען את הפרויקטים שלך...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent mx-auto mb-3"></div>
+          <p className="text-sm text-muted-foreground animate-pulse">טוען את הפרויקטים שלך...</p>
         </div>
       </div>
     );
@@ -110,7 +110,15 @@ const Index = () => {
 
       {/* Left Sidebar - Projects Navigation */}
       <div className="relative">
-        <Suspense fallback={<div className="w-80 h-full bg-muted/20 animate-pulse" />}>
+        <Suspense fallback={
+          <div className="w-80 h-full bg-muted/10 animate-pulse border-r border-border/50">
+            <div className="p-4 space-y-3">
+              <div className="h-4 bg-muted-foreground/10 rounded animate-pulse"></div>
+              <div className="h-4 bg-muted-foreground/10 rounded animate-pulse w-3/4"></div>
+              <div className="h-4 bg-muted-foreground/10 rounded animate-pulse w-1/2"></div>
+            </div>
+          </div>
+        }>
           <ProjectNavigationSidebar 
             tasks={tasks} 
             onProjectSelect={handleProjectSelect}
@@ -189,7 +197,18 @@ const Index = () => {
 
             <TabsContent value="dashboard" className="mt-8 animate-slide-up">
               <div className="space-y-6">
-                <Suspense fallback={<div className="h-96 bg-muted/20 animate-pulse rounded-xl" />}>
+                <Suspense fallback={
+                  <div className="h-96 bg-muted/5 animate-pulse rounded-xl border border-border/30">
+                    <div className="p-6 space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="h-20 bg-muted-foreground/5 rounded animate-pulse"></div>
+                        <div className="h-20 bg-muted-foreground/5 rounded animate-pulse"></div>
+                        <div className="h-20 bg-muted-foreground/5 rounded animate-pulse"></div>
+                      </div>
+                      <div className="h-48 bg-muted-foreground/5 rounded animate-pulse"></div>
+                    </div>
+                  </div>
+                }>
                   <Dashboard tasks={tasks} stats={stats} />
                 </Suspense>
               </div>
@@ -197,7 +216,16 @@ const Index = () => {
 
             <TabsContent value="projects" className="mt-8 animate-slide-up">
               <div className="mac-card p-6">
-                <Suspense fallback={<div className="h-96 bg-muted/20 animate-pulse rounded-xl" />}>
+                <Suspense fallback={
+                  <div className="h-96 bg-muted/5 animate-pulse rounded-xl">
+                    <div className="p-4 space-y-3">
+                      <div className="h-8 bg-muted-foreground/10 rounded animate-pulse"></div>
+                      <div className="h-12 bg-muted-foreground/5 rounded animate-pulse"></div>
+                      <div className="h-12 bg-muted-foreground/5 rounded animate-pulse"></div>
+                      <div className="h-12 bg-muted-foreground/5 rounded animate-pulse"></div>
+                    </div>
+                  </div>
+                }>
                   <TaskTable 
                     tasks={tasks} 
                     onUpdateTask={updateTask} 

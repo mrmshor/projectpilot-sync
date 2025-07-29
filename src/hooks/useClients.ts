@@ -46,11 +46,14 @@ export const useClients = () => {
     if (!loading && clients.length >= 0) {
       const timeoutId = setTimeout(() => {
         try {
-          localStorage.setItem(CLIENTS_STORAGE_KEY, JSON.stringify(clients));
+          const dataToSave = safeJSONStringify(clients);
+          if (dataToSave) {
+            localStorage.setItem(CLIENTS_STORAGE_KEY, dataToSave);
+          }
         } catch (error) {
-          console.error('Error saving clients:', error);
+          handleStorageError(error, 'save clients');
         }
-      }, 500); // Debounce saves
+      }, 300); // Reduced debounce time for better responsiveness
 
       return () => clearTimeout(timeoutId);
     }

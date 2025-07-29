@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { FixedSizeList as List } from 'react-window';
 import { Task } from '@/types/task';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface VirtualizedTaskListProps {
   tasks: Task[];
@@ -28,17 +29,25 @@ const TaskItem = React.memo(({ index, style, data }: TaskItemProps) => {
   if (!task) return null;
 
   return (
-    <div style={style} className="px-4">
-      <Card className="mac-card hover-lift mb-4">
-        <CardContent className="p-4">
+    <div style={style} className="px-2 will-change-transform">
+      <Card className="mb-2 border-muted-foreground/20 bg-card/80 backdrop-blur-sm hover:bg-card/90 transition-colors duration-200">
+        <CardContent className="p-3">
           <div className="flex justify-between items-center">
-            <div className="flex-1">
-              <h3 className="font-semibold text-lg text-foreground">{task.projectName}</h3>
-              <p className="text-sm text-muted-foreground">{task.clientName}</p>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-base text-foreground truncate">{task.projectName}</h3>
+              <p className="text-sm text-muted-foreground truncate">{task.clientName}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge variant={task.isCompleted ? "default" : "secondary"} className="text-xs">
+                  {task.isCompleted ? "הושלם" : "בתהליך"}
+                </Badge>
+                <Badge variant={task.isPaid ? "outline" : "destructive"} className="text-xs">
+                  {task.isPaid ? "שולם" : "לא שולם"}
+                </Badge>
+              </div>
             </div>
-            <div className="text-right">
+            <div className="text-right flex-shrink-0 ml-2">
               <span className="text-lg font-bold text-primary">
-                {task.price.toFixed(2)} {task.currency}
+                {task.price.toFixed(0)} ₪
               </span>
             </div>
           </div>
@@ -72,14 +81,15 @@ export const VirtualizedTaskList = React.memo(({
   }
 
   return (
-    <div dir="rtl">
+    <div dir="rtl" className="w-full">
       <List
         height={height}
         width={width}
         itemCount={tasks.length}
-        itemSize={120}
+        itemSize={100}
         itemData={itemData}
-        className="scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent"
+        className="scrollbar-thin scrollbar-thumb-muted/30 scrollbar-track-transparent"
+        overscanCount={5}
       >
         {TaskItem}
       </List>

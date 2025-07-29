@@ -13,6 +13,17 @@ export const handleStorageError = (error: any, operation: string): void => {
     switch (error.name) {
       case 'QuotaExceededError':
         console.warn('Storage quota exceeded - cleaning up old data');
+        // Attempt to clear some storage
+        try {
+          const keys = Object.keys(localStorage);
+          keys.forEach(key => {
+            if (key.startsWith('temp_') || key.startsWith('cache_')) {
+              localStorage.removeItem(key);
+            }
+          });
+        } catch (e) {
+          console.error('Failed to cleanup storage:', e);
+        }
         break;
       case 'SecurityError':
         console.warn('Storage access denied - private browsing mode?');
@@ -24,10 +35,14 @@ export const handleStorageError = (error: any, operation: string): void => {
 };
 
 export const safeJSONParse = <T>(data: string | null, fallback: T): T => {
-  if (!data) return fallback;
+  if (!data || data.trim() === '') return fallback;
   
   try {
     const parsed = JSON.parse(data);
+    // Additional validation to ensure parsed data is valid
+    if (parsed === null || parsed === undefined) {
+      return fallback;
+    }
     return parsed;
   } catch (error) {
     console.error('JSON parse error:', error);
