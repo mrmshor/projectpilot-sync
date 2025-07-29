@@ -73,7 +73,6 @@
     --shadow-large: 0 4px 8px 0 hsl(0 0% 0% / 0.08);
 
     --radius: 0.25rem;
-  }
 
     --sidebar-background: 0 0% 97%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -142,7 +141,6 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
-}
 
 @layer base {
   * {
