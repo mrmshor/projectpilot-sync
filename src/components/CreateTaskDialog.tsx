@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, FolderOpen } from 'lucide-react';
 import { toast } from 'sonner';
+import { ClientSelector } from './ClientSelector';
 
 interface CreateTaskDialogProps {
   onCreateTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => void;
@@ -91,6 +92,31 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
 
   const updateField = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleClientChange = (clientName: string, clientData?: any) => {
+    setFormData(prev => ({
+      ...prev,
+      clientName,
+      ...(clientData && {
+        clientPhone: clientData.phone || '',
+        clientPhone2: clientData.phone2 || '',
+        clientWhatsapp: clientData.whatsapp || '',
+        clientWhatsapp2: clientData.whatsapp2 || '',
+        clientEmail: clientData.email || ''
+      })
+    }));
+  };
+
+  const handleClientDataChange = (clientData: any) => {
+    setFormData(prev => ({
+      ...prev,
+      clientPhone: clientData.phone || prev.clientPhone,
+      clientPhone2: clientData.phone2 || prev.clientPhone2,
+      clientWhatsapp: clientData.whatsapp || prev.clientWhatsapp,
+      clientWhatsapp2: clientData.whatsapp2 || prev.clientWhatsapp2,
+      clientEmail: clientData.email || prev.clientEmail
+    }));
   };
 
   const handleFolderSelect = async () => {
@@ -217,18 +243,16 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
             </h3>
             
             <div className="grid grid-cols-1 gap-4">
-              <div>
-                <Label htmlFor="clientName" className="text-base font-semibold mb-2 block">שם הלקוח *</Label>
-                <Input
-                  id="clientName"
-                  value={formData.clientName}
-                  onChange={(e) => updateField('clientName', e.target.value)}
-                  placeholder="הכנס שם לקוח מלא"
-                  required
-                  dir="rtl"
-                  className="text-base h-12 border-2 border-blue-200/50 focus:border-blue-400/60"
-                />
-              </div>
+              <ClientSelector
+                value={formData.clientName}
+                onChange={handleClientChange}
+                onClientDataChange={handleClientDataChange}
+                clientPhone={formData.clientPhone}
+                clientPhone2={formData.clientPhone2}
+                clientWhatsapp={formData.clientWhatsapp}
+                clientWhatsapp2={formData.clientWhatsapp2}
+                clientEmail={formData.clientEmail}
+              />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>

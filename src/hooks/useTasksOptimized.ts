@@ -159,52 +159,81 @@ const useTasksOptimized = () => {
     };
   }, [tasks]);
 
-  // Optimized CSV export
+  // Enhanced CSV export with proper UTF-8 encoding for Hebrew
   const exportToCSV = useCallback(() => {
     try {
       const headers = [
-        'Project Name',
-        'Description', 
-        'Client Name',
-        'Client Phone',
-        'Client Email',
-        'Work Status',
-        'Priority',
-        'Price',
-        'Currency',
-        'Payment Status',
-        'Completion Status',
-        'Created Date',
-        'Updated Date'
+        'שם הפרויקט',
+        'תיאור הפרויקט', 
+        'שם הלקוח',
+        'טלפון לקוח',
+        'טלפון נוסף',
+        'וואטסאפ',
+        'וואטסאפ נוסף',
+        'אימייל לקוח',
+        'סטטוס עבודה',
+        'רמת עדיפות',
+        'מחיר',
+        'מטבע',
+        'סטטוס תשלום',
+        'סטטוס השלמה',
+        'תאריך יצירה',
+        'תאריך עדכון',
+        'נתיב תיקייה',
+        'קישור תיקייה',
+        'מספר משימות',
+        'משימות שהושלמו'
       ];
 
-      const rows = tasks.map(task => [
-        task.projectName,
-        task.projectDescription,
-        task.clientName,
-        task.clientPhone || '',
-        task.clientEmail || '',
-        task.workStatus,
-        task.priority,
-        task.price,
-        task.currency,
-        task.isPaid ? 'Paid' : 'Unpaid',
-        task.isCompleted ? 'Done' : 'Not Done',
-        task.createdAt.toLocaleDateString(),
-        task.updatedAt.toLocaleDateString()
-      ]);
+      const rows = tasks.map(task => {
+        const completedTasks = task.tasks.filter(t => t.isCompleted).length;
+        return [
+          task.projectName,
+          task.projectDescription,
+          task.clientName,
+          task.clientPhone || '',
+          task.clientPhone2 || '',
+          task.clientWhatsapp || '',
+          task.clientWhatsapp2 || '',
+          task.clientEmail || '',
+          task.workStatus,
+          task.priority,
+          task.price.toString(),
+          task.currency,
+          task.isPaid ? 'שולם' : 'לא שולם',
+          task.isCompleted ? 'הושלם' : 'לא הושלם',
+          task.createdAt.toLocaleDateString('he-IL'),
+          task.updatedAt.toLocaleDateString('he-IL'),
+          task.folderPath || '',
+          task.folderLink || '',
+          task.tasks.length.toString(),
+          `${completedTasks}/${task.tasks.length}`
+        ];
+      });
 
+      // Create CSV with proper UTF-8 BOM for Hebrew support
       const csvContent = [headers, ...rows]
-        .map(row => row.map(cell => `"${cell}"`).join(','))
-        .join('\n');
+        .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+        .join('\r\n');
 
-      const blob = new Blob([csvContent], { type: 'text/csv' });
+      // Add BOM for proper UTF-8 encoding in Excel
+      const BOM = '\uFEFF';
+      const csvWithBOM = BOM + csvContent;
+
+      const blob = new Blob([csvWithBOM], { 
+        type: 'text/csv;charset=utf-8;' 
+      });
+      
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `tasks_export_${new Date().toISOString().split('T')[0]}.csv`;
+      link.download = `projects_export_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
+      
+      console.log('CSV export completed successfully');
     } catch (error) {
       console.error('Error exporting CSV:', error);
     }
