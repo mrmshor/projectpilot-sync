@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Task, WorkStatus, Priority } from '@/types/task';
+import { handleStorageError, safeJSONParse, generateId } from '@/lib/errorHandling';
 
 const STORAGE_KEY = 'task_management_data';
 const MAX_STORAGE_SIZE = 5 * 1024 * 1024; // 5MB limit
@@ -23,7 +24,7 @@ const useTasksOptimized = () => {
             localStorage.removeItem(STORAGE_KEY);
             setTasks([]);
           } else {
-            const parsed = JSON.parse(savedTasks);
+            const parsed = safeJSONParse(savedTasks, []);
             // Validate data structure
             if (Array.isArray(parsed)) {
               const tasksWithDates = parsed.map((task: any) => ({
@@ -36,7 +37,7 @@ const useTasksOptimized = () => {
           }
         }
       } catch (error) {
-        console.error('Error loading tasks:', error);
+        handleStorageError(error, 'load tasks');
         // Clear corrupted data
         localStorage.removeItem(STORAGE_KEY);
         setTasks([]);
@@ -109,7 +110,7 @@ const useTasksOptimized = () => {
     try {
       const newTask: Task = {
         ...taskData,
-        id: crypto.randomUUID(),
+        id: generateId(),
         createdAt: new Date(),
         updatedAt: new Date()
       };

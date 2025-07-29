@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useClients, ClientData } from '@/hooks/useClients';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -73,8 +73,8 @@ export const ClientSelector: React.FC<ClientSelectorProps> = ({
     onChange(newValue);
   };
 
-  // Save client data when form is submitted
-  const handleSaveClientData = () => {
+  // Save client data when form is submitted - memoized to prevent recreations
+  const handleSaveClientData = useCallback(() => {
     if (value.trim()) {
       saveClient({
         name: value.trim(),
@@ -85,27 +85,33 @@ export const ClientSelector: React.FC<ClientSelectorProps> = ({
         email: clientEmail || undefined
       });
     }
-  };
+  }, [value, clientPhone, clientPhone2, clientWhatsapp, clientWhatsapp2, clientEmail, saveClient]);
 
-  // Auto-save when any client data changes
+  // Auto-save when any client data changes - debounced to prevent excessive saves
   useEffect(() => {
-    if (value.trim() && (clientPhone || clientPhone2 || clientWhatsapp || clientWhatsapp2 || clientEmail)) {
-      const existingClient = getClientByName(value);
-      if (existingClient) {
-        // Only save if data has changed
-        const hasChanges = 
-          existingClient.phone !== clientPhone ||
-          existingClient.phone2 !== clientPhone2 ||
-          existingClient.whatsapp !== clientWhatsapp ||
-          existingClient.whatsapp2 !== clientWhatsapp2 ||
-          existingClient.email !== clientEmail;
-        
-        if (hasChanges) {
-          handleSaveClientData();
+    if (!value.trim()) return;
+    
+    const timeoutId = setTimeout(() => {
+      if (clientPhone || clientPhone2 || clientWhatsapp || clientWhatsapp2 || clientEmail) {
+        const existingClient = getClientByName(value);
+        if (existingClient) {
+          // Only save if data has changed
+          const hasChanges = 
+            existingClient.phone !== (clientPhone || undefined) ||
+            existingClient.phone2 !== (clientPhone2 || undefined) ||
+            existingClient.whatsapp !== (clientWhatsapp || undefined) ||
+            existingClient.whatsapp2 !== (clientWhatsapp2 || undefined) ||
+            existingClient.email !== (clientEmail || undefined);
+          
+          if (hasChanges) {
+            handleSaveClientData();
+          }
         }
       }
-    }
-  }, [value, clientPhone, clientPhone2, clientWhatsapp, clientWhatsapp2, clientEmail]);
+    }, 1000); // Debounce for 1 second
+
+    return () => clearTimeout(timeoutId);
+  }, [value, clientPhone, clientPhone2, clientWhatsapp, clientWhatsapp2, clientEmail, getClientByName]);
 
   return (
     <div className="space-y-2">

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { QuickTask } from '@/types/quickTask';
+import { handleStorageError, safeJSONParse, generateId } from '@/lib/errorHandling';
 
 const QUICK_TASKS_STORAGE_KEY = 'quick-tasks';
 const MAX_QUICK_TASKS = 100; // Limit number of quick tasks
@@ -15,15 +16,20 @@ export const useQuickTasksOptimized = () => {
       const savedTasks = localStorage.getItem(QUICK_TASKS_STORAGE_KEY);
       
       if (savedTasks) {
-        const parsed = JSON.parse(savedTasks);
+        const parsed = safeJSONParse(savedTasks, []);
+        
         if (Array.isArray(parsed)) {
+          const tasksWithDates = parsed.map((task: any) => ({
+            ...task,
+            createdAt: new Date(task.createdAt)
+          }));
           // Limit the number of tasks loaded
-          const limitedTasks = parsed.slice(0, MAX_QUICK_TASKS);
+          const limitedTasks = tasksWithDates.slice(0, MAX_QUICK_TASKS);
           setQuickTasks(limitedTasks);
         }
       }
     } catch (error) {
-      console.error('Error loading quick tasks:', error);
+      handleStorageError(error, 'load quick tasks');
       localStorage.removeItem(QUICK_TASKS_STORAGE_KEY);
       setQuickTasks([]);
     }
@@ -60,46 +66,35 @@ export const useQuickTasksOptimized = () => {
     setSaveTimeout(timeout);
   }, [saveTimeout]);
 
-  // Optimized save function
-  const saveQuickTasks = useCallback((tasks: QuickTask[]) => {
-    setQuickTasks(tasks);
-    debouncedSave(tasks);
-  }, [debouncedSave]);
+  // Save tasks whenever they change
+  useEffect(() => {
+    if (quickTasks.length >= 0) {
+      debouncedSave(quickTasks);
+    }
+  }, [quickTasks, debouncedSave]);
 
   const addQuickTask = useCallback((title: string) => {
     if (!title.trim()) return;
 
     const newTask: QuickTask = {
-      id: Date.now().toString(),
+      id: generateId(), // Use secure UUID with fallback
       title: title.trim(),
       completed: false,
       createdAt: new Date()
     };
     
-    setQuickTasks(prev => {
-      const updatedTasks = [newTask, ...prev];
-      debouncedSave(updatedTasks);
-      return updatedTasks;
-    });
-  }, [debouncedSave]);
+    setQuickTasks(prev => [newTask, ...prev]);
+  }, []);
 
   const toggleQuickTask = useCallback((id: string) => {
-    setQuickTasks(prev => {
-      const updatedTasks = prev.map(task =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      );
-      debouncedSave(updatedTasks);
-      return updatedTasks;
-    });
-  }, [debouncedSave]);
+    setQuickTasks(prev => prev.map(task =>
+      task.id === id ? { ...task, completed: !task.completed } : task
+    ));
+  }, []);
 
   const deleteQuickTask = useCallback((id: string) => {
-    setQuickTasks(prev => {
-      const updatedTasks = prev.filter(task => task.id !== id);
-      debouncedSave(updatedTasks);
-      return updatedTasks;
-    });
-  }, [debouncedSave]);
+    setQuickTasks(prev => prev.filter(task => task.id !== id));
+  }, []);
 
   // Cleanup
   useEffect(() => {

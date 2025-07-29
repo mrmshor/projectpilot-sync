@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { handleStorageError, safeJSONParse, safeJSONStringify, generateId } from '@/lib/errorHandling';
 
 export interface ClientData {
   id: string;
@@ -22,60 +23,63 @@ export const useClients = () => {
   useEffect(() => {
     try {
       const savedClients = localStorage.getItem(CLIENTS_STORAGE_KEY);
-      if (savedClients) {
-        const parsed = JSON.parse(savedClients);
-        if (Array.isArray(parsed)) {
-          const clientsWithDates = parsed.map((client: any) => ({
-            ...client,
-            createdAt: new Date(client.createdAt),
-            updatedAt: new Date(client.updatedAt)
-          }));
-          setClients(clientsWithDates);
-        }
+      const parsed = safeJSONParse(savedClients, []);
+      
+      if (Array.isArray(parsed)) {
+        const clientsWithDates = parsed.map((client: any) => ({
+          ...client,
+          createdAt: new Date(client.createdAt),
+          updatedAt: new Date(client.updatedAt)
+        }));
+        setClients(clientsWithDates);
       }
     } catch (error) {
-      console.error('Error loading clients:', error);
+      handleStorageError(error, 'load clients');
       localStorage.removeItem(CLIENTS_STORAGE_KEY);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Save clients to localStorage
+  // Save clients to localStorage with debouncing
   useEffect(() => {
-    if (!loading) {
-      try {
-        localStorage.setItem(CLIENTS_STORAGE_KEY, JSON.stringify(clients));
-      } catch (error) {
-        console.error('Error saving clients:', error);
-      }
+    if (!loading && clients.length >= 0) {
+      const timeoutId = setTimeout(() => {
+        try {
+          localStorage.setItem(CLIENTS_STORAGE_KEY, JSON.stringify(clients));
+        } catch (error) {
+          console.error('Error saving clients:', error);
+        }
+      }, 500); // Debounce saves
+
+      return () => clearTimeout(timeoutId);
     }
   }, [clients, loading]);
 
-  // Add or update client
+  // Add or update client - optimized with proper memoization
   const saveClient = useCallback((clientData: Omit<ClientData, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const existingClient = clients.find(c => c.name.toLowerCase() === clientData.name.toLowerCase());
-    
-    if (existingClient) {
-      // Update existing client
-      setClients(prev => prev.map(client => 
-        client.id === existingClient.id
-          ? { ...client, ...clientData, updatedAt: new Date() }
-          : client
-      ));
-      return existingClient;
-    } else {
-      // Create new client
-      const newClient: ClientData = {
-        ...clientData,
-        id: crypto.randomUUID(),
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      setClients(prev => [newClient, ...prev]);
-      return newClient;
-    }
-  }, [clients]);
+    setClients(prevClients => {
+      const existingClient = prevClients.find(c => c.name.toLowerCase() === clientData.name.toLowerCase());
+      
+      if (existingClient) {
+        // Update existing client
+        return prevClients.map(client => 
+          client.id === existingClient.id
+            ? { ...client, ...clientData, updatedAt: new Date() }
+            : client
+        );
+      } else {
+        // Create new client
+        const newClient: ClientData = {
+          ...clientData,
+          id: generateId(),
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        return [newClient, ...prevClients];
+      }
+    });
+  }, []);
 
   // Get client by name
   const getClientByName = useCallback((name: string) => {
