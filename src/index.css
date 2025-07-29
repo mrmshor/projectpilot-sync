@@ -17,64 +17,63 @@
 
 @layer base {
   :root {
-    /* Apple-style Compact Surface Colors */
-    --background: 0 0% 98%;
-    --foreground: 0 0% 9%;
+    /* Ultra Clean Minimal Colors */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 8%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 9%;
+    --card-foreground: 0 0% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 9%;
+    --popover-foreground: 0 0% 8%;
 
-    /* Apple Blue - מותאם לפרודקטיביות */
-    --primary: 211 96% 48%;
+    /* Simple Blue - Clean & Professional */
+    --primary: 220 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    /* Compact Gray Backgrounds */
-    --secondary: 0 0% 95%;
-    --secondary-foreground: 0 0% 9%;
+    /* Minimal Grays */
+    --secondary: 0 0% 97%;
+    --secondary-foreground: 0 0% 8%;
 
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 46%;
+    --muted: 0 0% 98%;
+    --muted-foreground: 0 0% 50%;
 
-    --accent: 0 0% 94%;
-    --accent-foreground: 0 0% 9%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 8%;
 
-    /* System Colors - מקומפקטים */
-    --destructive: 0 84% 60%;
+    /* Clean System Colors */
+    --destructive: 0 100% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Clean Borders */
-    --border: 0 0% 90%;
-    --input: 0 0% 92%;
-    --ring: 211 96% 48%;
+    /* Invisible Borders */
+    --border: 0 0% 94%;
+    --input: 0 0% 96%;
+    --ring: 220 100% 50%;
 
-    /* Subtle Status Colors */
-    --success: 122 39% 49%;
+    /* Subtle Status */
+    --success: 120 100% 35%;
     --success-foreground: 0 0% 100%;
-    --warning: 43 96% 56%;
+    --warning: 45 100% 50%;
     --warning-foreground: 0 0% 100%;
-    --info: 211 96% 48%;
+    --info: 220 100% 50%;
     --info-foreground: 0 0% 100%;
 
-    /* Priority Colors - ברורים אך עדינים */
-    --priority-high: 0 84% 60%;
-    --priority-medium: 43 96% 56%;
-    --priority-low: 122 39% 49%;
+    /* Priority - Clear Distinctions */
+    --priority-high: 0 100% 50%;
+    --priority-medium: 45 100% 50%;
+    --priority-low: 120 100% 35%;
 
-    /* Clean Gradients */
-    --gradient-primary: linear-gradient(180deg, hsl(211 96% 48%), hsl(211 96% 44%));
-    --gradient-surface: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 99%));
-    --gradient-glass: linear-gradient(180deg, hsl(0 0% 100% / 0.95), hsl(0 0% 99% / 0.8));
+    /* No Gradients - Pure Colors */
+    --gradient-primary: hsl(220 100% 50%);
+    --gradient-surface: hsl(0 0% 100%);
     
     /* Minimal Shadows */
-    --shadow-soft: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
-    --shadow-medium: 0 2px 8px -2px hsl(0 0% 0% / 0.08);
-    --shadow-large: 0 8px 24px -4px hsl(0 0% 0% / 0.12);
-    --shadow-glass: 0 4px 16px hsl(0 0% 0% / 0.08), 0 0 0 1px hsl(0 0% 100% / 0.1);
+    --shadow-soft: 0 1px 2px 0 hsl(0 0% 0% / 0.03);
+    --shadow-medium: 0 2px 4px 0 hsl(0 0% 0% / 0.06);
+    --shadow-large: 0 4px 8px 0 hsl(0 0% 0% / 0.08);
 
-    --radius: 0.5rem;
+    --radius: 0.25rem;
+  }
 
     --sidebar-background: 0 0% 97%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -166,82 +165,87 @@
 }
 
 @layer components {
-  /* Compact Apple Glass Effect */
-  .glass {
-    @apply bg-white/90 dark:bg-black/40 backdrop-blur-md border border-white/30 dark:border-white/10;
-    backdrop-filter: blur(12px) saturate(120%);
+  /* Ultra Minimal - No Effects */
+  .minimal-card {
+    @apply bg-white border border-border rounded shadow-soft;
   }
   
-  /* Compact Apple Card Style */
-  .mac-card {
-    @apply bg-card border border-border/40 rounded-lg shadow-soft relative;
-    background: hsl(var(--card));
+  /* Clean Button */
+  .minimal-button {
+    @apply px-4 py-2 text-sm font-medium rounded transition-colors duration-150;
   }
   
-  /* Compact Button Styles */
-  .mac-button {
-    @apply rounded-lg font-medium transition-all duration-200 ease-out;
+  .minimal-button-primary {
+    @apply bg-primary text-white hover:opacity-90;
   }
   
-  .mac-button-primary {
-    @apply bg-primary text-primary-foreground shadow-soft hover:shadow-medium;
+  .minimal-button-secondary {
+    @apply bg-secondary text-foreground hover:bg-secondary/80;
   }
   
-  .mac-button-primary:hover {
-    @apply brightness-105;
+  /* Clean Input */
+  .minimal-input {
+    @apply w-full px-3 py-2 text-sm border border-border rounded focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary;
   }
   
-  .mac-button-primary:active {
-    @apply scale-[0.98] brightness-95;
+  /* Typography */
+  .text-title {
+    @apply text-lg font-semibold text-foreground;
   }
   
-  /* Compact Input Style */
-  .mac-input {
-    @apply bg-white dark:bg-black/30 border border-border/60 rounded-lg transition-all duration-200;
+  .text-subtitle {
+    @apply text-sm text-muted-foreground;
   }
   
-  .mac-input:focus {
-    @apply border-primary/60 shadow-soft ring-2 ring-primary/20;
+  .text-body {
+    @apply text-sm text-foreground;
   }
   
-  /* Gradient Text */
-  .gradient-text {
-    @apply bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent;
+  /* Layout Utilities */
+  .minimal-spacing {
+    @apply space-y-4;
   }
   
-  /* Compact Status Indicators */
-  .status-dot {
-    @apply w-1.5 h-1.5 rounded-full;
+  .minimal-padding {
+    @apply p-4;
   }
   
-  /* Micro Interactions - פשוטות ויעילות */
-  .hover-lift {
-    @apply transition-transform duration-150 hover:scale-[1.01];
+  .minimal-container {
+    @apply max-w-7xl mx-auto px-4;
   }
   
-  .press-scale {
-    @apply transition-transform duration-75 active:scale-[0.99];
+  /* Status Colors - Clear & Simple */
+  .status-high {
+    @apply bg-red-500 text-white;
   }
   
-  /* Compact Layout Classes */
-  .compact-spacing {
-    @apply space-y-2;
+  .status-medium {
+    @apply bg-yellow-500 text-white;
   }
   
-  .compact-padding {
-    @apply p-3;
+  .status-low {
+    @apply bg-green-500 text-white;
   }
   
-  .compact-margin {
-    @apply m-2;
+  /* Desktop App Optimizations */
+  .no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
   
-  /* Productivity Focus */
-  .focus-ring {
-    @apply ring-2 ring-primary/30 ring-offset-1;
+  .performance-mode {
+    will-change: transform;
+    contain: layout;
   }
   
-  .clean-border {
-    @apply border border-border/30;
+  /* Ultra Clean Layout */
+  .clean-grid {
+    @apply grid gap-4;
+  }
+  
+  .clean-flex {
+    @apply flex items-center gap-3;
   }
 }

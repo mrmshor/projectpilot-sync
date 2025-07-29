@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useTasks } from '@/hooks/useTasks';
-import { TaskTable } from '@/components/TaskTable';
+import { useOptimizedTasks } from '@/hooks/useOptimizedTasks';
+import { VirtualizedTaskList } from '@/components/optimized/VirtualizedTaskList';
 import { CreateTaskDialog } from '@/components/CreateTaskDialog';
-import { Dashboard } from '@/components/Dashboard';
+import { OptimizedDashboard } from '@/components/optimized/OptimizedDashboard';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { QuickTaskSidebar } from '@/components/QuickTaskSidebar';
 import { ProjectNavigationSidebar } from '@/components/ProjectNavigationSidebar';
@@ -24,46 +24,39 @@ import { useToast } from '@/hooks/use-toast';
 import { useNotesExport } from '@/hooks/useNotesExport';
 
 const Index = () => {
-  const { tasks, loading, createTask, updateTask, deleteTask, getTaskStats, exportToCSV } = useTasks();
+  const { 
+    tasks, 
+    loading, 
+    createTask, 
+    updateTask, 
+    deleteTask, 
+    stats, 
+    exportToCSV,
+    searchTerm,
+    setSearchTerm,
+    priorityFilter,
+    setPriorityFilter
+  } = useOptimizedTasks();
+
+  
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  
-  const { toast } = useToast();
-  const { exportToNotes, downloadAsFile } = useNotesExport();
-  const stats = getTaskStats();
+  const [editingTask, setEditingTask] = useState<any>(null);
 
-  const handleCreateTask = (taskData: Parameters<typeof createTask>[0]) => {
+  const handleCreateTask = (taskData: any) => {
     createTask(taskData);
-    toast({
-      title: 'פרויקט נוצר',
-      description: 'הפרויקט החדש נוצר בהצלחה.',
-    });
   };
 
   const handleDeleteTask = (id: string) => {
-    const task = tasks.find(t => t.id === id);
     deleteTask(id);
-    toast({
-      title: 'פרויקט נמחק',
-      description: `"${task?.projectName}" נמחק.`,
-      variant: 'destructive',
-    });
+  };
+
+  const handleEditTask = (task: any) => {
+    setEditingTask(task);
   };
 
   const handleExport = () => {
     exportToCSV();
-    toast({
-      title: 'ייצוא הושלם',
-      description: 'המשימות יוצאו לקובץ CSV.',
-    });
-  };
-
-  const handleExportToNotes = () => {
-    exportToNotes(tasks);
-  };
-
-  const handleDownloadFile = () => {
-    downloadAsFile(tasks);
   };
 
   const handleProjectSelect = (projectId: string) => {
@@ -98,49 +91,47 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex" dir="rtl">
-      {/* Left Sidebar - Projects Navigation */}
-      <div className="relative">
+    <div className="min-h-screen bg-background no-select performance-mode" dir="rtl">
+      {/* Minimal Left Sidebar */}
+      <div className="fixed left-0 top-0 h-full w-64 bg-secondary border-r border-border">
         <ProjectNavigationSidebar 
           tasks={tasks} 
           onProjectSelect={handleProjectSelect}
         />
       </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
-        {/* Compact Header */}
-        <header className="bg-white/90 dark:bg-black/40 backdrop-blur-md border-b border-border/40 sticky top-0 z-40">
-          <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
-            <div className="flex justify-between items-center h-10">
-              <div className="flex items-center gap-3">
+      {/* Main Content */}
+      <div className="ml-64 flex-1 flex flex-col">
+        {/* Ultra Clean Header */}
+        <header className="bg-white border-b border-border">
+          <div className="minimal-container">
+            <div className="clean-flex h-12 justify-between">
+              <div className="clean-flex">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className="p-1.5 hover-lift"
+                  className="p-2"
                 >
                   {sidebarOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
                 </Button>
-                <div className="flex items-center justify-center w-8 h-8 bg-primary rounded-lg shadow-soft">
-                  <Briefcase className="h-4 w-4 text-primary-foreground" />
+                <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
+                  <Briefcase className="h-4 w-4 text-white" />
                 </div>
-                <div>
-                  <h1 className="text-lg font-bold gradient-text">מנהל משימות</h1>
-                </div>
+                <h1 className="text-title">מנהל משימות</h1>
               </div>
               
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={handleExport} className="gap-1.5 mac-button text-xs hover-lift">
-                  <Download className="h-3.5 w-3.5" />
+              <div className="clean-flex">
+                <Button variant="outline" size="sm" onClick={handleExport} className="minimal-button text-xs">
+                  <Download className="h-3 w-3 ml-1" />
                   CSV
                 </Button>
-                <Button variant="outline" size="sm" onClick={handleExportToNotes} className="gap-1.5 mac-button text-xs hover-lift">
-                  <FileText className="h-3.5 w-3.5" />
+                <Button variant="outline" size="sm" onClick={() => console.log('Export to notes')} className="minimal-button text-xs">
+                  <FileText className="h-3 w-3 ml-1" />
                   פתקים
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => window.open('/mobile', '_blank')} className="gap-1.5 mac-button text-xs hover-lift">
-                  <Users className="h-3.5 w-3.5" />
+                <Button variant="outline" size="sm" onClick={() => window.open('/mobile', '_blank')} className="minimal-button text-xs">
+                  <Users className="h-3 w-3 ml-1" />
                   מובייל
                 </Button>
                 <CreateTaskDialog onCreateTask={handleCreateTask} />
@@ -150,38 +141,38 @@ const Index = () => {
           </div>
         </header>
 
-        {/* Compact Main Content */}
-        <main className="flex-1 max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4 w-full">
+        {/* Clean Main Content */}
+        <main className="flex-1 minimal-container py-6">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2 mac-card bg-muted/30 p-1 rounded-lg clean-border">
+            <TabsList className="clean-grid grid-cols-2 w-full bg-secondary p-1 rounded">
               <TabsTrigger 
                 value="dashboard" 
-                className="gap-1.5 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-soft dark:data-[state=active]:bg-white/10 transition-all duration-200 hover-lift text-sm font-medium"
+                className="minimal-button data-[state=active]:bg-white data-[state=active]:shadow-soft text-sm"
               >
-                <LayoutDashboard className="h-3.5 w-3.5" />
+                <LayoutDashboard className="h-4 w-4 ml-1" />
                 לוח בקרה
               </TabsTrigger>
               <TabsTrigger 
                 value="projects" 
-                className="gap-1.5 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-soft dark:data-[state=active]:bg-white/10 transition-all duration-200 hover-lift text-sm font-medium"
+                className="minimal-button data-[state=active]:bg-white data-[state=active]:shadow-soft text-sm"
               >
-                <Table className="h-3.5 w-3.5" />
+                <Table className="h-4 w-4 ml-1" />
                 פרויקטים
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="dashboard" className="mt-4">
-              <div className="compact-spacing">
-                <Dashboard tasks={tasks} stats={stats} />
-              </div>
+            <TabsContent value="dashboard" className="mt-6">
+              <OptimizedDashboard tasks={tasks} stats={stats} />
             </TabsContent>
 
-            <TabsContent value="projects" className="mt-4">
-              <div className="mac-card compact-padding">
-                <TaskTable 
-                  tasks={tasks} 
-                  onUpdateTask={updateTask} 
+            <TabsContent value="projects" className="mt-6">
+              <div className="minimal-card minimal-padding">
+                <VirtualizedTaskList
+                  tasks={tasks}
+                  onUpdateTask={updateTask}
                   onDeleteTask={handleDeleteTask}
+                  onEditTask={handleEditTask}
+                  height={600}
                 />
               </div>
             </TabsContent>
@@ -189,9 +180,9 @@ const Index = () => {
         </main>
       </div>
 
-      {/* Compact Right Sidebar - Quick Tasks */}
+      {/* Clean Right Sidebar */}
       {sidebarOpen && (
-        <div className="relative">
+        <div className="fixed right-0 top-0 h-full w-80 bg-secondary border-l border-border">
           <QuickTaskSidebar />
         </div>
       )}
