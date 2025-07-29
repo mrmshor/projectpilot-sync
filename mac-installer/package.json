@@ -30,6 +30,10 @@
       "entitlements": null,
       "entitlementsInherit": null
     },
+    "dmg": {
+      "title": "ProjectPilot Sync",
+      "backgroundColor": "#f0f0f0"
+    },
     "win": {
       "target": "nsis",
       "icon": "assets/icon.ico"
