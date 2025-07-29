@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo, lazy, Suspense } from 'react';
 import { useTasks } from '@/hooks/useTasksOptimized';
-import { TaskTable } from '@/components/TaskTable';
-import { CreateTaskDialog } from '@/components/CreateTaskDialog';
-import { Dashboard } from '@/components/Dashboard';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { QuickTaskSidebar } from '@/components/QuickTaskSidebar';
-import { ProjectNavigationSidebar } from '@/components/ProjectNavigationSidebar';
+const TaskTable = lazy(() => import('@/components/TaskTable').then(module => ({ default: module.TaskTable })));
+const CreateTaskDialog = lazy(() => import('@/components/CreateTaskDialog').then(module => ({ default: module.CreateTaskDialog })));
+const Dashboard = lazy(() => import('@/components/Dashboard').then(module => ({ default: module.Dashboard })));
+const ThemeToggle = lazy(() => import('@/components/ThemeToggle').then(module => ({ default: module.ThemeToggle })));
+const QuickTaskSidebar = lazy(() => import('@/components/QuickTaskSidebar').then(module => ({ default: module.QuickTaskSidebar })));
+const ProjectNavigationSidebar = lazy(() => import('@/components/ProjectNavigationSidebar').then(module => ({ default: module.ProjectNavigationSidebar })));
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -30,17 +30,17 @@ const Index = () => {
   
   const { toast } = useToast();
   const { exportQuickTasksToNotes } = useQuickTasksExport();
-  const stats = getTaskStats;
+  const stats = useMemo(() => getTaskStats, [getTaskStats]);
 
-  const handleCreateTask = (taskData: Parameters<typeof createTask>[0]) => {
+  const handleCreateTask = useCallback((taskData: Parameters<typeof createTask>[0]) => {
     createTask(taskData);
     toast({
       title: 'פרויקט נוצר',
       description: 'הפרויקט החדש נוצר בהצלחה.',
     });
-  };
+  }, [createTask, toast]);
 
-  const handleDeleteTask = (id: string) => {
+  const handleDeleteTask = useCallback((id: string) => {
     const task = tasks.find(t => t.id === id);
     deleteTask(id);
     toast({
@@ -48,17 +48,17 @@ const Index = () => {
       description: `"${task?.projectName}" נמחק.`,
       variant: 'destructive',
     });
-  };
+  }, [tasks, deleteTask, toast]);
 
-  const handleExport = () => {
+  const handleExport = useCallback(() => {
     exportToCSV();
     toast({
       title: 'ייצוא הושלם',
       description: 'המשימות יוצאו לקובץ CSV.',
     });
-  };
+  }, [exportToCSV, toast]);
 
-  const handleExportToNotes = () => {
+  const handleExportToNotes = useCallback(() => {
     // ממיר את המשימות הרגילות לפורמט QuickTask ושולח לפתקים
     const quickTasksFormat = tasks.map(task => ({
       id: task.id,
@@ -67,12 +67,12 @@ const Index = () => {
       createdAt: new Date()
     }));
     exportQuickTasksToNotes(quickTasksFormat);
-  };
+  }, [tasks, exportQuickTasksToNotes]);
 
-  const handleProjectSelect = (projectId: string) => {
+  const handleProjectSelect = useCallback((projectId: string) => {
     setActiveTab('projects');
-    // Scroll to the specific project in the table
-    setTimeout(() => {
+    // Use requestAnimationFrame for better performance
+    requestAnimationFrame(() => {
       const projectElement = document.querySelector(`[data-project-id="${projectId}"]`);
       if (projectElement) {
         projectElement.scrollIntoView({ 
@@ -86,8 +86,8 @@ const Index = () => {
           projectElement.classList.remove('ring-2', 'ring-primary', 'ring-opacity-50');
         }, 2000);
       }
-    }, 150);
-  };
+    });
+  }, []);
 
   if (loading) {
     return (
@@ -110,10 +110,12 @@ const Index = () => {
 
       {/* Left Sidebar - Projects Navigation */}
       <div className="relative">
-        <ProjectNavigationSidebar 
-          tasks={tasks} 
-          onProjectSelect={handleProjectSelect}
-        />
+        <Suspense fallback={<div className="w-80 h-full bg-muted/20 animate-pulse" />}>
+          <ProjectNavigationSidebar 
+            tasks={tasks} 
+            onProjectSelect={handleProjectSelect}
+          />
+        </Suspense>
       </div>
 
       {/* Main Content Area */}
@@ -154,8 +156,12 @@ const Index = () => {
                   <Users className="h-4 w-4" />
                   גרסת מובייל
                 </Button>
-                <CreateTaskDialog onCreateTask={handleCreateTask} />
-                <ThemeToggle />
+                <Suspense fallback={<div className="w-8 h-8 bg-muted/20 animate-pulse rounded" />}>
+                  <CreateTaskDialog onCreateTask={handleCreateTask} />
+                </Suspense>
+                <Suspense fallback={<div className="w-8 h-8 bg-muted/20 animate-pulse rounded" />}>
+                  <ThemeToggle />
+                </Suspense>
               </div>
             </div>
           </div>
@@ -183,17 +189,21 @@ const Index = () => {
 
             <TabsContent value="dashboard" className="mt-8 animate-slide-up">
               <div className="space-y-6">
-                <Dashboard tasks={tasks} stats={stats} />
+                <Suspense fallback={<div className="h-96 bg-muted/20 animate-pulse rounded-xl" />}>
+                  <Dashboard tasks={tasks} stats={stats} />
+                </Suspense>
               </div>
             </TabsContent>
 
             <TabsContent value="projects" className="mt-8 animate-slide-up">
               <div className="mac-card p-6">
-                <TaskTable 
-                  tasks={tasks} 
-                  onUpdateTask={updateTask} 
-                  onDeleteTask={handleDeleteTask}
-                />
+                <Suspense fallback={<div className="h-96 bg-muted/20 animate-pulse rounded-xl" />}>
+                  <TaskTable 
+                    tasks={tasks} 
+                    onUpdateTask={updateTask} 
+                    onDeleteTask={handleDeleteTask}
+                  />
+                </Suspense>
               </div>
             </TabsContent>
           </Tabs>
@@ -203,7 +213,9 @@ const Index = () => {
       {/* Right Sidebar - Quick Tasks */}
       {sidebarOpen && (
         <div className="relative">
-          <QuickTaskSidebar />
+          <Suspense fallback={<div className="w-80 h-full bg-muted/20 animate-pulse" />}>
+            <QuickTaskSidebar />
+          </Suspense>
         </div>
       )}
     </div>

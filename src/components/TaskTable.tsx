@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 import { Task, TaskItem, WorkStatus, Priority, WORK_STATUS_LABELS, PRIORITY_LABELS, CURRENCIES } from '@/types/task';
 import { TaskListDialog } from '@/components/TaskListDialog';
@@ -34,7 +34,7 @@ interface TaskTableProps {
 type SortField = keyof Task;
 type SortDirection = 'asc' | 'desc';
 
-export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps) => {
+export const TaskTable = React.memo(({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState<SortField>('updatedAt');
@@ -67,35 +67,37 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
     }
   };
 
-  const handleSort = (field: SortField) => {
+  const handleSort = useCallback((field: SortField) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setSortField(field);
       setSortDirection('asc');
     }
-  };
+  }, [sortField, sortDirection]);
 
-  const sortedTasks = [...tasks].sort((a, b) => {
-    const aValue = a[sortField];
-    const bValue = b[sortField];
-    
-    if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-    if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
-    return 0;
-  });
+  const filteredTasks = useMemo(() => {
+    const filtered = tasks.filter(task => {
+      // Filter by search term
+      const matchesSearch = task.projectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        task.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        task.projectDescription.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      // Filter by priority
+      const matchesPriority = priorityFilter === 'all' || task.priority === priorityFilter;
+      
+      return matchesSearch && matchesPriority;
+    });
 
-  const filteredTasks = sortedTasks.filter(task => {
-    // Filter by search term
-    const matchesSearch = task.projectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.projectDescription.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    // Filter by priority
-    const matchesPriority = priorityFilter === 'all' || task.priority === priorityFilter;
-    
-    return matchesSearch && matchesPriority;
-  });
+    return filtered.sort((a, b) => {
+      const aValue = a[sortField];
+      const bValue = b[sortField];
+      
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [tasks, searchTerm, priorityFilter, sortField, sortDirection]);
 
   const handleEdit = (task: Task) => {
     setEditingId(task.id);
@@ -109,9 +111,9 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
     setEditingId(null);
   };
 
-  const handleFieldUpdate = (taskId: string, field: string, value: any) => {
+  const handleFieldUpdate = useCallback((taskId: string, field: string, value: any) => {
     onUpdateTask(taskId, { [field]: value });
-  };
+  }, [onUpdateTask]);
 
   const handleFolderSelect = async (taskId: string) => {
     try {
@@ -693,4 +695,4 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
       </div>
     </div>
   );
-};
+});

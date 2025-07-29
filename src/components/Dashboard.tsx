@@ -1,3 +1,4 @@
+import React from 'react';
 import { Task } from '@/types/task';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -27,7 +28,7 @@ interface DashboardProps {
   };
 }
 
-export const Dashboard = ({ tasks, stats }: DashboardProps) => {
+export const Dashboard = React.memo(({ tasks, stats }: DashboardProps) => {
   const recentTasks = tasks
     .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
     .slice(0, 5);
@@ -234,4 +235,4 @@ export const Dashboard = ({ tasks, stats }: DashboardProps) => {
       </div>
     </div>
   );
-};
+});

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useQuickTasks } from '@/hooks/useQuickTasksOptimized';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +12,7 @@ import {
   Copy
 } from 'lucide-react';
 
-export const QuickTaskSidebar = () => {
+export const QuickTaskSidebar = React.memo(() => {
   const {
     quickTasks,
     addQuickTask,
@@ -33,15 +33,17 @@ export const QuickTaskSidebar = () => {
     }
   };
 
-  const handleAddTask = () => {
+  const handleAddTask = useCallback(() => {
     if (newTaskTitle.trim()) {
       addQuickTask(newTaskTitle.trim());
       setNewTaskTitle('');
     }
-  };
+  }, [newTaskTitle, addQuickTask]);
 
-  const completedTasks = quickTasks.filter(task => task.completed);
-  const pendingTasks = quickTasks.filter(task => !task.completed);
+  const { completedTasks, pendingTasks } = useMemo(() => ({
+    completedTasks: quickTasks.filter(task => task.completed),
+    pendingTasks: quickTasks.filter(task => !task.completed)
+  }), [quickTasks]);
 
   return (
     <div className="w-80 h-[calc(100vh-2rem)] bg-background border-l border-border flex flex-col sticky top-4 rounded-lg shadow-lg overflow-hidden">
@@ -153,4 +155,4 @@ export const QuickTaskSidebar = () => {
       </div>
     </div>
   );
-};
+});
