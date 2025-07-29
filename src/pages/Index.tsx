@@ -91,9 +91,9 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background no-select performance-mode" dir="rtl">
-      {/* Minimal Left Sidebar */}
-      <div className="fixed left-0 top-0 h-full w-64 bg-secondary border-r border-border">
+    <div className="min-h-screen bg-background desktop-optimized" dir="rtl">
+      {/* Apple Left Sidebar */}
+      <div className="fixed left-0 top-0 h-full w-64 apple-sidebar">
         <ProjectNavigationSidebar 
           tasks={tasks} 
           onProjectSelect={handleProjectSelect}
@@ -102,36 +102,36 @@ const Index = () => {
 
       {/* Main Content */}
       <div className="ml-64 flex-1 flex flex-col">
-        {/* Ultra Clean Header */}
-        <header className="bg-white border-b border-border">
-          <div className="minimal-container">
-            <div className="clean-flex h-12 justify-between">
-              <div className="clean-flex">
+        {/* Apple Header */}
+        <header className="apple-header">
+          <div className="apple-container">
+            <div className="apple-flex h-14 justify-between">
+              <div className="apple-flex">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className="p-2"
+                  className="apple-button"
                 >
                   {sidebarOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
                 </Button>
-                <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
-                  <Briefcase className="h-4 w-4 text-white" />
+                <div className="w-10 h-10 bg-primary rounded-xl apple-flex justify-center">
+                  <Briefcase className="h-5 w-5 text-white" />
                 </div>
-                <h1 className="text-title">מנהל משימות</h1>
+                <h1 className="apple-title">מנהל משימות</h1>
               </div>
               
-              <div className="clean-flex">
-                <Button variant="outline" size="sm" onClick={handleExport} className="minimal-button text-xs">
-                  <Download className="h-3 w-3 ml-1" />
+              <div className="apple-flex">
+                <Button variant="outline" size="sm" onClick={handleExport} className="apple-button text-sm apple-hover">
+                  <Download className="h-4 w-4 ml-2" />
                   CSV
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => console.log('Export to notes')} className="minimal-button text-xs">
-                  <FileText className="h-3 w-3 ml-1" />
+                <Button variant="outline" size="sm" onClick={() => console.log('Export to notes')} className="apple-button text-sm apple-hover">
+                  <FileText className="h-4 w-4 ml-2" />
                   פתקים
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => window.open('/mobile', '_blank')} className="minimal-button text-xs">
-                  <Users className="h-3 w-3 ml-1" />
+                <Button variant="outline" size="sm" onClick={() => window.open('/mobile', '_blank')} className="apple-button text-sm apple-hover">
+                  <Users className="h-4 w-4 ml-2" />
                   מובייל
                 </Button>
                 <CreateTaskDialog onCreateTask={handleCreateTask} />
@@ -141,32 +141,32 @@ const Index = () => {
           </div>
         </header>
 
-        {/* Clean Main Content */}
-        <main className="flex-1 minimal-container py-6">
+        {/* Apple Main Content */}
+        <main className="flex-1 apple-container py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="clean-grid grid-cols-2 w-full bg-secondary p-1 rounded">
+            <TabsList className="apple-grid grid-cols-2 w-full bg-muted/50 p-1.5 rounded-xl shadow-soft">
               <TabsTrigger 
                 value="dashboard" 
-                className="minimal-button data-[state=active]:bg-white data-[state=active]:shadow-soft text-sm"
+                className="apple-button data-[state=active]:bg-white data-[state=active]:shadow-medium apple-hover text-sm"
               >
-                <LayoutDashboard className="h-4 w-4 ml-1" />
+                <LayoutDashboard className="h-4 w-4 ml-2" />
                 לוח בקרה
               </TabsTrigger>
               <TabsTrigger 
                 value="projects" 
-                className="minimal-button data-[state=active]:bg-white data-[state=active]:shadow-soft text-sm"
+                className="apple-button data-[state=active]:bg-white data-[state=active]:shadow-medium apple-hover text-sm"
               >
-                <Table className="h-4 w-4 ml-1" />
+                <Table className="h-4 w-4 ml-2" />
                 פרויקטים
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="dashboard" className="mt-6">
+            <TabsContent value="dashboard" className="mt-8">
               <OptimizedDashboard tasks={tasks} stats={stats} />
             </TabsContent>
 
-            <TabsContent value="projects" className="mt-6">
-              <div className="minimal-card minimal-padding">
+            <TabsContent value="projects" className="mt-8">
+              <div className="apple-card apple-padding">
                 <VirtualizedTaskList
                   tasks={tasks}
                   onUpdateTask={updateTask}
@@ -180,9 +180,9 @@ const Index = () => {
         </main>
       </div>
 
-      {/* Clean Right Sidebar */}
+      {/* Apple Right Sidebar */}
       {sidebarOpen && (
-        <div className="fixed right-0 top-0 h-full w-80 bg-secondary border-l border-border">
+        <div className="fixed right-0 top-0 h-full w-80 apple-sidebar">
           <QuickTaskSidebar />
         </div>
       )}

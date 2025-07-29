@@ -17,71 +17,68 @@
 
 @layer base {
   :root {
-    /* Ultra Clean Minimal Colors */
+    /* Modern Apple Design System 2024 */
     --background: 0 0% 100%;
-    --foreground: 0 0% 8%;
+    --foreground: 215 25% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 8%;
+    --card-foreground: 215 25% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 8%;
+    --popover-foreground: 215 25% 15%;
 
-    /* Simple Blue - Clean & Professional */
-    --primary: 220 100% 50%;
+    /* Apple Blue - Perfect Modern */
+    --primary: 211 86% 50%;
     --primary-foreground: 0 0% 100%;
 
-    /* Minimal Grays */
-    --secondary: 0 0% 97%;
-    --secondary-foreground: 0 0% 8%;
+    /* Apple Gray System */
+    --secondary: 210 12% 98%;
+    --secondary-foreground: 215 25% 15%;
 
-    --muted: 0 0% 98%;
-    --muted-foreground: 0 0% 50%;
+    --muted: 210 12% 96%;
+    --muted-foreground: 215 16% 46%;
 
-    --accent: 0 0% 96%;
-    --accent-foreground: 0 0% 8%;
+    --accent: 210 20% 94%;
+    --accent-foreground: 215 25% 15%;
 
-    /* Clean System Colors */
-    --destructive: 0 100% 50%;
+    /* Apple Red */
+    --destructive: 0 84% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Invisible Borders */
-    --border: 0 0% 94%;
-    --input: 0 0% 96%;
-    --ring: 220 100% 50%;
+    /* Subtle Apple Borders */
+    --border: 210 20% 88%;
+    --input: 210 20% 92%;
+    --ring: 211 86% 50%;
 
-    /* Subtle Status */
-    --success: 120 100% 35%;
+    /* Apple Status Colors */
+    --success: 138 62% 47%;
     --success-foreground: 0 0% 100%;
-    --warning: 45 100% 50%;
+    --warning: 32 95% 44%;
     --warning-foreground: 0 0% 100%;
-    --info: 220 100% 50%;
+    --info: 211 86% 50%;
     --info-foreground: 0 0% 100%;
 
-    /* Priority - Clear Distinctions */
-    --priority-high: 0 100% 50%;
-    --priority-medium: 45 100% 50%;
-    --priority-low: 120 100% 35%;
+    /* Priority - Clear Apple Style */
+    --priority-high: 0 84% 55%;
+    --priority-medium: 32 95% 44%;
+    --priority-low: 138 62% 47%;
 
-    /* No Gradients - Pure Colors */
-    --gradient-primary: hsl(220 100% 50%);
-    --gradient-surface: hsl(0 0% 100%);
-    
-    /* Minimal Shadows */
-    --shadow-soft: 0 1px 2px 0 hsl(0 0% 0% / 0.03);
-    --shadow-medium: 0 2px 4px 0 hsl(0 0% 0% / 0.06);
-    --shadow-large: 0 4px 8px 0 hsl(0 0% 0% / 0.08);
+    /* Apple Shadows - Modern */
+    --shadow-soft: 0 1px 3px 0 hsl(0 0% 0% / 0.05), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+    --shadow-medium: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
+    --shadow-large: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.1);
 
-    --radius: 0.25rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 97%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 211 96% 48%;
+    /* Apple Sidebar */
+    --sidebar-background: 210 20% 98%;
+    --sidebar-foreground: 215 25% 15%;
+    --sidebar-primary: 211 86% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 94%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 211 96% 48%;
+    --sidebar-accent: 210 20% 94%;
+    --sidebar-accent-foreground: 215 25% 15%;
+    --sidebar-border: 210 20% 88%;
+    --sidebar-ring: 211 86% 50%;
   }
 
   .dark {
@@ -163,87 +160,122 @@
 }
 
 @layer components {
-  /* Ultra Minimal - No Effects */
-  .minimal-card {
-    @apply bg-white border border-border rounded shadow-soft;
+  /* Modern Apple Cards */
+  .apple-card {
+    @apply bg-card border border-border rounded-xl shadow-soft backdrop-blur-sm;
+    background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%);
   }
   
-  /* Clean Button */
-  .minimal-button {
-    @apply px-4 py-2 text-sm font-medium rounded transition-colors duration-150;
+  /* Apple Button System */
+  .apple-button {
+    @apply px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ease-out;
+    @apply shadow-soft hover:shadow-medium transform hover:scale-[1.02] active:scale-[0.98];
   }
   
-  .minimal-button-primary {
-    @apply bg-primary text-white hover:opacity-90;
+  .apple-button-primary {
+    @apply bg-primary text-primary-foreground;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.9) 100%);
   }
   
-  .minimal-button-secondary {
-    @apply bg-secondary text-foreground hover:bg-secondary/80;
+  .apple-button-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-accent;
   }
   
-  /* Clean Input */
-  .minimal-input {
-    @apply w-full px-3 py-2 text-sm border border-border rounded focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary;
+  /* Modern Input */
+  .apple-input {
+    @apply w-full px-4 py-3 text-sm border border-input rounded-xl;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary;
+    @apply transition-all duration-200 ease-out;
+    background: linear-gradient(135deg, hsl(var(--input)) 0%, hsl(var(--muted)) 100%);
   }
   
-  /* Typography */
-  .text-title {
-    @apply text-lg font-semibold text-foreground;
+  /* Apple Typography */
+  .apple-title {
+    @apply text-xl font-semibold text-foreground tracking-tight;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
   
-  .text-subtitle {
-    @apply text-sm text-muted-foreground;
+  .apple-subtitle {
+    @apply text-sm text-muted-foreground font-medium;
   }
   
-  .text-body {
-    @apply text-sm text-foreground;
+  .apple-body {
+    @apply text-sm text-foreground leading-relaxed;
   }
   
-  /* Layout Utilities */
-  .minimal-spacing {
-    @apply space-y-4;
+  /* Apple Layout System */
+  .apple-spacing {
+    @apply space-y-6;
   }
   
-  .minimal-padding {
-    @apply p-4;
+  .apple-padding {
+    @apply p-6;
   }
   
-  .minimal-container {
-    @apply max-w-7xl mx-auto px-4;
+  .apple-container {
+    @apply max-w-7xl mx-auto px-6;
   }
   
-  /* Status Colors - Clear & Simple */
-  .status-high {
-    @apply bg-red-500 text-white;
+  /* Apple Status System */
+  .apple-status-high {
+    @apply bg-destructive text-destructive-foreground px-3 py-1 rounded-full text-xs font-medium;
   }
   
-  .status-medium {
-    @apply bg-yellow-500 text-white;
+  .apple-status-medium {
+    @apply bg-warning text-warning-foreground px-3 py-1 rounded-full text-xs font-medium;
   }
   
-  .status-low {
-    @apply bg-green-500 text-white;
+  .apple-status-low {
+    @apply bg-success text-success-foreground px-3 py-1 rounded-full text-xs font-medium;
   }
   
-  /* Desktop App Optimizations */
-  .no-select {
+  /* Apple Glass Effect */
+  .apple-glass {
+    @apply bg-white/80 dark:bg-black/20 backdrop-blur-xl border border-white/20;
+    background: linear-gradient(135deg, hsl(var(--background) / 0.9) 0%, hsl(var(--muted) / 0.8) 100%);
+  }
+  
+  /* Apple Sidebar */
+  .apple-sidebar {
+    @apply bg-sidebar border-r border-sidebar-border;
+    background: linear-gradient(180deg, hsl(var(--sidebar-background)) 0%, hsl(var(--sidebar-accent)) 100%);
+  }
+  
+  /* Apple Header */
+  .apple-header {
+    @apply bg-background/95 backdrop-blur-xl border-b border-border;
+    background: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
+  }
+  
+  /* Productivity Focused */
+  .apple-focus {
+    @apply ring-2 ring-primary/30 ring-offset-2 ring-offset-background;
+  }
+  
+  /* Apple Grid System */
+  .apple-grid {
+    @apply grid gap-6;
+  }
+  
+  .apple-flex {
+    @apply flex items-center gap-4;
+  }
+  
+  /* Apple Animations */
+  .apple-hover {
+    @apply transition-all duration-200 ease-out hover:scale-[1.02] hover:shadow-medium;
+  }
+  
+  .apple-press {
+    @apply transition-transform duration-100 ease-out active:scale-[0.98];
+  }
+  
+  /* Desktop Optimizations */
+  .desktop-optimized {
     -webkit-user-select: none;
     -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
-  }
-  
-  .performance-mode {
     will-change: transform;
-    contain: layout;
-  }
-  
-  /* Ultra Clean Layout */
-  .clean-grid {
-    @apply grid gap-4;
-  }
-  
-  .clean-flex {
-    @apply flex items-center gap-3;
+    contain: layout style paint;
   }
 }
