@@ -1,16 +1,16 @@
-import { useState, useCallback, useMemo, lazy, Suspense } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useTasks } from '@/hooks/useTasksOptimized';
 import { useMemoryManager, useMemoryMonitor } from '@/hooks/useMemoryManager';
 import { useAutoSave } from '@/hooks/useAutoSave';
 import { useAppKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { PerformanceMonitor } from '@/components/PerformanceMonitor';
-const TaskTable = lazy(() => import('@/components/TaskTable').then(module => ({ default: module.TaskTable })));
-const CreateTaskDialog = lazy(() => import('@/components/CreateTaskDialog').then(module => ({ default: module.CreateTaskDialog })));
-const Dashboard = lazy(() => import('@/components/Dashboard').then(module => ({ default: module.Dashboard })));
-const ThemeToggle = lazy(() => import('@/components/ThemeToggle').then(module => ({ default: module.ThemeToggle })));
-const QuickTaskSidebar = lazy(() => import('@/components/QuickTaskSidebar').then(module => ({ default: module.QuickTaskSidebar })));
-const ProjectNavigationSidebar = lazy(() => import('@/components/ProjectNavigationSidebar').then(module => ({ default: module.ProjectNavigationSidebar })));
+import { TaskTable } from '@/components/TaskTable';
+import { CreateTaskDialog } from '@/components/CreateTaskDialog';
+import { Dashboard } from '@/components/Dashboard';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { QuickTaskSidebar } from '@/components/QuickTaskSidebar';
+import { ProjectNavigationSidebar } from '@/components/ProjectNavigationSidebar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -145,20 +145,10 @@ const Index = () => {
 
       {/* Left Sidebar - Projects Navigation */}
       <div className="relative">
-        <Suspense fallback={
-          <div className="w-80 h-full bg-muted/10 animate-pulse border-r border-border/50">
-            <div className="p-4 space-y-3">
-              <div className="h-4 bg-muted-foreground/10 rounded animate-pulse"></div>
-              <div className="h-4 bg-muted-foreground/10 rounded animate-pulse w-3/4"></div>
-              <div className="h-4 bg-muted-foreground/10 rounded animate-pulse w-1/2"></div>
-            </div>
-          </div>
-        }>
-          <ProjectNavigationSidebar 
-            tasks={tasks} 
-            onProjectSelect={handleProjectSelect}
-          />
-        </Suspense>
+        <ProjectNavigationSidebar 
+          tasks={tasks} 
+          onProjectSelect={handleProjectSelect}
+        />
       </div>
 
       {/* Main Content Area */}
@@ -199,12 +189,8 @@ const Index = () => {
                   <Users className="h-4 w-4" />
                   גרסת מובייל
                 </Button>
-                <Suspense fallback={<div className="w-8 h-8 bg-muted/20 animate-pulse rounded" />}>
-                  <CreateTaskDialog onCreateTask={handleCreateTask} />
-                </Suspense>
-                <Suspense fallback={<div className="w-8 h-8 bg-muted/20 animate-pulse rounded" />}>
-                  <ThemeToggle />
-                </Suspense>
+                <CreateTaskDialog onCreateTask={handleCreateTask} />
+                <ThemeToggle />
               </div>
             </div>
           </div>
@@ -232,41 +218,17 @@ const Index = () => {
 
             <TabsContent value="dashboard" className="mt-8 animate-slide-up">
               <div className="space-y-6">
-                <Suspense fallback={
-                  <div className="h-96 bg-muted/5 animate-pulse rounded-xl border border-border/30">
-                    <div className="p-6 space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="h-20 bg-muted-foreground/5 rounded animate-pulse"></div>
-                        <div className="h-20 bg-muted-foreground/5 rounded animate-pulse"></div>
-                        <div className="h-20 bg-muted-foreground/5 rounded animate-pulse"></div>
-                      </div>
-                      <div className="h-48 bg-muted-foreground/5 rounded animate-pulse"></div>
-                    </div>
-                  </div>
-                }>
-                  <Dashboard tasks={tasks} stats={stats} />
-                </Suspense>
+                <Dashboard tasks={tasks} stats={stats} />
               </div>
             </TabsContent>
 
             <TabsContent value="projects" className="mt-8 animate-slide-up">
               <div className="mac-card p-6">
-                <Suspense fallback={
-                  <div className="h-96 bg-muted/5 animate-pulse rounded-xl">
-                    <div className="p-4 space-y-3">
-                      <div className="h-8 bg-muted-foreground/10 rounded animate-pulse"></div>
-                      <div className="h-12 bg-muted-foreground/5 rounded animate-pulse"></div>
-                      <div className="h-12 bg-muted-foreground/5 rounded animate-pulse"></div>
-                      <div className="h-12 bg-muted-foreground/5 rounded animate-pulse"></div>
-                    </div>
-                  </div>
-                }>
-                  <TaskTable 
-                    tasks={tasks} 
-                    onUpdateTask={updateTask} 
-                    onDeleteTask={handleDeleteTask}
-                  />
-                </Suspense>
+                <TaskTable 
+                  tasks={tasks} 
+                  onUpdateTask={updateTask} 
+                  onDeleteTask={handleDeleteTask}
+                />
               </div>
             </TabsContent>
           </Tabs>
@@ -276,9 +238,7 @@ const Index = () => {
       {/* Right Sidebar - Quick Tasks */}
       {sidebarOpen && (
         <div className="relative">
-          <Suspense fallback={<div className="w-80 h-full bg-muted/20 animate-pulse" />}>
-            <QuickTaskSidebar />
-          </Suspense>
+          <QuickTaskSidebar />
         </div>
       )}
       </div>
