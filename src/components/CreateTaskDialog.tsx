@@ -99,11 +99,11 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
       ...prev,
       clientName,
       ...(clientData && {
-        clientPhone: clientData.phone || '',
-        clientPhone2: clientData.phone2 || '',
-        clientWhatsapp: clientData.whatsapp || '',
-        clientWhatsapp2: clientData.whatsapp2 || '',
-        clientEmail: clientData.email || ''
+        clientPhone: clientData.phone || prev.clientPhone,
+        clientPhone2: clientData.phone2 || prev.clientPhone2,
+        clientWhatsapp: clientData.whatsapp || prev.clientWhatsapp,
+        clientWhatsapp2: clientData.whatsapp2 || prev.clientWhatsapp2,
+        clientEmail: clientData.email || prev.clientEmail
       })
     }));
   };
