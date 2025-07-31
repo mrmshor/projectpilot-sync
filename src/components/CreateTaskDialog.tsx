@@ -123,28 +123,46 @@ export const CreateTaskDialog = ({ onCreateTask }: CreateTaskDialogProps) => {
           updateField('folderPath', manualPath.trim());
           console.log('Manual folder path entered:', manualPath.trim());
         } else {
-          // Fallback to directory picker
-          if ('showDirectoryPicker' in window) {
-            const dirHandle = await (window as any).showDirectoryPicker();
-            updateField('folderPath', dirHandle.name);
-          } else {
-            // Fallback for older browsers
-            const input = document.createElement('input');
-            input.type = 'file';
-            (input as any).webkitdirectory = true;
-            input.multiple = false;
-            
-            input.addEventListener('change', (event: any) => {
-              const files = event.target.files;
-              if (files && files.length > 0) {
-                const firstFile = files[0];
-                const webkitPath = firstFile.webkitRelativePath;
-                const folderName = webkitPath.split('/')[0];
-                updateField('folderPath', folderName);
+          // Improved directory picker with better support
+          try {
+            // Try File System Access API first (Chrome/Edge)
+            if ('showDirectoryPicker' in window) {
+              const dirHandle = await (window as any).showDirectoryPicker({
+                mode: 'read'
+              });
+              if (dirHandle) {
+                updateField('folderPath', dirHandle.name);
+                // Store handle for later use
+                localStorage.setItem('lastSelectedFolderHandle', JSON.stringify(dirHandle));
+                console.log('Directory selected via showDirectoryPicker:', dirHandle.name);
               }
-            });
-            
-            input.click();
+            } else {
+              // Fallback for older browsers
+              const input = document.createElement('input');
+              input.type = 'file';
+              (input as any).webkitdirectory = true;
+              input.multiple = false;
+              
+              input.addEventListener('change', (event: any) => {
+                const files = event.target.files;
+                if (files && files.length > 0) {
+                  const firstFile = files[0];
+                  const webkitPath = firstFile.webkitRelativePath;
+                  const folderName = webkitPath.split('/')[0];
+                  updateField('folderPath', folderName);
+                  console.log('Directory selected via webkitdirectory:', folderName);
+                }
+              });
+              
+              input.click();
+            }
+          } catch (error) {
+            console.error('Error selecting directory:', error);
+            // If all fails, let user type manually
+            const fallbackPath = prompt('לא ניתן לבחור תיקיה אוטומטית. הזן נתיב תיקיה:');
+            if (fallbackPath && fallbackPath.trim()) {
+              updateField('folderPath', fallbackPath.trim());
+            }
           }
         }
       }
