@@ -156,18 +156,46 @@ export const TaskTable = ({ tasks, onUpdateTask, onDeleteTask }: TaskTableProps)
 
   const sendWhatsApp = (phone?: string) => {
     if (phone) {
-      // Clean phone number - remove all non-digit characters and ensure proper format
+      // Clean phone number - remove all non-digit characters
       const cleanNumber = phone.replace(/\D/g, '');
-      // If number starts with 0, replace with 972, if starts with +972, remove +
+      
+      if (!cleanNumber) {
+        console.error('No valid phone number found');
+        return;
+      }
+      
       let formattedNumber = cleanNumber;
+      
+      // Handle Israeli phone numbers
       if (cleanNumber.startsWith('0')) {
+        // Israeli local number starting with 0 - replace with 972
         formattedNumber = '972' + cleanNumber.substring(1);
       } else if (cleanNumber.startsWith('972')) {
+        // Already has Israeli country code
         formattedNumber = cleanNumber;
+      } else if (cleanNumber.length === 9 && (cleanNumber.startsWith('5') || cleanNumber.startsWith('2') || cleanNumber.startsWith('3') || cleanNumber.startsWith('4') || cleanNumber.startsWith('7') || cleanNumber.startsWith('8') || cleanNumber.startsWith('9'))) {
+        // Israeli number without leading 0 - add 972
+        formattedNumber = '972' + cleanNumber;
+      } else if (cleanNumber.length === 10 && cleanNumber.startsWith('0')) {
+        // 10 digit number starting with 0 - Israeli format
+        formattedNumber = '972' + cleanNumber.substring(1);
       }
+      
       const whatsappUrl = `https://wa.me/${formattedNumber}`;
-      console.log('Opening WhatsApp with URL:', whatsappUrl);
-      window.open(whatsappUrl, '_blank');
+      console.log('Opening WhatsApp with URL:', whatsappUrl, 'from original:', phone);
+      
+      // Try to open WhatsApp
+      try {
+        window.open(whatsappUrl, '_blank');
+      } catch (error) {
+        console.error('Failed to open WhatsApp:', error);
+        // Fallback - copy to clipboard
+        navigator.clipboard.writeText(whatsappUrl).then(() => {
+          alert(`לא ניתן לפתוח וואטסאפ אוטומטית. הקישור הועתק ללוח: ${whatsappUrl}`);
+        }).catch(() => {
+          alert(`לא ניתן לפתוח וואטסאפ. נסה לפתוח ידנית: ${whatsappUrl}`);
+        });
+      }
     }
   };
 
