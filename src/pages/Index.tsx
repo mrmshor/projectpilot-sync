@@ -6,6 +6,7 @@ import { OptimizedDashboard } from '@/components/optimized/OptimizedDashboard';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { QuickTaskSidebar } from '@/components/QuickTaskSidebar';
 import { ProjectNavigationSidebar } from '@/components/ProjectNavigationSidebar';
+import { TauriActions } from '@/components/TauriActions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -144,7 +145,7 @@ const Index = () => {
         {/* Apple Main Content */}
         <main className="flex-1 apple-container py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="apple-grid grid-cols-2 w-full bg-muted/50 p-1.5 rounded-xl shadow-soft">
+            <TabsList className="apple-grid grid-cols-3 w-full bg-muted/50 p-1.5 rounded-xl shadow-soft">
               <TabsTrigger 
                 value="dashboard" 
                 className="apple-button data-[state=active]:bg-white data-[state=active]:shadow-medium apple-hover text-sm"
@@ -158,6 +159,13 @@ const Index = () => {
               >
                 <Table className="h-4 w-4 ml-2" />
                 פרויקטים
+              </TabsTrigger>
+              <TabsTrigger 
+                value="system" 
+                className="apple-button data-[state=active]:bg-white data-[state=active]:shadow-medium apple-hover text-sm"
+              >
+                <FileText className="h-4 w-4 ml-2" />
+                מערכת
               </TabsTrigger>
             </TabsList>
 
@@ -175,6 +183,10 @@ const Index = () => {
                   height={600}
                 />
               </div>
+            </TabsContent>
+
+            <TabsContent value="system" className="mt-8">
+              <TauriActions />
             </TabsContent>
           </Tabs>
         </main>

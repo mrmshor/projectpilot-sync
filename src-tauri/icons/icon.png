@@ -1,0 +1,12 @@
+# This is a placeholder for the app icon
+# In a real project, you would place your app icons here:
+# - 32x32.png
+# - 128x128.png  
+# - 128x128@2x.png
+# - icon.icns (for macOS)
+# - icon.ico (for Windows)
+
+# You can generate these from a single high-resolution PNG using tools like:
+# - tauri icon path/to/icon.png
+# - Online icon generators
+# - Image editing software

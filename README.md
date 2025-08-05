@@ -1,64 +1,78 @@
-# Welcome to your Lovable project
+# Project Pilot Sync - אפליקציה נייטיבית לניהול פרויקטים
 
-## Project info
+## 🚀 אפליקציה נייטיבית מלאה עם Tauri
 
-**URL**: https://lovable.dev/projects/b1cb2869-cf2d-4731-a631-2297f36707cb
+אפליקציה מודרנית לניהול פרויקטים ומשימות עם יכולות מערכת מתקדמות:
 
-## How can I edit this code?
+### ✨ תכונות עיקריות
+- 📁 **פתיחת תיקיות ב-Finder/Explorer** - גישה ישירה לתיקיות הפרויקט
+- 💬 **WhatsApp שולחני** - פתיחת צ'אטים ישירות מהאפליקציה  
+- 📧 **מייל אוטומטי** - שליחת מיילים עם פרטי פרויקט
+- 📞 **חיוג טלפוני** - התקשרות ישירה לאנשי קשר
+- 🎨 **עיצוב Apple מודרני** - ממשק משתמש מלוטש ומקצועי
+- 🌙 **מצב כהה/בהיר** - תמיכה מלאה בשני מצבים
+- 🇮🇱 **תמיכה בעברית** - RTL מלא וטקסט בעברית
 
-There are several ways of editing your application.
+### 🛠 טכנולוגיות
 
-**Use Lovable**
+**Frontend:**
+- React 18 + TypeScript
+- Vite (build tool)
+- Tailwind CSS + shadcn/ui
+- React Query (state management)
+- React Router (navigation)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/b1cb2869-cf2d-4731-a631-2297f36707cb) and start prompting.
+**Backend:**
+- Tauri 2.0 (Rust)
+- Native system integration
+- Cross-platform support
 
-Changes made via Lovable will be committed automatically to this repo.
+**Styling:**
+- Apple Design System inspired
+- Modern glass effects
+- Responsive design
+- Hebrew RTL support
 
-**Use your preferred IDE**
+## 🔧 התקנה ופיתוח
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### דרישות מערכת
+- Node.js 20+ 
+- Rust (latest stable)
+- npm או yarn
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### הגדרה מקומית
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+```bash
+# שכפול הפרויקט
 git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
 cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
-npm i
+# התקנת תלויות
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# פיתוח (web version)
 npm run dev
+
+# פיתוח (Tauri desktop app)
+npm run tauri:dev
+
+# בנייה לפרודקשן
+npm run build
+npm run tauri:build
 ```
 
-**Edit a file directly in GitHub**
+### פקודות שימושיות
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+# בדיקת קוד
+npm run lint
 
-**Use GitHub Codespaces**
+# בנייה לבדיקה
+npm run tauri:build:debug
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+# בדיקת תצורת Tauri
+npm run tauri info
+```
 
 ## 📱 אפליקציות מותקנות
 

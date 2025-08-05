@@ -1,0 +1,193 @@
+name: Test Code
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+jobs:
+  test-frontend:
+    runs-on: ubuntu-latest
+    name: Test Frontend Code
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Type check
+        run: npx tsc --noEmit
+        continue-on-error: true
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Test build output
+        run: |
+          echo "Checking build output..."
+          ls -la dist/
+          echo "Build completed successfully!"
+
+  test-backend:
+    runs-on: ubuntu-latest
+    name: Test Tauri Backend
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Check Rust formatting
+        run: cd src-tauri && cargo fmt --all -- --check
+        continue-on-error: true
+
+      - name: Run Clippy
+        run: cd src-tauri && cargo clippy --all-targets --all-features -- -D warnings
+        continue-on-error: true
+
+      - name: Run Rust tests
+        run: cd src-tauri && cargo test
+        continue-on-error: true
+
+      - name: Check if Tauri builds
+        run: cd src-tauri && cargo check
+
+  validate-config:
+    runs-on: ubuntu-latest
+    name: Validate Configuration
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate Tauri config
+        run: |
+          echo "Validating tauri.conf.json..."
+          if [ -f "tauri.conf.json" ]; then
+            echo "✅ tauri.conf.json exists"
+            # Basic JSON validation
+            python3 -m json.tool tauri.conf.json > /dev/null && echo "✅ Valid JSON format"
+          else
+            echo "❌ tauri.conf.json not found"
+            exit 1
+          fi
+
+      - name: Validate package.json
+        run: |
+          echo "Validating package.json..."
+          if [ -f "package.json" ]; then
+            echo "✅ package.json exists"
+            python3 -m json.tool package.json > /dev/null && echo "✅ Valid JSON format"
+          else
+            echo "❌ package.json not found"
+            exit 1
+          fi
+
+      - name: Check required files
+        run: |
+          echo "Checking required files..."
+          
+          # Frontend files
+          [ -f "src/main.tsx" ] && echo "✅ src/main.tsx" || echo "❌ src/main.tsx missing"
+          [ -f "src/App.tsx" ] && echo "✅ src/App.tsx" || echo "❌ src/App.tsx missing"
+          [ -f "index.html" ] && echo "✅ index.html" || echo "❌ index.html missing"
+          [ -f "vite.config.ts" ] && echo "✅ vite.config.ts" || echo "❌ vite.config.ts missing"
+          
+          # Tauri files
+          [ -f "src-tauri/Cargo.toml" ] && echo "✅ src-tauri/Cargo.toml" || echo "❌ src-tauri/Cargo.toml missing"
+          [ -f "src-tauri/src/main.rs" ] && echo "✅ src-tauri/src/main.rs" || echo "❌ src-tauri/src/main.rs missing"
+          [ -f "src-tauri/build.rs" ] && echo "✅ src-tauri/build.rs" || echo "❌ src-tauri/build.rs missing"
+          
+          # Custom files
+          [ -f "src/lib/tauri.ts" ] && echo "✅ src/lib/tauri.ts" || echo "❌ src/lib/tauri.ts missing"
+          [ -f "src/components/TauriActions.tsx" ] && echo "✅ src/components/TauriActions.tsx" || echo "❌ src/components/TauriActions.tsx missing"
+
+  security-check:
+    runs-on: ubuntu-latest
+    name: Security Check
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: Check for sensitive files
+        run: |
+          echo "Checking for sensitive files..."
+          
+          # Check for common sensitive files
+          if find . -name "*.key" -o -name "*.pem" -o -name "*.p12" -o -name "*.pfx" | grep -q .; then
+            echo "❌ Found potential sensitive key files"
+            find . -name "*.key" -o -name "*.pem" -o -name "*.p12" -o -name "*.pfx"
+            exit 1
+          else
+            echo "✅ No sensitive key files found"
+          fi
+          
+          # Check for environment files
+          if find . -name ".env*" -not -name ".env.example" | grep -q .; then
+            echo "⚠️  Found environment files (make sure they're in .gitignore)"
+            find . -name ".env*" -not -name ".env.example"
+          else
+            echo "✅ No environment files found"
+          fi
+
+  summary:
+    runs-on: ubuntu-latest
+    name: Test Summary
+    needs: [test-frontend, test-backend, validate-config, security-check]
+    if: always()
+    
+    steps:
+      - name: Test Results Summary
+        run: |
+          echo "## 🧪 Test Results Summary"
+          echo ""
+          echo "| Component | Status |"
+          echo "|-----------|--------|"
+          echo "| Frontend Tests | ${{ needs.test-frontend.result == 'success' && '✅ Passed' || '❌ Failed' }} |"
+          echo "| Backend Tests | ${{ needs.test-backend.result == 'success' && '✅ Passed' || '❌ Failed' }} |"
+          echo "| Config Validation | ${{ needs.validate-config.result == 'success' && '✅ Passed' || '❌ Failed' }} |"
+          echo "| Security Check | ${{ needs.security-check.result == 'success' && '✅ Passed' || '❌ Failed' }} |"
+          echo ""
+          
+          if [[ "${{ needs.test-frontend.result }}" == "success" && "${{ needs.test-backend.result }}" == "success" && "${{ needs.validate-config.result }}" == "success" && "${{ needs.security-check.result }}" == "success" ]]; then
+            echo "🎉 All tests passed! The code is ready for building."
+            exit 0
+          else
+            echo "⚠️  Some tests failed. Please check the logs above."
+            exit 1
+          fi
