@@ -6,6 +6,10 @@ import { OptimizedDashboard } from '@/components/optimized/OptimizedDashboard';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { QuickTaskSidebar } from '@/components/QuickTaskSidebar';
 import { ProjectNavigationSidebar } from '@/components/ProjectNavigationSidebar';
+import { BackupManager } from '@/components/BackupManager';
+import { AdvancedAnalytics } from '@/components/AdvancedAnalytics';
+import { NotificationCenter } from '@/components/NotificationCenter';
+import { ProjectTemplates } from '@/components/ProjectTemplates';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -18,7 +22,8 @@ import {
   DollarSign,
   PanelLeftOpen,
   PanelLeftClose,
-  FileText
+  FileText,
+  BarChart3
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNotesExport } from '@/hooks/useNotesExport';
@@ -35,7 +40,8 @@ const Index = () => {
     searchTerm,
     setSearchTerm,
     priorityFilter,
-    setPriorityFilter
+    setPriorityFilter,
+    restoreData
   } = useOptimizedTasks();
 
   
@@ -57,6 +63,33 @@ const Index = () => {
 
   const handleExport = () => {
     exportToCSV();
+  };
+
+  const handleDataRestore = (data: { tasks: any[]; quickTasks: any[] }) => {
+    restoreData(data.tasks);
+  };
+
+  const handleCreateFromTemplate = (template: any, customData: any) => {
+    const taskItems = template.tasks.map((task: any, index: number) => ({
+      id: `task_${Date.now()}_${index}`,
+      text: task.text,
+      isCompleted: task.isCompleted
+    }));
+
+    const newProject = {
+      projectName: template.name,
+      projectDescription: customData.customDescription || template.description,
+      clientName: customData.clientName,
+      price: customData.customPrice ? parseInt(customData.customPrice) : template.price,
+      currency: template.currency,
+      priority: template.priority,
+      workStatus: 'not_started' as const,
+      isPaid: false,
+      isCompleted: false,
+      tasks: taskItems
+    };
+
+    createTask(newProject);
   };
 
   const handleProjectSelect = (projectId: string) => {
@@ -91,9 +124,9 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background desktop-optimized" dir="rtl">
-      {/* Apple Left Sidebar */}
-      <div className="fixed left-0 top-0 h-full w-64 apple-sidebar">
+    <div className="clean-layout" dir="rtl">
+      {/* Left Sidebar */}
+      <div className="fixed left-0 top-0 h-full w-64 clean-sidebar z-40">
         <ProjectNavigationSidebar 
           tasks={tasks} 
           onProjectSelect={handleProjectSelect}
@@ -101,36 +134,38 @@ const Index = () => {
       </div>
 
       {/* Main Content */}
-      <div className="ml-64 flex-1 flex flex-col">
-        {/* Apple Header */}
-        <header className="apple-header">
-          <div className="apple-container">
-            <div className="apple-flex h-14 justify-between">
-              <div className="apple-flex">
+      <div className="mr-64 ml-80 flex-1 flex flex-col min-h-screen">
+        {/* Clean Header */}
+        <header className="modern-header">
+          <div className="spacious-container">
+            <div className="flex items-center justify-between h-16">
+              <div className="flex items-center gap-4">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className="apple-button"
+                  className="clean-btn clean-btn-secondary"
                 >
                   {sidebarOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
                 </Button>
-                <div className="w-10 h-10 bg-primary rounded-xl apple-flex justify-center">
-                  <Briefcase className="h-5 w-5 text-white" />
+                <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-md">
+                  <Briefcase className="h-6 w-6 text-white" />
                 </div>
-                <h1 className="apple-title">מנהל משימות</h1>
+                <h1 className="clean-title">מנהל משימות ופרויקטים</h1>
               </div>
               
-              <div className="apple-flex">
-                <Button variant="outline" size="sm" onClick={handleExport} className="apple-button text-sm apple-hover">
+              <div className="flex items-center gap-3">
+                <Button variant="outline" size="sm" onClick={handleExport} className="clean-btn clean-btn-secondary">
                   <Download className="h-4 w-4 ml-2" />
-                  CSV
+                  יצוא CSV
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => console.log('Export to notes')} className="apple-button text-sm apple-hover">
-                  <FileText className="h-4 w-4 ml-2" />
-                  פתקים
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => window.open('/mobile', '_blank')} className="apple-button text-sm apple-hover">
+                <BackupManager 
+                  tasks={tasks} 
+                  onDataRestore={handleDataRestore}
+                />
+                <NotificationCenter tasks={tasks} />
+                <ProjectTemplates onCreateFromTemplate={handleCreateFromTemplate} />
+                <Button variant="outline" size="sm" onClick={() => window.open('/mobile', '_blank')} className="clean-btn clean-btn-secondary">
                   <Users className="h-4 w-4 ml-2" />
                   מובייל
                 </Button>
@@ -141,32 +176,39 @@ const Index = () => {
           </div>
         </header>
 
-        {/* Apple Main Content */}
-        <main className="flex-1 apple-container py-8">
+        {/* Main Content Area */}
+        <main className="flex-1 spacious-container breathing-room">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="apple-grid grid-cols-2 w-full bg-muted/50 p-1.5 rounded-xl shadow-soft">
+            <TabsList className="modern-tabs w-full max-w-md mx-auto">
               <TabsTrigger 
                 value="dashboard" 
-                className="apple-button data-[state=active]:bg-white data-[state=active]:shadow-medium apple-hover text-sm"
+                className="modern-tab data-[state=active]:modern-tab-active"
               >
                 <LayoutDashboard className="h-4 w-4 ml-2" />
                 לוח בקרה
               </TabsTrigger>
               <TabsTrigger 
                 value="projects" 
-                className="apple-button data-[state=active]:bg-white data-[state=active]:shadow-medium apple-hover text-sm"
+                className="modern-tab data-[state=active]:modern-tab-active"
               >
                 <Table className="h-4 w-4 ml-2" />
                 פרויקטים
               </TabsTrigger>
+              <TabsTrigger 
+                value="analytics" 
+                className="modern-tab data-[state=active]:modern-tab-active"
+              >
+                <BarChart3 className="h-4 w-4 ml-2" />
+                אנליטיקה
+              </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="dashboard" className="mt-8">
+            <TabsContent value="dashboard" className="fade-in">
               <OptimizedDashboard tasks={tasks} stats={stats} />
             </TabsContent>
 
-            <TabsContent value="projects" className="mt-8">
-              <div className="apple-card apple-padding">
+            <TabsContent value="projects" className="fade-in">
+              <div className="clean-card p-6">
                 <VirtualizedTaskList
                   tasks={tasks}
                   onUpdateTask={updateTask}
@@ -176,13 +218,17 @@ const Index = () => {
                 />
               </div>
             </TabsContent>
+
+            <TabsContent value="analytics" className="fade-in">
+              <AdvancedAnalytics tasks={tasks} />
+            </TabsContent>
           </Tabs>
         </main>
       </div>
 
-      {/* Apple Right Sidebar */}
+      {/* Right Sidebar */}
       {sidebarOpen && (
-        <div className="fixed right-0 top-0 h-full w-80 apple-sidebar">
+        <div className="fixed right-0 top-0 h-full w-80 clean-sidebar z-40">
           <QuickTaskSidebar />
         </div>
       )}

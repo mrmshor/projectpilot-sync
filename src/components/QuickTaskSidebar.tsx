@@ -1,16 +1,21 @@
 import { useState } from 'react';
 import { useQuickTasks } from '@/hooks/useQuickTasks';
 import { useQuickTasksExport } from '@/hooks/useQuickTasksExport';
+import { useOptimizedTasks } from '@/hooks/useOptimizedTasks';
+import { TimeTracker } from '@/components/TimeTracker';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Plus, 
   Trash2, 
   CheckSquare,
   Square,
-  FileText
+  FileText,
+  Timer,
+  Zap
 } from 'lucide-react';
 
 export const QuickTaskSidebar = () => {
@@ -21,6 +26,7 @@ export const QuickTaskSidebar = () => {
     deleteQuickTask
   } = useQuickTasks();
 
+  const { tasks } = useOptimizedTasks();
   const { exportQuickTasksToNotes } = useQuickTasksExport();
   const [newTaskTitle, setNewTaskTitle] = useState('');
 
@@ -35,109 +41,142 @@ export const QuickTaskSidebar = () => {
   const pendingTasks = quickTasks.filter(task => !task.completed);
 
   return (
-    <div className="w-80 h-[calc(100vh-2rem)] bg-background border-l border-border flex flex-col sticky top-4 rounded-lg shadow-lg overflow-hidden">
+    <div className="h-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-l border-slate-200 dark:border-slate-700 flex flex-col">
       {/* Header */}
-      <div className="p-4 border-b border-border sticky top-0 bg-background/95 backdrop-blur-sm z-10">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">משימות מהירות</h2>
-          {pendingTasks.length > 0 && (
-            <Button 
-              onClick={() => exportQuickTasksToNotes(quickTasks)}
-              size="sm"
-              variant="outline"
-              className="gap-1 text-xs"
-            >
-              <FileText className="h-3 w-3" />
-              שלח לפתקים
-            </Button>
-          )}
-        </div>
+      <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+        <h2 className="clean-subtitle mb-4">כלים מהירים</h2>
         
-        {/* Add Task */}
-        <div className="flex gap-2">
-          <Input
-            placeholder="הוסף משימה חדשה..."
-            value={newTaskTitle}
-            onChange={(e) => setNewTaskTitle(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleAddTask()}
-            className="flex-1"
-          />
-          <Button 
-            onClick={handleAddTask} 
-            size="sm"
-            disabled={!newTaskTitle.trim()}
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+        <Tabs defaultValue="tasks" className="w-full">
+          <TabsList className="modern-tabs w-full">
+            <TabsTrigger value="tasks" className="modern-tab data-[state=active]:modern-tab-active text-xs">
+              <Zap className="h-3 w-3 ml-1" />
+              משימות
+            </TabsTrigger>
+            <TabsTrigger value="timer" className="modern-tab data-[state=active]:modern-tab-active text-xs">
+              <Timer className="h-3 w-3 ml-1" />
+              זמן
+            </TabsTrigger>
+          </TabsList>
+          
+          {/* Content */}
+          <div className="mt-6 space-y-4">
+            <TabsContent value="tasks" className="mt-0 space-y-4">
+              {/* Add new task */}
+              <div className="flex gap-2">
+                <Input
+                  value={newTaskTitle}
+                  onChange={(e) => setNewTaskTitle(e.target.value)}
+                  placeholder="הוסף משימה מהירה..."
+                  onKeyPress={(e) => e.key === 'Enter' && handleAddTask()}
+                  className="clean-input flex-1"
+                />
+                <Button onClick={handleAddTask} size="sm" disabled={!newTaskTitle.trim()} className="clean-btn clean-btn-primary">
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              {pendingTasks.length > 0 && (
+                <Button 
+                  onClick={() => exportQuickTasksToNotes(quickTasks)}
+                  size="sm"
+                  variant="outline"
+                  className="clean-btn clean-btn-secondary w-full text-xs"
+                >
+                  <FileText className="h-3 w-3 ml-1" />
+                  יצא לפתקים
+                </Button>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="timer" className="mt-0">
+              <div className="text-sm clean-text">
+                מעקב זמן עבור פרויקטים
+              </div>
+            </TabsContent>
+          </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 h-[calc(100%-8rem)]">
-        
-        {/* Pending Tasks */}
-        {pendingTasks.length > 0 && (
-          <Card className="bg-gradient-to-br from-blue-500/10 to-purple-600/10 border-blue-300/30 shadow-md">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-blue-700 dark:text-blue-300">
-                <Square className="h-4 w-4" />
-                משימות ממתינות ({pendingTasks.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {pendingTasks.map(task => (
-                <div key={task.id} className="flex items-center gap-3 group p-2 rounded-lg hover:bg-white/50 dark:hover:bg-white/5 transition-colors">
-                  <Checkbox
-                    checked={task.completed}
-                    onCheckedChange={() => toggleQuickTask(task.id)}
-                    className="border-2 border-blue-400 data-[state=checked]:bg-blue-500"
-                  />
-                  <span className="flex-1 text-base font-medium text-foreground">{task.title}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => deleteQuickTask(task.id)}
-                    className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive/80"
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        )}
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto mt-6 space-y-4 max-h-[calc(100vh-20rem)]">
+            <TabsContent value="tasks" className="mt-0 space-y-4">
+              {/* Pending Tasks */}
+              {pendingTasks.length > 0 && (
+                <Card className="clean-card">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-semibold flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                      <Square className="h-4 w-4" />
+                      ממתין ({pendingTasks.length})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="tight-spacing">
+                    {pendingTasks.map(task => (
+                      <div key={task.id} className="flex items-center gap-3 group p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                        <Checkbox
+                          checked={task.completed}
+                          onCheckedChange={() => toggleQuickTask(task.id)}
+                          className="border-2 border-blue-400 data-[state=checked]:bg-blue-500"
+                        />
+                        <span className="flex-1 text-sm font-medium">{task.title}</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => deleteQuickTask(task.id)}
+                          className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:text-red-600"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
 
-        {/* Completed Tasks */}
-        {completedTasks.length > 0 && (
-          <Card className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 border-green-300/30 shadow-md">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-green-700 dark:text-green-300">
-                <CheckSquare className="h-4 w-4" />
-                הושלמו ({completedTasks.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {completedTasks.map(task => (
-                <div key={task.id} className="flex items-center gap-3 group p-2 rounded-lg hover:bg-white/30 dark:hover:bg-white/5 transition-colors opacity-70">
-                  <Checkbox
-                    checked={task.completed}
-                    onCheckedChange={() => toggleQuickTask(task.id)}
-                    className="border-2 border-green-400 data-[state=checked]:bg-green-500"
-                  />
-                  <span className="flex-1 text-base font-medium line-through text-muted-foreground">{task.title}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => deleteQuickTask(task.id)}
-                    className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive/80"
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
+              {/* Completed Tasks */}
+              {completedTasks.length > 0 && (
+                <Card className="clean-card">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-semibold flex items-center gap-2 text-green-600 dark:text-green-400">
+                      <CheckSquare className="h-4 w-4" />
+                      הושלם ({completedTasks.length})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="tight-spacing">
+                    {completedTasks.map(task => (
+                      <div key={task.id} className="flex items-center gap-3 group p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors opacity-70">
+                        <Checkbox
+                          checked={task.completed}
+                          onCheckedChange={() => toggleQuickTask(task.id)}
+                          className="border-2 border-green-400 data-[state=checked]:bg-green-500"
+                        />
+                        <span className="flex-1 text-sm font-medium line-through clean-text">{task.title}</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => deleteQuickTask(task.id)}
+                          className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:text-red-600"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Empty state */}
+              {quickTasks.length === 0 && (
+                <div className="text-center clean-text py-12">
+                  <Square className="h-16 w-16 mx-auto mb-4 opacity-20" />
+                  <p className="text-sm font-medium">אין משימות מהירות</p>
+                  <p className="text-xs mt-1">הוסף משימה כדי להתחיל</p>
                 </div>
-              ))}
-            </CardContent>
-          </Card>
-        )}
+              )}
+            </TabsContent>
+            
+            <TabsContent value="timer" className="mt-0">
+              <TimeTracker tasks={tasks} />
+            </TabsContent>
+          </div>
+        </Tabs>
       </div>
     </div>
   );

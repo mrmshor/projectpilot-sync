@@ -20,7 +20,7 @@ function useDebounce<T>(value: T, delay: number): T {
 }
 
 export const useOptimizedTasks = () => {
-  const { tasks, loading, createTask, updateTask, deleteTask, getTaskStats, exportToCSV } = useTasks();
+  const { tasks, loading, createTask, updateTask, deleteTask, getTaskStats, exportToCSV, restoreData } = useTasks();
   
   // Search and filter states
   const [searchTerm, setSearchTerm] = useState('');
@@ -123,6 +123,7 @@ export const useOptimizedTasks = () => {
     deleteTask,
     batchDeleteTasks,
     exportToCSV,
+    restoreData,
     
     // Performance
     getPerformanceMetrics
