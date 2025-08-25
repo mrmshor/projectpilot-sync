@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Task, WorkStatus, Priority } from '@/types/task';
+import { useDataBackup } from './useDataBackup';
 
 const STORAGE_KEY = 'task_management_data';
 
 export const useTasks = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const { createAutoBackup } = useDataBackup();
 
   // Load tasks from localStorage on mount
   useEffect(() => {
@@ -30,8 +32,10 @@ export const useTasks = () => {
   useEffect(() => {
     if (!loading) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+      // Create auto-backup every time data changes
+      createAutoBackup(tasks, []);
     }
-  }, [tasks, loading]);
+  }, [tasks, loading, createAutoBackup]);
 
   const createTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
     try {
@@ -136,6 +140,10 @@ export const useTasks = () => {
     window.URL.revokeObjectURL(url);
   };
 
+  const restoreData = (restoredTasks: Task[]) => {
+    setTasks(restoredTasks);
+  };
+
   return {
     tasks,
     loading,
@@ -143,6 +151,7 @@ export const useTasks = () => {
     updateTask,
     deleteTask,
     getTaskStats,
-    exportToCSV
+    exportToCSV,
+    restoreData
   };
 };

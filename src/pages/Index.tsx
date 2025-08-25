@@ -6,6 +6,10 @@ import { OptimizedDashboard } from '@/components/optimized/OptimizedDashboard';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { QuickTaskSidebar } from '@/components/QuickTaskSidebar';
 import { ProjectNavigationSidebar } from '@/components/ProjectNavigationSidebar';
+import { BackupManager } from '@/components/BackupManager';
+import { AdvancedAnalytics } from '@/components/AdvancedAnalytics';
+import { NotificationCenter } from '@/components/NotificationCenter';
+import { ProjectTemplates } from '@/components/ProjectTemplates';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -18,7 +22,8 @@ import {
   DollarSign,
   PanelLeftOpen,
   PanelLeftClose,
-  FileText
+  FileText,
+  BarChart3
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNotesExport } from '@/hooks/useNotesExport';
@@ -35,7 +40,8 @@ const Index = () => {
     searchTerm,
     setSearchTerm,
     priorityFilter,
-    setPriorityFilter
+    setPriorityFilter,
+    restoreData
   } = useOptimizedTasks();
 
   
@@ -57,6 +63,33 @@ const Index = () => {
 
   const handleExport = () => {
     exportToCSV();
+  };
+
+  const handleDataRestore = (data: { tasks: any[]; quickTasks: any[] }) => {
+    restoreData(data.tasks);
+  };
+
+  const handleCreateFromTemplate = (template: any, customData: any) => {
+    const taskItems = template.tasks.map((task: any, index: number) => ({
+      id: `task_${Date.now()}_${index}`,
+      text: task.text,
+      isCompleted: task.isCompleted
+    }));
+
+    const newProject = {
+      projectName: template.name,
+      projectDescription: customData.customDescription || template.description,
+      clientName: customData.clientName,
+      price: customData.customPrice ? parseInt(customData.customPrice) : template.price,
+      currency: template.currency,
+      priority: template.priority,
+      workStatus: 'not_started' as const,
+      isPaid: false,
+      isCompleted: false,
+      tasks: taskItems
+    };
+
+    createTask(newProject);
   };
 
   const handleProjectSelect = (projectId: string) => {
@@ -130,6 +163,12 @@ const Index = () => {
                   <FileText className="h-4 w-4 ml-2" />
                   פתקים
                 </Button>
+                <BackupManager 
+                  tasks={tasks} 
+                  onDataRestore={handleDataRestore}
+                />
+                <NotificationCenter tasks={tasks} />
+                <ProjectTemplates onCreateFromTemplate={handleCreateFromTemplate} />
                 <Button variant="outline" size="sm" onClick={() => window.open('/mobile', '_blank')} className="apple-button text-sm apple-hover">
                   <Users className="h-4 w-4 ml-2" />
                   מובייל
@@ -144,7 +183,7 @@ const Index = () => {
         {/* Apple Main Content */}
         <main className="flex-1 apple-container py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="apple-grid grid-cols-2 w-full bg-muted/50 p-1.5 rounded-xl shadow-soft">
+            <TabsList className="apple-grid grid-cols-3 w-full bg-muted/50 p-1.5 rounded-xl shadow-soft">
               <TabsTrigger 
                 value="dashboard" 
                 className="apple-button data-[state=active]:bg-white data-[state=active]:shadow-medium apple-hover text-sm"
@@ -158,6 +197,13 @@ const Index = () => {
               >
                 <Table className="h-4 w-4 ml-2" />
                 פרויקטים
+              </TabsTrigger>
+              <TabsTrigger 
+                value="analytics" 
+                className="apple-button data-[state=active]:bg-white data-[state=active]:shadow-medium apple-hover text-sm"
+              >
+                <BarChart3 className="h-4 w-4 ml-2" />
+                אנליטיקה
               </TabsTrigger>
             </TabsList>
 
@@ -175,6 +221,10 @@ const Index = () => {
                   height={600}
                 />
               </div>
+            </TabsContent>
+
+            <TabsContent value="analytics" className="mt-8">
+              <AdvancedAnalytics tasks={tasks} />
             </TabsContent>
           </Tabs>
         </main>
