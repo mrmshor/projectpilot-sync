@@ -41,35 +41,36 @@ export const QuickTaskSidebar = () => {
   const pendingTasks = quickTasks.filter(task => !task.completed);
 
   return (
-    <div className="w-80 h-[calc(100vh-2rem)] bg-background border-l border-border flex flex-col sticky top-4 rounded-lg shadow-lg overflow-hidden">
-      {/* Header with Tabs */}
-      <div className="p-4 border-b border-border sticky top-0 bg-background/95 backdrop-blur-sm z-10">
-        <h2 className="text-lg font-semibold mb-4">כלים מהירים</h2>
+    <div className="h-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-l border-slate-200 dark:border-slate-700 flex flex-col">
+      {/* Header */}
+      <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+        <h2 className="clean-subtitle mb-4">כלים מהירים</h2>
         
         <Tabs defaultValue="tasks" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="tasks" className="text-xs">
+          <TabsList className="modern-tabs w-full">
+            <TabsTrigger value="tasks" className="modern-tab data-[state=active]:modern-tab-active text-xs">
               <Zap className="h-3 w-3 ml-1" />
               משימות
             </TabsTrigger>
-            <TabsTrigger value="timer" className="text-xs">
+            <TabsTrigger value="timer" className="modern-tab data-[state=active]:modern-tab-active text-xs">
               <Timer className="h-3 w-3 ml-1" />
               זמן
             </TabsTrigger>
           </TabsList>
           
-          <div className="mt-4">
-            <TabsContent value="tasks" className="mt-0 space-y-0">
+          {/* Content */}
+          <div className="mt-6 space-y-4">
+            <TabsContent value="tasks" className="mt-0 space-y-4">
               {/* Add new task */}
-              <div className="flex gap-2 mb-4">
+              <div className="flex gap-2">
                 <Input
                   value={newTaskTitle}
                   onChange={(e) => setNewTaskTitle(e.target.value)}
                   placeholder="הוסף משימה מהירה..."
                   onKeyPress={(e) => e.key === 'Enter' && handleAddTask()}
-                  className="flex-1"
+                  className="clean-input flex-1"
                 />
-                <Button onClick={handleAddTask} size="sm" disabled={!newTaskTitle.trim()}>
+                <Button onClick={handleAddTask} size="sm" disabled={!newTaskTitle.trim()} className="clean-btn clean-btn-primary">
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
@@ -79,47 +80,47 @@ export const QuickTaskSidebar = () => {
                   onClick={() => exportQuickTasksToNotes(quickTasks)}
                   size="sm"
                   variant="outline"
-                  className="gap-1 text-xs w-full"
+                  className="clean-btn clean-btn-secondary w-full text-xs"
                 >
-                  <FileText className="h-3 w-3" />
+                  <FileText className="h-3 w-3 ml-1" />
                   יצא לפתקים
                 </Button>
               )}
             </TabsContent>
             
             <TabsContent value="timer" className="mt-0">
-              <div className="text-sm text-muted-foreground">
+              <div className="text-sm clean-text">
                 מעקב זמן עבור פרויקטים
               </div>
             </TabsContent>
           </div>
 
-          {/* Content */}
-          <div className="flex-1 overflow-y-auto mt-4 space-y-4 h-[calc(100vh-16rem)]">
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto mt-6 space-y-4 max-h-[calc(100vh-20rem)]">
             <TabsContent value="tasks" className="mt-0 space-y-4">
               {/* Pending Tasks */}
               {pendingTasks.length > 0 && (
-                <Card className="bg-gradient-to-br from-blue-500/10 to-purple-600/10 border-blue-300/30 shadow-md">
+                <Card className="clean-card">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-semibold flex items-center gap-2 text-blue-700 dark:text-blue-300">
+                    <CardTitle className="text-sm font-semibold flex items-center gap-2 text-blue-600 dark:text-blue-400">
                       <Square className="h-4 w-4" />
-                      משימות ממתינות ({pendingTasks.length})
+                      ממתין ({pendingTasks.length})
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3">
+                  <CardContent className="tight-spacing">
                     {pendingTasks.map(task => (
-                      <div key={task.id} className="flex items-center gap-3 group p-2 rounded-lg hover:bg-white/50 dark:hover:bg-white/5 transition-colors">
+                      <div key={task.id} className="flex items-center gap-3 group p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                         <Checkbox
                           checked={task.completed}
                           onCheckedChange={() => toggleQuickTask(task.id)}
                           className="border-2 border-blue-400 data-[state=checked]:bg-blue-500"
                         />
-                        <span className="flex-1 text-base font-medium text-foreground">{task.title}</span>
+                        <span className="flex-1 text-sm font-medium">{task.title}</span>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => deleteQuickTask(task.id)}
-                          className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive/80"
+                          className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:text-red-600"
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
@@ -131,27 +132,27 @@ export const QuickTaskSidebar = () => {
 
               {/* Completed Tasks */}
               {completedTasks.length > 0 && (
-                <Card className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 border-green-300/30 shadow-md">
+                <Card className="clean-card">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-semibold flex items-center gap-2 text-green-700 dark:text-green-300">
+                    <CardTitle className="text-sm font-semibold flex items-center gap-2 text-green-600 dark:text-green-400">
                       <CheckSquare className="h-4 w-4" />
-                      הושלמו ({completedTasks.length})
+                      הושלם ({completedTasks.length})
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3">
+                  <CardContent className="tight-spacing">
                     {completedTasks.map(task => (
-                      <div key={task.id} className="flex items-center gap-3 group p-2 rounded-lg hover:bg-white/30 dark:hover:bg-white/5 transition-colors opacity-70">
+                      <div key={task.id} className="flex items-center gap-3 group p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors opacity-70">
                         <Checkbox
                           checked={task.completed}
                           onCheckedChange={() => toggleQuickTask(task.id)}
                           className="border-2 border-green-400 data-[state=checked]:bg-green-500"
                         />
-                        <span className="flex-1 text-base font-medium line-through text-muted-foreground">{task.title}</span>
+                        <span className="flex-1 text-sm font-medium line-through clean-text">{task.title}</span>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => deleteQuickTask(task.id)}
-                          className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive/80"
+                          className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:text-red-600"
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
@@ -163,10 +164,10 @@ export const QuickTaskSidebar = () => {
 
               {/* Empty state */}
               {quickTasks.length === 0 && (
-                <div className="text-center text-muted-foreground py-8">
-                  <Square className="h-12 w-12 mx-auto mb-4 opacity-20" />
-                  <p className="text-sm">אין משימות מהירות</p>
-                  <p className="text-xs">הוסף משימה כדי להתחיל</p>
+                <div className="text-center clean-text py-12">
+                  <Square className="h-16 w-16 mx-auto mb-4 opacity-20" />
+                  <p className="text-sm font-medium">אין משימות מהירות</p>
+                  <p className="text-xs mt-1">הוסף משימה כדי להתחיל</p>
                 </div>
               )}
             </TabsContent>

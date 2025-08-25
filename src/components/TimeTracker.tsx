@@ -75,19 +75,19 @@ export const TimeTracker = ({ tasks }: TimeTrackerProps) => {
   return (
     <div className="space-y-4">
       {/* Active Timer Display */}
-      <Card className="apple-card">
+      <Card className="clean-card">
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-full ${isTracking ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`}>
-                <Timer className="h-4 w-4" />
+              <div className={`p-3 rounded-full ${isTracking ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500'}`}>
+                <Timer className="h-5 w-5" />
               </div>
               <div>
-                <div className="text-2xl font-mono font-bold">
+                <div className="text-3xl font-mono font-bold text-slate-800 dark:text-slate-200">
                   {formatTime(currentTime)}
                 </div>
                 {activeEntry && (
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm clean-text mt-1">
                     {getTaskName(activeEntry.taskId)}
                   </div>
                 )}
@@ -97,35 +97,35 @@ export const TimeTracker = ({ tasks }: TimeTrackerProps) => {
             <div className="flex items-center gap-2">
               {isTracking ? (
                 <>
-                  <Button size="sm" variant="outline" onClick={pauseTimer}>
+                  <Button size="sm" variant="outline" onClick={pauseTimer} className="clean-btn clean-btn-secondary">
                     <Pause className="h-4 w-4" />
                   </Button>
-                  <Button size="sm" variant="destructive" onClick={stopTimer}>
+                  <Button size="sm" variant="destructive" onClick={stopTimer} className="clean-btn bg-red-500 text-white hover:bg-red-600">
                     <Square className="h-4 w-4" />
                   </Button>
                 </>
               ) : (
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button size="sm">
+                    <Button size="sm" className="clean-btn clean-btn-primary">
                       <Play className="h-4 w-4 ml-2" />
                       התחל
                     </Button>
                   </DialogTrigger>
                   
-                  <DialogContent dir="rtl">
+                  <DialogContent dir="rtl" className="clean-card">
                     <DialogHeader>
-                      <DialogTitle>התחל מעקב זמן</DialogTitle>
+                      <DialogTitle className="clean-subtitle">התחל מעקב זמן</DialogTitle>
                     </DialogHeader>
                     
                     <div className="space-y-4">
                       <div>
-                        <Label htmlFor="task-select">בחר פרויקט</Label>
+                        <Label htmlFor="task-select" className="clean-text font-medium">בחר פרויקט</Label>
                         <select
                           id="task-select"
                           value={selectedTaskId}
                           onChange={(e) => setSelectedTaskId(e.target.value)}
-                          className="w-full p-2 border rounded-md"
+                          className="clean-input mt-2"
                         >
                           <option value="">בחר פרויקט...</option>
                           {tasks.map(task => (
@@ -137,19 +137,20 @@ export const TimeTracker = ({ tasks }: TimeTrackerProps) => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="description">תיאור (אופציונלי)</Label>
+                        <Label htmlFor="description" className="clean-text font-medium">תיאור (אופציונלי)</Label>
                         <Input
                           id="description"
                           value={description}
                           onChange={(e) => setDescription(e.target.value)}
                           placeholder="על מה אתה עובד?"
+                          className="clean-input mt-2"
                         />
                       </div>
                       
                       <Button 
                         onClick={handleStart} 
                         disabled={!selectedTaskId}
-                        className="w-full"
+                        className="clean-btn clean-btn-primary w-full"
                       >
                         <Play className="h-4 w-4 ml-2" />
                         התחל מעקב
@@ -164,48 +165,48 @@ export const TimeTracker = ({ tasks }: TimeTrackerProps) => {
       </Card>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-2 gap-4">
-        <Card className="apple-card">
-          <CardContent className="p-3">
+      <div className="grid grid-cols-2 gap-3">
+        <Card className="clean-card">
+          <CardContent className="p-4">
             <div className="text-center">
-              <div className="text-lg font-bold text-primary">
+              <div className="text-xl font-bold text-primary">
                 {formatTime(todayTotalTime)}
               </div>
-              <div className="text-xs text-muted-foreground">היום</div>
+              <div className="text-xs clean-text mt-1">היום</div>
             </div>
           </CardContent>
         </Card>
         
-        <Card className="apple-card">
-          <CardContent className="p-3">
+        <Card className="clean-card">
+          <CardContent className="p-4">
             <div className="text-center">
-              <div className="text-lg font-bold text-primary">
+              <div className="text-xl font-bold text-primary">
                 {formatTime(totalTrackedTime)}
               </div>
-              <div className="text-xs text-muted-foreground">סה"כ</div>
+              <div className="text-xs clean-text mt-1">סה"כ</div>
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Project Time Summary */}
-      <Card className="apple-card">
+      <Card className="clean-card">
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm flex items-center gap-2">
+          <CardTitle className="text-sm flex items-center gap-2 clean-subtitle">
             <Clock className="h-4 w-4" />
             זמן לפי פרויקט
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2 max-h-32 overflow-y-auto">
+          <div className="space-y-3 max-h-40 overflow-y-auto">
             {tasks.map(task => {
               const taskTime = getTaskTotalTime(task.id);
               if (taskTime === 0) return null;
               
               return (
-                <div key={task.id} className="flex items-center justify-between text-sm">
-                  <span className="truncate flex-1">{task.projectName}</span>
-                  <Badge variant="secondary" className="text-xs">
+                <div key={task.id} className="flex items-center justify-between text-sm p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800">
+                  <span className="truncate flex-1 font-medium">{task.projectName}</span>
+                  <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
                     {formatTime(taskTime)}
                   </Badge>
                 </div>
@@ -213,8 +214,10 @@ export const TimeTracker = ({ tasks }: TimeTrackerProps) => {
             })}
             
             {tasks.every(task => getTaskTotalTime(task.id) === 0) && (
-              <div className="text-center text-muted-foreground text-sm py-4">
-                עדיין לא נרשם זמן עבור פרויקטים
+              <div className="text-center clean-text text-sm py-8">
+                <Clock className="h-12 w-12 mx-auto mb-3 opacity-20" />
+                <p>עדיין לא נרשם זמן</p>
+                <p className="text-xs mt-1">התחל מעקב זמן כדי לראות סטטיסטיקות</p>
               </div>
             )}
           </div>
@@ -224,7 +227,7 @@ export const TimeTracker = ({ tasks }: TimeTrackerProps) => {
       {/* Time History */}
       <Dialog open={showHistory} onOpenChange={setShowHistory}>
         <DialogTrigger asChild>
-          <Button variant="outline" size="sm" className="w-full">
+          <Button variant="outline" size="sm" className="clean-btn clean-btn-secondary w-full">
             <Calendar className="h-4 w-4 ml-2" />
             היסטוריית זמן
           </Button>
